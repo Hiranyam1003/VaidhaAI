@@ -2,10 +2,13 @@ import React from 'react';
 import {
   Plus,
   Home,
+  Newspaper,
+  MessageCircle,
   Landmark,
   ClipboardCheck,
   Files,
   Bookmark,
+  UserCircle,
   PanelLeftClose,
   PanelLeft,
 } from 'lucide-react';
@@ -26,8 +29,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isCollapsed,
   onToggleCollapse,
 }) => {
+  // Exact Navigation Order specified in prompt:
+  // 1. Home — house icon
+  // 2. News & Updates — newspaper icon (MUST be immediately below Home)
+  // 3. Ask Vaidha — message-circle icon
+  // 4. Explore Schemes — landmark icon
+  // 5. Eligibility Checker — clipboard-check icon
+  // 6. Document Library — files icon
+  // 7. Saved Schemes — bookmark icon
   const navItems = [
     { id: 'home' as NavTab, label: 'Home', icon: Home },
+    { id: 'news' as NavTab, label: 'News & Updates', icon: Newspaper },
+    { id: 'ask' as NavTab, label: 'Ask Vaidha', icon: MessageCircle },
     { id: 'schemes' as NavTab, label: 'Explore Schemes', icon: Landmark },
     { id: 'eligibility' as NavTab, label: 'Eligibility Checker', icon: ClipboardCheck },
     { id: 'documents' as NavTab, label: 'Document Library', icon: Files },
@@ -37,8 +50,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside
       style={{
-        width: isCollapsed ? '72px' : '260px',
-        minWidth: isCollapsed ? '72px' : '260px',
+        width: isCollapsed ? '72px' : '268px',
+        minWidth: isCollapsed ? '72px' : '268px',
         height: '100%',
         backgroundColor: 'var(--sidebar-bg)',
         borderRight: '1px solid var(--sidebar-border)',
@@ -71,7 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             overflow: 'hidden',
           }}
         >
-          {/* Official Vaidha Logo Image */}
+          {/* Actual Vaidha Logo Asset */}
           <div
             style={{
               width: '34px',
@@ -204,14 +217,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      {/* Icon-based Navigation Items */}
+      {/* Navigation Items in Exact Order */}
       <nav
         style={{
           flex: 1,
-          padding: isCollapsed ? '6px 10px' : '6px 12px',
+          padding: isCollapsed ? '4px 10px' : '4px 12px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '4px',
+          gap: '3px',
+          overflowY: 'auto',
         }}
       >
         {navItems.map((item) => {
@@ -252,7 +266,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 }
               }}
             >
-              {/* Active accent pill indicator */}
               {isActive && (
                 <div
                   style={{
@@ -282,32 +295,51 @@ export const Sidebar: React.FC<SidebarProps> = ({
         })}
       </nav>
 
-      {/* Minimal Footer */}
+      {/* Anchored My Profile Item at Bottom */}
       <div
         style={{
-          padding: isCollapsed ? '16px 0' : '14px 16px',
-          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: isCollapsed ? 'center' : 'space-between',
+          padding: isCollapsed ? '12px 10px' : '12px 12px',
+          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          backgroundColor: 'rgba(0, 0, 0, 0.18)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
-          <div
-            style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: 'var(--brand-sun)',
-              boxShadow: '0 0 6px rgba(217, 72, 43, 0.6)',
-            }}
-          />
+        <button
+          onClick={() => onSelectTab('profile')}
+          title={isCollapsed ? 'My Profile' : undefined}
+          style={{
+            width: '100%',
+            height: '42px',
+            borderRadius: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: isCollapsed ? 'center' : 'flex-start',
+            gap: '11px',
+            padding: isCollapsed ? '0' : '0 10px',
+            backgroundColor: activeTab === 'profile' ? 'var(--sidebar-active)' : 'transparent',
+            color: activeTab === 'profile' ? '#ffffff' : 'var(--sidebar-text-muted)',
+            transition: 'all 0.12s ease',
+          }}
+          onMouseEnter={(e) => {
+            if (activeTab !== 'profile') {
+              e.currentTarget.style.backgroundColor = 'var(--sidebar-hover)';
+              e.currentTarget.style.color = '#fff';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (activeTab !== 'profile') {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = 'var(--sidebar-text-muted)';
+            }
+          }}
+        >
+          <UserCircle size={20} color={activeTab === 'profile' ? 'var(--brand-sun)' : 'currentColor'} />
           {!isCollapsed && (
-            <span style={{ fontSize: '11px', color: 'var(--sidebar-text-muted)', fontWeight: 500 }}>
-              Govt Services Active
-            </span>
+            <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left', lineHeight: 1.2 }}>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: '#f1f5f9' }}>My Profile</span>
+              <span style={{ fontSize: '10.5px', color: 'var(--sidebar-text-muted)' }}>Aadhaar & KYC Verified</span>
+            </div>
           )}
-        </div>
+        </button>
       </div>
     </aside>
   );

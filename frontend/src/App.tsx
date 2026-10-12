@@ -2,12 +2,15 @@ import { useState, useRef, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { ChatHeader } from './components/ChatHeader';
 import { Home } from './pages/Home';
+import { NewsUpdates } from './pages/NewsUpdates';
 import { ExploreSchemes } from './pages/ExploreSchemes';
 import { EligibilityChecker } from './pages/EligibilityChecker';
 import { DocumentLibrary } from './pages/DocumentLibrary';
 import { SavedSchemes } from './pages/SavedSchemes';
-import { SCHEMES_DATA, getAssistantResponse } from './data/mockData';
-import type { Message, NavTab } from './types';
+import { MyProfile } from './pages/MyProfile';
+import { SCHEMES_DATA, USER_PROFILE_DEFAULT } from './data/mockData';
+import { getAssistantResponse } from './utils/responseEngine';
+import type { Message, NavTab, UserProfile } from './types';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('home');
@@ -24,11 +27,31 @@ export function App() {
     return local ? JSON.parse(local) : ['sch-1', 'sch-2'];
   });
 
+  // Bookmarked news IDs
+  const [bookmarkedNewsIds, setBookmarkedNewsIds] = useState<string[]>(() => {
+    const local = localStorage.getItem('vaidha_bookmarked_news');
+    return local ? JSON.parse(local) : ['news-1'];
+  });
+
+  // User Profile
+  const [userProfile, setUserProfile] = useState<UserProfile>(() => {
+    const local = localStorage.getItem('vaidha_user_profile');
+    return local ? JSON.parse(local) : USER_PROFILE_DEFAULT;
+  });
+
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     localStorage.setItem('vaidha_saved_schemes', JSON.stringify(savedIds));
   }, [savedIds]);
+
+  useEffect(() => {
+    localStorage.setItem('vaidha_bookmarked_news', JSON.stringify(bookmarkedNewsIds));
+  }, [bookmarkedNewsIds]);
+
+  useEffect(() => {
+    localStorage.setItem('vaidha_user_profile', JSON.stringify(userProfile));
+  }, [userProfile]);
 
   // Auto-scroll when messages update
   useEffect(() => {
@@ -43,13 +66,17 @@ export function App() {
     setActiveTab('home');
   };
 
-  const handleToggleSave = (id: string) => {
+  const handleToggleSaveScheme = (id: string) => {
     setSavedIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
   };
 
+  const handleToggleBookmarkNews = (id: string) => {
+    setBookmarkedNewsIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
+  };
+
   const handleSendMessage = (text: string) => {
-    // If not currently on Home, switch to Home to show chatbot conversation
-    if (activeTab !== 'home') {
+    // If not currently on Home or Ask tab, switch to Home
+    if (activeTab !== 'home' && activeTab !== 'ask') {
       setActiveTab('home');
     }
 
@@ -93,7 +120,7 @@ export function App() {
         backgroundColor: 'var(--workspace-bg)',
       }}
     >
-      {/* Minimal Left Sidebar */}
+      {/* Fixed compact dark sidebar with exact navigation order */}
       <Sidebar
         activeTab={activeTab}
         onSelectTab={(tab) => {
@@ -124,7 +151,7 @@ export function App() {
 
         {/* View Router based on active tab */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          {activeTab === 'home' && (
+          {(activeTab === 'home' || activeTab === 'ask') && (
             <Home
               messages={messages}
               onSendMessage={handleSendMessage}
@@ -133,11 +160,22 @@ export function App() {
             />
           )}
 
+          {activeTab === 'news' && (
+            <NewsUpdates
+              bookmarkedNewsIds={bookmarkedNewsIds}
+              onToggleBookmarkNews={handleToggleBookmarkNews}
+              onAskAboutNews={(q) => {
+                setActiveTab('home');
+                handleSendMessage(q);
+              }}
+            />
+          )}
+
           {activeTab === 'schemes' && (
             <ExploreSchemes
               schemes={SCHEMES_DATA}
               savedIds={savedIds}
-              onToggleSave={handleToggleSave}
+              onToggleSave={handleToggleSaveScheme}
               onAskScheme={(q) => {
                 setActiveTab('home');
                 handleSendMessage(q);
@@ -167,12 +205,19 @@ export function App() {
             <SavedSchemes
               schemes={SCHEMES_DATA}
               savedIds={savedIds}
-              onRemoveSaved={handleToggleSave}
+              onRemoveSaved={handleToggleSaveScheme}
               onAskScheme={(q) => {
                 setActiveTab('home');
                 handleSendMessage(q);
               }}
               onGoToExplore={() => setActiveTab('schemes')}
+            />
+          )}
+
+          {activeTab === 'profile' && (
+            <MyProfile
+              profile={userProfile}
+              onUpdateProfile={setUserProfile}
             />
           )}
         </div>

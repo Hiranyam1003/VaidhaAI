@@ -1,6 +1,6 @@
 import React from 'react';
 import { Landmark, ClipboardCheck, Files, GraduationCap } from 'lucide-react';
-import { WELCOME_SUGGESTIONS } from '../data/mockData';
+import { WELCOME_SUGGESTIONS } from '../utils/responseEngine';
 import { SuggestionCard } from './SuggestionCard';
 
 interface WelcomeScreenProps {
@@ -87,7 +87,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onSelectPrompt }) 
           marginBottom: '42px',
         }}
       >
-        Vaidha helps Indian citizens understand government schemes, verify eligibility criteria, and discover official documentation.
+        Understand government schemes, check your <span style={{ color: 'var(--brand-sun)', fontWeight: 600 }}>eligibility</span>, and find the official documents that support your answers.
       </p>
 
       {/* Suggestion Cards */}

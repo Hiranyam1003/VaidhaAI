@@ -1,4 +1,16 @@
-import type { SchemeItem, Citation } from '../types';
+import type { SchemeItem, NewsItem, UserProfile } from '../types';
+
+export const USER_PROFILE_DEFAULT: UserProfile = {
+  name: 'Rohan R Kapoor',
+  email: 'rohankapoor2460@gmail.com',
+  phone: '+91 98230 45112',
+  state: 'Maharashtra',
+  district: 'Pune',
+  category: 'General / Open',
+  incomeRange: '₹6 Lakh – ₹8 Lakh (EBC)',
+  aadhaarLinked: true,
+  dbtActive: true,
+};
 
 export const SCHEMES_DATA: SchemeItem[] = [
   {
@@ -7,10 +19,12 @@ export const SCHEMES_DATA: SchemeItem[] = [
     hindiName: 'प्रधानमंत्री आवास योजना (शहरी)',
     category: 'Housing',
     level: 'Central-State',
+    beneficiaryGroup: 'Families',
     benefit: 'Up to ₹1.80 Lakh interest subsidy over 5 years on housing loans',
-    eligibility: 'EWS/LIG/MIG families with annual income up to ₹18 Lakhs. No existing pucca house.',
-    documents: ['Aadhaar Card', 'Tahsildar Income Certificate', 'Bank Passbook (NPCI linked)', 'Affidavit of No Pucca House'],
+    eligibility: 'EWS/LIG/MIG families with annual income up to ₹18 Lakhs. No existing pucca house anywhere in India in family name.',
+    documents: ['Aadhaar Card', 'Tahsildar Income Certificate', 'Bank Passbook (NPCI linked)', 'Affidavit of No Pucca House', 'Registered Sale Deed / Agreement'],
     department: 'Ministry of Housing and Urban Affairs (MoHUA)',
+    officialUrl: 'https://pmay-urban.gov.in',
   },
   {
     id: 'sch-2',
@@ -18,10 +32,12 @@ export const SCHEMES_DATA: SchemeItem[] = [
     hindiName: 'राजर्षी छत्रपती शाहू महाराज शिक्षण शुल्क शिष्यवृत्ती',
     category: 'Education',
     level: 'State',
-    benefit: '50% Tuition Fee & 50% Exam Fee waiver for higher/technical education',
-    eligibility: 'Open/General/EWS category students admitted through CAP round. Family income under ₹8 Lakh.',
-    documents: ['CAP Allotment Letter', 'Tahsildar Income Certificate', 'Domicile Certificate', 'College Bonafide'],
+    beneficiaryGroup: 'Students',
+    benefit: '50% Tuition Fee & 50% Exam Fee waiver for higher and technical education',
+    eligibility: 'Open/General/EWS category students admitted through Centralized Admission Process (CAP). Family income under ₹8 Lakh/annum.',
+    documents: ['CAP Allotment Letter', 'Tahsildar Income Certificate', 'Domicile Certificate', 'College Bonafide', 'Mark sheets (10th/12th/Semesters)'],
     department: 'Higher & Technical Education Department, Maharashtra',
+    officialUrl: 'https://mahadbt.maharashtra.gov.in',
   },
   {
     id: 'sch-3',
@@ -29,10 +45,12 @@ export const SCHEMES_DATA: SchemeItem[] = [
     hindiName: 'आयुष्मान भारत प्रधानमंत्री जन आरोग्य योजना',
     category: 'Healthcare',
     level: 'Central',
-    benefit: 'Cashless hospitalisation coverage up to ₹5,00,000 per family per year',
-    eligibility: 'Identified families based on Socio-Economic Caste Census (SECC) deprivation criteria.',
-    documents: ['Ayushman Golden Card', 'Aadhaar Card', 'Ration Card'],
+    beneficiaryGroup: 'Families',
+    benefit: 'Cashless hospitalisation coverage up to ₹5,00,000 per family per year across empaneled hospitals',
+    eligibility: 'Identified families based on Socio-Economic Caste Census (SECC) deprivation criteria and expanded state beneficiary lists.',
+    documents: ['Ayushman Golden Card / PM-JAY Letter', 'Aadhaar Card', 'Ration Card'],
     department: 'National Health Authority (NHA)',
+    officialUrl: 'https://pmjay.gov.in',
   },
   {
     id: 'sch-4',
@@ -40,10 +58,12 @@ export const SCHEMES_DATA: SchemeItem[] = [
     hindiName: 'नमो शेतकरी महासन्मान निधी योजना',
     category: 'Agriculture',
     level: 'State',
-    benefit: 'Direct transfer of ₹6,000 per year (added on top of Central PM-KISAN ₹6,000)',
-    eligibility: 'All landholder farmer families having cultivable landholding in Maharashtra with verified e-KYC.',
-    documents: ['7/12 & 8A Land Extract', 'Aadhaar Card', 'DBT Enabled Bank Account'],
+    beneficiaryGroup: 'Farmers',
+    benefit: 'Direct transfer of ₹6,000 per year (added on top of Central PM-KISAN ₹6,000, total ₹12,000/yr)',
+    eligibility: 'All landholder farmer families having cultivable landholding in Maharashtra with verified e-KYC and Aadhaar seeding.',
+    documents: ['7/12 & 8A Land Extract', 'Aadhaar Card', 'DBT Enabled Bank Account', 'e-KYC Verification'],
     department: 'Agriculture Department, Government of Maharashtra',
+    officialUrl: 'https://krishi.maharashtra.gov.in',
   },
   {
     id: 'sch-5',
@@ -51,10 +71,12 @@ export const SCHEMES_DATA: SchemeItem[] = [
     hindiName: 'पीएम विश्वकर्मा योजना',
     category: 'Financial',
     level: 'Central',
-    benefit: 'Collateral-free enterprise credit up to ₹3 Lakh at 5% interest + ₹15,000 toolkit grant',
-    eligibility: 'Traditional artisans and craftspeople working with their hands (18 specified trades).',
-    documents: ['Aadhaar Card', 'Trade Skill Certificate', 'Bank Account Details', 'Ration Card'],
+    beneficiaryGroup: 'Artisans',
+    benefit: 'Collateral-free enterprise credit up to ₹3 Lakh at 5% interest + ₹15,000 toolkit grant + skill training stipend',
+    eligibility: 'Traditional artisans and craftspeople working with their hands (18 specified trades including carpenters, blacksmiths, potters).',
+    documents: ['Aadhaar Card', 'Trade Skill Certificate / Gram Panchayat Endorsement', 'Bank Account Details', 'Ration Card'],
     department: 'Ministry of Micro, Small and Medium Enterprises (MSME)',
+    officialUrl: 'https://pmvishwakarma.gov.in',
   },
   {
     id: 'sch-6',
@@ -62,191 +84,113 @@ export const SCHEMES_DATA: SchemeItem[] = [
     hindiName: 'डॉ. पंजाबराव देशमुख वसतिगृह निर्वाह भत्ता योजना',
     category: 'Education',
     level: 'State',
-    benefit: 'Hostel sustenance allowance of up to ₹30,000/year for professional courses',
-    eligibility: 'Children of registered small landholder farmers or registered agricultural laborers.',
-    documents: ['Alpabhudharak Farmer Certificate / Labour Certificate', 'Hostel Admission Receipt', 'Income Proof'],
+    beneficiaryGroup: 'Students',
+    benefit: 'Hostel sustenance allowance of up to ₹30,000/year (Metropolitan) or ₹20,000/year (Other districts)',
+    eligibility: 'Children of registered small landholder farmers (Alpabhudharak) or registered agricultural laborers admitted to technical degrees.',
+    documents: ['Alpabhudharak Farmer Certificate / Labour Certificate', 'Hostel Admission Receipt', 'Income Certificate', 'CAP Allotment Letter'],
     department: 'Directorate of Technical Education, Maharashtra',
+    officialUrl: 'https://mahadbt.maharashtra.gov.in',
+  },
+  {
+    id: 'sch-7',
+    name: 'Pradhan Mantri Matru Vandana Yojana (PMMVY)',
+    hindiName: 'प्रधानमंत्री मातृ वंदना योजना',
+    category: 'Women & Child',
+    level: 'Central',
+    beneficiaryGroup: 'Families',
+    benefit: 'Maternity cash incentive of ₹5,000 in two installments directly into bank account',
+    eligibility: 'Pregnant women and lactating mothers for the first living child of the family.',
+    documents: ['Mother & Child Protection (MCP) Card', 'Aadhaar of Mother and Husband', 'Bank Passbook'],
+    department: 'Ministry of Women and Child Development (MoWCD)',
+    officialUrl: 'https://pmmvy.wcd.gov.in',
+  },
+  {
+    id: 'sch-8',
+    name: 'Indira Gandhi National Old Age Pension Scheme',
+    hindiName: 'इंदिरा गांधी राष्ट्रीय वृद्धावस्था पेंशन योजना',
+    category: 'Financial',
+    level: 'Central-State',
+    beneficiaryGroup: 'Senior Citizens',
+    benefit: 'Monthly pension allowance for senior citizens living below poverty line',
+    eligibility: 'Citizens aged 60 years and above belonging to a household below the official poverty line.',
+    documents: ['BPL Ration Card / Certificate', 'Age Proof (Voter ID / Aadhaar)', 'Bank Passbook'],
+    department: 'Ministry of Rural Development (MoRD)',
+    officialUrl: 'https://nsap.nic.in',
   },
 ];
 
-export const WELCOME_SUGGESTIONS = [
+export const MOCK_NEWS_DATA: NewsItem[] = [
   {
-    id: 's-1',
-    title: 'Explore Government Schemes',
-    description: 'Discover benefits and assistance programs available to Indian citizens.',
-    prompt: 'What central and state government schemes are currently open for application in 2026?',
+    id: 'news-1',
+    title: 'MahaDBT Extends Post-Matric Scholarship Verification Window for Academic Year 2026',
+    summary: 'The Directorate of Higher and Technical Education has issued a circular extending the scrutiny and institutional approval deadline for students claiming EBC and hostel allowances.',
+    details: 'College nodal officers have been advised to clear pending income certificates and CAP verification receipts to prevent delays in direct fee disbursements into student bank accounts. Students are advised to verify their NPCI Aadhaar bank linking before the window closes.',
+    category: 'Education',
+    authority: 'Higher & Technical Education Department, Maharashtra',
+    publishedAt: 'October 11, 2026',
+    updateType: 'Application Deadline',
+    sourceUrl: 'https://mahadbt.maharashtra.gov.in',
+    isDemo: true,
+    featured: true,
   },
   {
-    id: 's-2',
-    title: 'Check My Eligibility',
-    description: 'Answer a few simple questions to discover schemes matching your income and region.',
-    prompt: 'I want to check which government assistance schemes I am eligible for based on my family profile.',
+    id: 'news-2',
+    title: 'PMAY-Urban 2.0 Operational Guidelines Released for Middle Income Housing Subsidies',
+    summary: 'Ministry of Housing & Urban Affairs issues operational directives detailing credit-linked interest subsidy criteria for families purchasing flats in urban municipal limits.',
+    details: 'The subsidy framework clarifies that families with annual household income up to ₹18 Lakhs purchasing homes under ₹35 Lakh valuation with loans up to ₹25 Lakhs can claim up to ₹1.80 Lakh subsidy distributed across 5 annual installments.',
+    category: 'Central Government',
+    authority: 'Ministry of Housing and Urban Affairs (MoHUA)',
+    publishedAt: 'October 08, 2026',
+    updateType: 'Policy Announcement',
+    sourceUrl: 'https://pmay-urban.gov.in',
+    isDemo: true,
   },
   {
-    id: 's-3',
-    title: 'Find Required Documents',
-    description: 'Review common documentation checklists to prepare verified applications.',
-    prompt: 'What standard documents and certificates do I need to prepare before applying for state welfare benefits?',
+    id: 'news-3',
+    title: 'Namo Shetkari Mahasanman Nidhi: 6th Installment Disbursed via Aadhaar DBT',
+    summary: 'Over 88 lakh eligible farmers in Maharashtra received the quarterly assistance installment credited directly to Aadhaar-seeded accounts.',
+    details: 'The state agriculture department reminded beneficiaries that active biometric e-KYC and land seeding on the 7/12 land portal are required prerequisites for uninterrupted benefit transfers.',
+    category: 'Agriculture',
+    authority: 'Agriculture Department, Government of Maharashtra',
+    publishedAt: 'October 05, 2026',
+    updateType: 'Scheme Update',
+    sourceUrl: 'https://krishi.maharashtra.gov.in',
+    isDemo: true,
   },
   {
-    id: 's-4',
-    title: 'Education & Scholarships',
-    description: 'Explore fee-waivers and financial assistance opportunities for higher education.',
-    prompt: 'What government scholarships and fee reimbursements are available for college students in Maharashtra?',
+    id: 'news-4',
+    title: 'Ayushman Bharat Golden Card Drive Initiated Across Primary Health Centers',
+    summary: 'National Health Authority partners with Common Service Centers (CSCs) to expedite spot biometric issuance of PM-JAY cards for newly qualified families.',
+    details: 'Citizens can carry their ration card and Aadhaar to verify spot eligibility without incurring service charges at designated government healthcare centers and CSC kiosks.',
+    category: 'Healthcare',
+    authority: 'National Health Authority (NHA)',
+    publishedAt: 'October 02, 2026',
+    updateType: 'Public Notification',
+    sourceUrl: 'https://pmjay.gov.in',
+    isDemo: true,
+  },
+  {
+    id: 'news-5',
+    title: 'New Skill Stipend Norms Announced Under PM Vishwakarma Toolkit Scheme',
+    summary: 'Traditional artisans registered across 18 designated trade clusters will receive upgraded digital training stipends alongside collateral-free credit eligibility.',
+    details: 'The MSME department noted that enrolled beneficiaries receive basic 5-day skill training with ₹500/day stipend followed by ₹15,000 digital vouchers for verified toolkits.',
+    category: 'Employment',
+    authority: 'Ministry of MSME, Govt of India',
+    publishedAt: 'September 28, 2026',
+    updateType: 'Eligibility Change',
+    sourceUrl: 'https://pmvishwakarma.gov.in',
+    isDemo: true,
+  },
+  {
+    id: 'news-6',
+    title: 'Revenue Department Simplifies Digital Income Certificate Issuance via Aaple Sarkar',
+    summary: 'Self-declaration norms streamlined for citizens seeking annual Tahsildar revenue certificates for welfare and scholarship submissions.',
+    details: 'Under the revised citizen charter, digitally signed 1-year and 3-year income certificates will be dispatched to citizen DigiLocker accounts within 7 working days of application submission.',
+    category: 'Maharashtra',
+    authority: 'Department of Revenue & Information Technology, Maharashtra',
+    publishedAt: 'September 25, 2026',
+    updateType: 'Policy Announcement',
+    sourceUrl: 'https://aaplesarkar.mahaonline.gov.in',
+    isDemo: true,
   },
 ];
-
-export function getAssistantResponse(prompt: string): { content: string; citations: Citation[]; followUps: string[] } {
-  const p = prompt.toLowerCase();
-
-  if (p.includes('scholarship') || p.includes('education') || p.includes('student') || p.includes('college') || p.includes('fee')) {
-    return {
-      content: `### Higher Education Scholarships & Assistance Programs
-
-Here are the primary financial aid programs available for students in higher and technical courses:
-
-1. **Rajarshi Shahu Maharaj Tuition Fee Reimbursement (EBC)**:
-   - **Benefit:** 50% waiver on tuition and exam fees for approved general/EWS students with annual family income under ₹8 Lakh.
-   - **Eligibility:** Mandatory admission via Centralized Admission Process (CAP) in AICTE/UGC approved institutes.
-
-2. **Dr. Panjabrao Deshmukh Hostel Allowance**:
-   - Up to ₹30,000/year (Metro/Pune/Mumbai) or ₹20,000/year for rural districts for hostel and mess accommodation for children of marginal farmers.
-
-3. **National Scholarship Portal (Central Sector)**:
-   - ₹12,000/year for undergraduate students scoring above the 80th percentile in Class 12 board examinations.
-
-#### Essential Document Checklist:
-- Current academic year Bonafide Certificate and CAP Allotment letter.
-- Income Certificate signed by competent revenue authority (Tahsildar/SDM).
-- Aadhaar-linked Bank Account with DBT status enabled on NPCI mapper.`,
-      citations: [
-        {
-          id: 'cit-1',
-          title: 'MahaDBT Post-Matric Scholarship Guidelines',
-          department: 'Higher & Technical Education Dept, Maharashtra',
-          documentType: 'Official Government Resolution',
-          badge: 'MahaDBT Verified',
-        },
-        {
-          id: 'cit-2',
-          title: 'National Scholarship Portal 2.0 Framework',
-          department: 'Ministry of Education, Government of India',
-          documentType: 'Operational Guidelines',
-          badge: 'MoE Portal',
-        },
-      ],
-      followUps: [
-        'How do I obtain a Tahsildar Income Certificate?',
-        'Can I apply for both Central and State scholarships together?',
-        'What is the last date for submitting MahaDBT applications?',
-      ],
-    };
-  }
-
-  if (p.includes('eligibility') || p.includes('eligible') || p.includes('qualify') || p.includes('criteria')) {
-    return {
-      content: `### Citizen Eligibility Criteria & Parameters
-
-Government welfare scheme eligibility across Indian central and state departments is structured around these primary parameters:
-
-1. **Annual Household Income Range**:
-   - **BPL / Antyodaya (AAY):** Priority assistance for NFSA subsidized grains, PMAY-Gramin, and Ayushman Bharat ₹5 Lakh health cover.
-   - **EWS / LIG:** Income up to ₹3 Lakh (EWS) or ₹6 Lakh (LIG); qualifies for fee waivers and credit-linked housing subsidies.
-   - **MIG:** Income up to ₹18 Lakh; eligible for specific urban interest subsidies.
-
-2. **Domicile & Continuous Residence**:
-   - State benefits require a verified continuous domicile certificate issued by the Sub-Divisional Revenue Officer / Tahsildar.
-
-3. **Occupation & Social Category**:
-   - Dedicated initiatives exist for **Marginal Farmers** (PM-KISAN, Namo Shetkari), **Artisans** (PM Vishwakarma), and **Unorganized Workers** (e-Shram card benefits).
-
-*Would you like to check eligibility for a specific domain such as Housing, Education, or Agriculture?*`,
-      citations: [
-        {
-          id: 'cit-3',
-          title: 'Standard Beneficiary Identification Norms',
-          department: 'DBT Mission, Cabinet Secretariat, Govt of India',
-          documentType: 'Administrative Framework',
-          badge: 'DBT Mission',
-        },
-      ],
-      followUps: [
-        'Check housing eligibility for Middle Income Group',
-        'What benefits are available under PM Vishwakarma?',
-        'How to verify if bank account is seeded with Aadhaar?',
-      ],
-    };
-  }
-
-  if (p.includes('document') || p.includes('certificate') || p.includes('aadhaar') || p.includes('ration') || p.includes('tahsildar')) {
-    return {
-      content: `### Required Documentation & Verification Standards
-
-To prevent application rejection on government portals (such as Aaple Sarkar, UMANG, or ServicePlus), make sure you have:
-
-1. **Proof of Identity (PoI)**:
-   - Aadhaar Card (ensure your active phone number is linked for OTP verification).
-   - Voter ID / Passport.
-
-2. **Proof of Residence (PoA)**:
-   - Domicile Certificate issued by the Tahsildar / Revenue Department.
-   - Electricity bill in the family head's name, or registered agreement.
-
-3. **Authorized Income Proof**:
-   - Tahsildar-issued Income Certificate for the current financial year.
-   - *Note:* Private pay slips alone are typically not accepted for government subsidies.
-
-4. **Direct Benefit Transfer (DBT) Readiness**:
-   - Bank account mapped on the **NPCI mapper** to receive cash benefits directly without bank delays.`,
-      citations: [
-        {
-          id: 'cit-4',
-          title: 'Aaple Sarkar Citizen Services Document Manual',
-          department: 'Govt of Maharashtra IT Directorate',
-          documentType: 'Citizen Service Charter',
-          badge: 'MahaGov Portal',
-        },
-      ],
-      followUps: [
-        'How do I check if my bank account has DBT active?',
-        'Can DigiLocker documents be submitted directly?',
-        'How long does an income certificate remain valid?',
-      ],
-    };
-  }
-
-  // Default Guidance
-  return {
-    content: `### Vaidha AI Citizen Assistance
-
-Thank you for your question. Here is an overview of verified government assistance and application guidelines related to: **"${prompt}"**
-
-1. **Application Method**:
-   - Most welfare schemes now process applications directly through official single-window portals (**Aaple Sarkar**, **UMANG**, or **National Portal of India**).
-   - Direct Benefit Transfer (DBT) ensures benefits are credited straight into your Aadhaar-linked account.
-
-2. **Prerequisites Checklist**:
-   - Valid **Aadhaar** linked to an active mobile number.
-   - Official **Income Certificate** issued by the local Revenue Authority / Tahsildar.
-   - Active bank passbook with NPCI Aadhaar seeding.
-
-3. **Support & Assistance**:
-   - You can visit your nearest **Aaple Sarkar Seva Kendra** or **Common Service Centre (CSC)** for physical verification assistance.
-
-*Please feel free to ask about any specific scheme, requirement, or document clarification.*`,
-    citations: [
-      {
-        id: 'cit-5',
-        title: 'National Citizen Service Delivery Framework',
-        department: 'Ministry of Electronics & Information Technology (MeitY)',
-        documentType: 'Public Advisory',
-        badge: 'Verified MeitY',
-      },
-    ],
-    followUps: [
-      'What are the eligibility limits for my state?',
-      'Which documents can be fetched directly from DigiLocker?',
-      'How to apply via Common Service Centre (CSC)?',
-    ],
-  };
-}
