@@ -1,0 +1,105 @@
+/* Vaidha AI — Minimalist Design Tokens derived from the official logo */
+:root {
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+
+  /* Theme Colors - Quibi dark sidebar inspired */
+  --sidebar-bg: #121316;
+  --sidebar-surface: #1a1c22;
+  --sidebar-hover: #22252e;
+  --sidebar-active: #2a2e39;
+  --sidebar-border: #232731;
+  --sidebar-text-main: #f1f3f7;
+  --sidebar-text-muted: #828896;
+
+  /* Palette derived from Vaidha AI Logo:
+     - Warm parchment white background (#faf8f5 / #fdfcfb)
+     - Sumi brush black (#1a1a1a / #222)
+     - Natural vermilion / terracotta red sun dot (#d9482b)
+     - Subtle slate blue accent for verified citizen badges (#2b59c3)
+  */
+  --brand-ink: #1a1a1a;
+  --brand-sun: #d9482b;
+  --brand-sun-light: #fef2ee;
+  --brand-sun-border: #fcd9d1;
+  --brand-parchment: #faf8f5;
+  --brand-card-bg: #ffffff;
+  
+  --workspace-bg: #faf8f5;
+  --workspace-text-main: #18191c;
+  --workspace-text-muted: #5e636e;
+  --workspace-text-subtle: #8d93a0;
+  --workspace-border: #e8e6e1;
+  --workspace-border-hover: #d5d2ca;
+
+  /* Soft Shadows */
+  --shadow-sm: 0 1px 3px rgba(26, 26, 26, 0.04);
+  --shadow-md: 0 4px 14px -2px rgba(26, 26, 26, 0.06);
+  --shadow-lg: 0 12px 30px -4px rgba(26, 26, 26, 0.08);
+  --shadow-composer: 0 8px 30px -4px rgba(20, 20, 20, 0.08), 0 2px 6px -1px rgba(20, 20, 20, 0.04);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  color: var(--workspace-text-main);
+  background-color: var(--workspace-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(140, 145, 155, 0.25);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(140, 145, 155, 0.45);
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  outline: none;
+}
+
+input, textarea {
+  font-family: inherit;
+  outline: none;
+  border: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

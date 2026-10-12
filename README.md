@@ -1,32 +1,54 @@
-# React + TypeScript + Vite
+# Vaidha AI (Virtual Assistant for Indian Documentation & High-level Administration)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+An AI-powered citizen services assistant designed to help Indian citizens understand government schemes, check eligibility criteria, and discover required official documentation.
 
-Currently, two official plugins are available:
+## Project Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```text
+vaidha-ai/
+├── frontend/                     # React + TypeScript + Vite UI Application
+│   ├── public/
+│   │   └── assets/
+│   │       └── vaidha-logo.jpeg  # Official Vaidha brand emblem
+│   ├── src/
+│   │   ├── assets/               # Brand & graphics assets
+│   │   ├── components/           # Modular UI components
+│   │   │   ├── Sidebar.tsx       # Minimal icon-based navigation sidebar
+│   │   │   ├── ChatHeader.tsx    # Clean header with identity & language control
+│   │   │   ├── ChatComposer.tsx  # Persistent pill-shaped bottom composer
+│   │   │   ├── WelcomeScreen.tsx # Centered welcome screen with actual logo
+│   │   │   ├── SuggestionCard.tsx# Contextual prompt suggestion cards
+│   │   │   └── MessageBubble.tsx # User and Assistant message blocks with citations
+│   │   ├── pages/                # Functional navigation views
+│   │   │   ├── Home.tsx          # Chat-first assistant workspace
+│   │   │   ├── ExploreSchemes.tsx# Scheme discovery catalog
+│   │   │   ├── EligibilityChecker.tsx # Interactive criteria checker
+│   │   │   ├── DocumentLibrary.tsx# Verification checklist & formats
+│   │   │   └── SavedSchemes.tsx  # Bookmark and tracked welfare schemes
+│   │   ├── data/
+│   │   │   └── mockData.ts       # Mock schemes, responses, and citations
+│   │   ├── types/
+│   │   │   └── index.ts          # TypeScript interfaces
+│   │   ├── App.tsx
+│   │   ├── main.tsx
+│   │   └── index.css
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── tsconfig.json
+├── backend/                      # Backend services and API specifications (Planned)
+│   └── README.md
+├── .gitignore
+└── README.md
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Running the Application
+
+### Frontend Development
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The application runs locally at `http://localhost:5173/`.
