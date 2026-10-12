@@ -75,8 +75,8 @@ export function App() {
   };
 
   const handleSendMessage = (text: string) => {
-    // If not currently on Home or Ask tab, switch to Home
-    if (activeTab !== 'home' && activeTab !== 'ask') {
+    // If not currently on Home, switch to Home
+    if (activeTab !== 'home') {
       setActiveTab('home');
     }
 
@@ -120,7 +120,7 @@ export function App() {
         backgroundColor: 'var(--workspace-bg)',
       }}
     >
-      {/* Fixed compact dark sidebar with exact navigation order */}
+      {/* Fixed compact dark sidebar */}
       <Sidebar
         activeTab={activeTab}
         onSelectTab={(tab) => {
@@ -151,12 +151,13 @@ export function App() {
 
         {/* View Router based on active tab */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          {(activeTab === 'home' || activeTab === 'ask') && (
+          {activeTab === 'home' && (
             <Home
               messages={messages}
               onSendMessage={handleSendMessage}
               isLoading={isLoading}
               scrollRef={scrollRef}
+              onNavigateTab={(tab) => setActiveTab(tab as NavTab)}
             />
           )}
 

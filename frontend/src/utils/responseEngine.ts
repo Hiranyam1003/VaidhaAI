@@ -1,5 +1,62 @@
 import type { Citation } from '../types';
 
+export interface ImageExploreCard {
+  id: string;
+  category: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  altText: string;
+  actionPrompt: string;
+  targetNav?: string;
+}
+
+export const EXPLORE_IMAGE_CARDS: ImageExploreCard[] = [
+  {
+    id: 'exp-gov',
+    category: 'Public Welfare',
+    title: 'Government Schemes',
+    description: 'Discover schemes and benefits available to you.',
+    imageUrl: '/assets/gov-services.jpg',
+    altText: 'Indian citizens accessing welfare services at a community administrative center',
+    actionPrompt: 'What central and state government schemes are currently open for citizens in 2026?',
+    targetNav: 'schemes',
+  },
+  {
+    id: 'exp-edu',
+    category: 'Higher Studies',
+    title: 'Education & Scholarships',
+    description: 'Find financial aid and educational opportunities.',
+    imageUrl: '/assets/edu-students.jpg',
+    altText: 'Indian university college students studying together on campus',
+    actionPrompt: 'What government scholarships and fee reimbursements are available for college students?',
+  },
+  {
+    id: 'exp-health',
+    category: 'Healthcare Access',
+    title: 'Healthcare',
+    description: 'Explore public healthcare programmes and benefits.',
+    imageUrl: '/assets/healthcare.jpg',
+    altText: 'Doctor assisting an Indian patient in a healthcare clinic',
+    actionPrompt: 'Tell me about government healthcare schemes like Ayushman Bharat PM-JAY and free hospital benefits.',
+  },
+  {
+    id: 'exp-agri',
+    category: 'Rural & Farming',
+    title: 'Agriculture',
+    description: 'Explore agricultural support and farmer schemes.',
+    imageUrl: '/assets/agriculture.jpg',
+    altText: 'Indian farmer in a lush green agricultural field at sunrise',
+    actionPrompt: 'What agricultural subsidies and financial assistance schemes are available for farmers like PM-KISAN and Namo Shetkari?',
+  },
+];
+
+export const QUICK_PROMPTS = [
+  { label: 'Which schemes can I apply for?', prompt: 'Which central and state government schemes can I apply for based on my family profile?' },
+  { label: 'What documents do I need?', prompt: 'What essential documents and certificates do I need to prepare before applying for a government benefit?' },
+  { label: 'Find scholarships for students', prompt: 'Find scholarships and fee waiver opportunities for higher and technical education students.' },
+];
+
 export const WELCOME_SUGGESTIONS = [
   {
     id: 's-1',
@@ -70,6 +127,86 @@ Here are the primary financial aid programs available for students in higher and
         'How do I obtain a Tahsildar Income Certificate?',
         'Can I apply for both Central and State scholarships together?',
         'What is the last date for submitting MahaDBT applications?',
+      ],
+    };
+  }
+
+  if (p.includes('health') || p.includes('medical') || p.includes('hospital') || p.includes('ayushman') || p.includes('pmjay') || p.includes('doctor')) {
+    return {
+      content: `### Public Healthcare Initiatives & Health Cover Benefits
+
+Public health programs offer cashless and subsidized hospital treatments for eligible households:
+
+1. **Ayushman Bharat PM-JAY (Pradhan Mantri Jan Arogya Yojana)**:
+   - **Coverage:** Cashless health cover up to ₹5,00,000 per family per year for secondary and tertiary care hospitalization.
+   - **Network:** Over 28,000 empaneled public and private hospitals across India.
+   - **Portability:** Access cashless treatment in any empaneled hospital nationwide.
+
+2. **Mahatma Jyotirao Phule Jan Arogya Yojana (MJPJAY - Maharashtra)**:
+   - State health insurance program covering 1,356 medical and surgical procedures up to ₹5 Lakhs for all ration card holders.
+   - Zero out-of-pocket expenditure for diagnostic and follow-up therapies.
+
+3. **Pradhan Mantri Bhartiya Janaushadhi Pariyojana**:
+   - Access generic medicines at 50% to 90% lower prices compared to branded equivalents through Kendra pharmacy outlets.`,
+      citations: [
+        {
+          id: 'cit-health-1',
+          title: 'PM-JAY National Health Benefit Package Guidelines',
+          department: 'National Health Authority (NHA)',
+          documentType: 'Statutory Operational Manual',
+          badge: 'Official NHA',
+        },
+        {
+          id: 'cit-health-2',
+          title: 'MJPJAY Scheme Guidelines & Empaneled Hospital Directory',
+          department: 'Public Health Department, Government of Maharashtra',
+          documentType: 'Citizen Health Charter',
+          badge: 'MahaHealth Portal',
+        },
+      ],
+      followUps: [
+        'How do I check if my name is on the Ayushman Bharat SECC list?',
+        'Can I generate an Ayushman Golden Card using Aadhaar online?',
+        'Which hospitals in Pune and Mumbai accept PM-JAY cashless claims?',
+      ],
+    };
+  }
+
+  if (p.includes('agri') || p.includes('farm') || p.includes('kisan') || p.includes('shetkari') || p.includes('crop') || p.includes('irrigation')) {
+    return {
+      content: `### Farmer Welfare & Agricultural Assistance Schemes
+
+Key financial and infrastructure support schemes for Indian farmers:
+
+1. **PM-KISAN Samman Nidhi & Namo Shetkari Mahasanman (Maharashtra)**:
+   - **Combined Direct Credit:** ₹12,000 annually (₹6,000 Central + ₹6,000 State) transferred in 3 equal four-monthly installments.
+   - **Prerequisites:** Verified Aadhaar DBT-linked bank account, 7/12 land registration, and active biometric e-KYC.
+
+2. **Pradhan Mantri Fasal Bima Yojana (PMFBY)**:
+   - Comprehensive crop insurance shielding against non-preventable natural risks (drought, flood, unseasonal rainfall) with minimal nominal premium (1.5% to 2%).
+
+3. **Magel Tyala Shettale (Farm Pond Subsidy)**:
+   - Subsidy up to ₹75,000 for digging plastic-lined farm ponds to secure drought-resistant irrigation.`,
+      citations: [
+        {
+          id: 'cit-agri-1',
+          title: 'Namo Shetkari Mahasanman Nidhi Operational Directives',
+          department: 'Agriculture Department, Government of Maharashtra',
+          documentType: 'Government Resolution',
+          badge: 'Krishi Vibhag',
+        },
+        {
+          id: 'cit-agri-2',
+          title: 'PM-KISAN Operational Guidelines',
+          department: 'Ministry of Agriculture and Farmers Welfare',
+          documentType: 'Scheme Directives',
+          badge: 'MoA&FW Official',
+        },
+      ],
+      followUps: [
+        'How do I complete e-KYC for Namo Shetkari online?',
+        'What documents are needed for micro-irrigation drip subsidy?',
+        'How to verify land record seeding on PM-KISAN portal?',
       ],
     };
   }

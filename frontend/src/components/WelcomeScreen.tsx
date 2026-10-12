@@ -1,28 +1,17 @@
 import React from 'react';
-import { Landmark, ClipboardCheck, Files, GraduationCap } from 'lucide-react';
-import { WELCOME_SUGGESTIONS } from '../utils/responseEngine';
-import { SuggestionCard } from './SuggestionCard';
+import { Sparkles } from 'lucide-react';
+import { EXPLORE_IMAGE_CARDS, QUICK_PROMPTS } from '../utils/responseEngine';
+import { ImageCard } from './ImageCard';
 
 interface WelcomeScreenProps {
   onSelectPrompt: (prompt: string) => void;
+  onNavigateTab?: (tab: string) => void;
 }
 
-export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onSelectPrompt }) => {
-  const getSuggestionIcon = (index: number) => {
-    switch (index) {
-      case 0:
-        return <Landmark size={16} color="var(--brand-sun)" />;
-      case 1:
-        return <ClipboardCheck size={16} color="var(--brand-sun)" />;
-      case 2:
-        return <Files size={16} color="var(--brand-sun)" />;
-      case 3:
-        return <GraduationCap size={16} color="var(--brand-sun)" />;
-      default:
-        return <Landmark size={16} color="var(--brand-sun)" />;
-    }
-  };
-
+export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
+  onSelectPrompt,
+  onNavigateTab,
+}) => {
   return (
     <div
       style={{
@@ -31,10 +20,10 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onSelectPrompt }) 
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
-        maxWidth: '1040px',
+        maxWidth: '1060px',
         width: '100%',
         margin: '0 auto',
-        padding: '32px 20px',
+        padding: '36px 24px 20px 24px',
         zIndex: 10,
       }}
       className="fade-in"
@@ -42,8 +31,8 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onSelectPrompt }) 
       {/* Official Vaidha Logo Asset */}
       <div
         style={{
-          width: '76px',
-          height: '76px',
+          width: '74px',
+          height: '74px',
           borderRadius: '16px',
           overflow: 'hidden',
           backgroundColor: '#faf8f5',
@@ -52,7 +41,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onSelectPrompt }) 
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          marginBottom: '22px',
+          marginBottom: '20px',
         }}
       >
         <img
@@ -66,48 +55,129 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onSelectPrompt }) 
       <h1
         style={{
           fontFamily: 'var(--font-heading)',
-          fontSize: 'clamp(28px, 4vw, 40px)',
+          fontSize: 'clamp(28px, 4.2vw, 42px)',
           fontWeight: 700,
           color: '#1a1a1a',
           letterSpacing: '-0.025em',
           lineHeight: '1.2',
-          marginBottom: '12px',
+          marginBottom: '10px',
         }}
       >
         How can I help you today?
       </h1>
 
-      {/* Description */}
+      {/* Supporting Text */}
       <p
         style={{
-          fontSize: '14.5px',
+          fontSize: '15px',
           color: 'var(--workspace-text-muted)',
-          maxWidth: '560px',
+          maxWidth: '580px',
           lineHeight: '1.55',
-          marginBottom: '42px',
+          marginBottom: '38px',
         }}
       >
-        Understand government schemes, check your <span style={{ color: 'var(--brand-sun)', fontWeight: 600 }}>eligibility</span>, and find the official documents that support your answers.
+        Your guide to government schemes, benefits and essential documents.
       </p>
 
-      {/* Suggestion Cards */}
+      {/* Image-Based Explore Section */}
+      <div style={{ width: '100%', marginBottom: '24px' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '16px',
+            padding: '0 4px',
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontSize: '17px',
+              fontWeight: 700,
+              color: '#1a1a1a',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            What are you looking for today?
+          </h2>
+          <span style={{ fontSize: '12px', color: 'var(--workspace-text-subtle)' }}>
+            Explore verified citizen services
+          </span>
+        </div>
+
+        {/* 4 Image Cards Responsive Grid */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '16px',
+            width: '100%',
+          }}
+        >
+          {EXPLORE_IMAGE_CARDS.map((card) => (
+            <ImageCard
+              key={card.id}
+              card={card}
+              onClick={() => {
+                if (card.targetNav && onNavigateTab) {
+                  onNavigateTab(card.targetNav);
+                } else {
+                  onSelectPrompt(card.actionPrompt);
+                }
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Quick Prompts Row */}
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '14px',
-          width: '100%',
-          maxWidth: '1000px',
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+          marginTop: '6px',
+          padding: '0 8px',
         }}
       >
-        {WELCOME_SUGGESTIONS.map((item, index) => (
-          <SuggestionCard
-            key={item.id}
-            title={item.title}
-            description={item.description}
-            icon={getSuggestionIcon(index)}
-            onClick={() => onSelectPrompt(item.prompt)}
-          />
+        <span style={{ fontSize: '12px', color: 'var(--workspace-text-subtle)', marginRight: '4px' }}>
+          Suggested questions:
+        </span>
+        {QUICK_PROMPTS.map((qp, idx) => (
+          <button
+            key={idx}
+            onClick={() => onSelectPrompt(qp.prompt)}
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid var(--workspace-border)',
+              borderRadius: '20px',
+              padding: '6px 14px',
+              fontSize: '12px',
+              fontWeight: 500,
+              color: 'var(--workspace-text-main)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              boxShadow: 'var(--shadow-sm)',
+              transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--brand-sun-border)';
+              e.currentTarget.style.backgroundColor = 'var(--brand-sun-light)';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--workspace-border)';
+              e.currentTarget.style.backgroundColor = '#ffffff';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            <Sparkles size={11} color="var(--brand-sun)" />
+            <span>&ldquo;{qp.label}&rdquo;</span>
+          </button>
         ))}
       </div>
     </div>

@@ -68,7 +68,6 @@ export interface UserProfile {
 export type NavTab = 
   | 'home'
   | 'news'
-  | 'ask'
   | 'schemes' 
   | 'eligibility' 
   | 'documents' 

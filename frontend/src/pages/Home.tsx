@@ -9,6 +9,7 @@ interface HomeProps {
   onSendMessage: (text: string) => void;
   isLoading: boolean;
   scrollRef: React.RefObject<HTMLDivElement | null>;
+  onNavigateTab?: (tab: string) => void;
 }
 
 export const Home: React.FC<HomeProps> = ({
@@ -16,6 +17,7 @@ export const Home: React.FC<HomeProps> = ({
   onSendMessage,
   isLoading,
   scrollRef,
+  onNavigateTab,
 }) => {
   const isWelcome = messages.length === 0;
 
@@ -30,7 +32,7 @@ export const Home: React.FC<HomeProps> = ({
         overflow: 'hidden',
       }}
     >
-      {/* Background ambient treatment derived from the logo's terracotta dot and parchment base */}
+      {/* Background ambient treatment derived from the logo's terracotta dot and warm parchment base */}
       <div
         style={{
           position: 'absolute',
@@ -39,7 +41,7 @@ export const Home: React.FC<HomeProps> = ({
           right: '15%',
           height: '380px',
           background:
-            'radial-gradient(ellipse 60% 45% at 50% 0%, rgba(217, 72, 43, 0.05), rgba(250, 248, 245, 0) 80%)',
+            'radial-gradient(ellipse 60% 45% at 50% 0%, rgba(217, 72, 43, 0.04), rgba(250, 248, 245, 0) 80%)',
           pointerEvents: 'none',
           zIndex: 1,
         }}
@@ -54,12 +56,15 @@ export const Home: React.FC<HomeProps> = ({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: isWelcome ? 'center' : 'flex-start',
-          paddingBottom: '120px',
+          paddingBottom: '124px',
           zIndex: 10,
         }}
       >
         {isWelcome ? (
-          <WelcomeScreen onSelectPrompt={onSendMessage} />
+          <WelcomeScreen
+            onSelectPrompt={onSendMessage}
+            onNavigateTab={onNavigateTab}
+          />
         ) : (
           <div
             style={{

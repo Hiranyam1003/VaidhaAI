@@ -48,7 +48,7 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
       style={{
         position: 'relative',
         width: '100%',
-        maxWidth: '820px',
+        maxWidth: '840px',
         margin: '0 auto',
       }}
     >
@@ -140,7 +140,7 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask about a government scheme, eligibility or documents..."
+          placeholder="Ask about schemes, eligibility or required documents…"
           style={{
             flex: 1,
             maxHeight: '160px',

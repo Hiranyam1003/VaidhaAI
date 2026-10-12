@@ -3,7 +3,6 @@ import {
   Plus,
   Home,
   Newspaper,
-  MessageCircle,
   Landmark,
   ClipboardCheck,
   Files,
@@ -29,18 +28,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isCollapsed,
   onToggleCollapse,
 }) => {
-  // Exact Navigation Order specified in prompt:
-  // 1. Home — house icon
-  // 2. News & Updates — newspaper icon (MUST be immediately below Home)
-  // 3. Ask Vaidha — message-circle icon
-  // 4. Explore Schemes — landmark icon
-  // 5. Eligibility Checker — clipboard-check icon
-  // 6. Document Library — files icon
-  // 7. Saved Schemes — bookmark icon
   const navItems = [
     { id: 'home' as NavTab, label: 'Home', icon: Home },
     { id: 'news' as NavTab, label: 'News & Updates', icon: Newspaper },
-    { id: 'ask' as NavTab, label: 'Ask Vaidha', icon: MessageCircle },
     { id: 'schemes' as NavTab, label: 'Explore Schemes', icon: Landmark },
     { id: 'eligibility' as NavTab, label: 'Eligibility Checker', icon: ClipboardCheck },
     { id: 'documents' as NavTab, label: 'Document Library', icon: Files },
@@ -217,7 +207,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      {/* Navigation Items in Exact Order */}
+      {/* Navigation Items in Order (Ask Vaidha removed) */}
       <nav
         style={{
           flex: 1,
