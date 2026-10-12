@@ -72,4 +72,9 @@ export type NavTab =
   | 'eligibility' 
   | 'documents' 
   | 'saved'
-  | 'profile';
+  | 'profile'
+  | 'settings';
+
+export type Language = 'English' | 'Hindi' | 'Marathi';
+
+export type TextSize = 'normal' | 'large' | 'larger';

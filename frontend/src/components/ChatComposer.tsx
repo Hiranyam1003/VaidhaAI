@@ -13,9 +13,11 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`;
+    const el = textareaRef.current;
+    if (el) {
+      el.style.height = 'auto';
+      el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+      el.style.overflowY = el.scrollHeight > 160 ? 'auto' : 'hidden';
     }
   }, [inputText]);
 
@@ -75,6 +77,7 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
           <span>Attached: <strong>{selectedFile}</strong> (Demo)</span>
           <button
             onClick={() => setSelectedFile(null)}
+            aria-label="Remove attachment"
             style={{ marginLeft: '4px', color: '#888', fontSize: '13px' }}
           >
             ×
@@ -108,6 +111,7 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
         <button
           onClick={() => fileInputRef.current?.click()}
           title="Attach document for verification (Demo)"
+          aria-label="Attach document"
           style={{
             width: '36px',
             height: '36px',
@@ -141,6 +145,7 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask about schemes, eligibility or required documents…"
+          aria-label="Message Vaidha AI"
           style={{
             flex: 1,
             maxHeight: '160px',
@@ -159,6 +164,7 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
           onClick={handleSend}
           disabled={!inputText.trim() || disabled}
           title="Send message (Enter)"
+          aria-label="Send message"
           style={{
             width: '36px',
             height: '36px',
@@ -191,6 +197,7 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
 
       {/* Subtle Hint */}
       <div
+        className="composer-hint"
         style={{
           display: 'flex',
           alignItems: 'center',

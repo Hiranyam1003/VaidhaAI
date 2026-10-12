@@ -137,7 +137,7 @@ export const MyProfile: React.FC<MyProfileProps> = ({ profile, onUpdateProfile }
           gap: '16px',
         }}
       >
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: '14px' }}>
           <div>
             <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
               Full Name
@@ -181,7 +181,7 @@ export const MyProfile: React.FC<MyProfileProps> = ({ profile, onUpdateProfile }
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: '14px' }}>
           <div>
             <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
               Primary State
@@ -230,7 +230,7 @@ export const MyProfile: React.FC<MyProfileProps> = ({ profile, onUpdateProfile }
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: '14px' }}>
           <div>
             <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
               Social Category

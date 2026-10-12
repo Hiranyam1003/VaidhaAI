@@ -55,16 +55,17 @@ export const Home: React.FC<HomeProps> = ({
           overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: isWelcome ? 'center' : 'flex-start',
           paddingBottom: '124px',
           zIndex: 10,
         }}
       >
         {isWelcome ? (
-          <WelcomeScreen
-            onSelectPrompt={onSendMessage}
-            onNavigateTab={onNavigateTab}
-          />
+          <div style={{ margin: 'auto 0' }}>
+            <WelcomeScreen
+              onSelectPrompt={onSendMessage}
+              onNavigateTab={onNavigateTab}
+            />
+          </div>
         ) : (
           <div
             style={{

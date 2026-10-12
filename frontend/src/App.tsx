@@ -8,14 +8,25 @@ import { EligibilityChecker } from './pages/EligibilityChecker';
 import { DocumentLibrary } from './pages/DocumentLibrary';
 import { SavedSchemes } from './pages/SavedSchemes';
 import { MyProfile } from './pages/MyProfile';
+import { Settings } from './pages/Settings';
+import { TEXT_SIZE_SCALE } from './utils/textSize';
 import { SCHEMES_DATA, USER_PROFILE_DEFAULT } from './data/mockData';
 import { getAssistantResponse } from './utils/responseEngine';
-import type { Message, NavTab, UserProfile } from './types';
+import type { Language, Message, NavTab, TextSize, UserProfile } from './types';
+
+const MOBILE_QUERY = '(max-width: 768px)';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('home');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState<'English' | 'Hindi' | 'Marathi'>('English');
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia(MOBILE_QUERY).matches);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>('English');
+
+  const [textSize, setTextSize] = useState<TextSize>(() => {
+    const local = localStorage.getItem('vaidha_text_size');
+    return local === 'large' || local === 'larger' ? local : 'normal';
+  });
 
   // Messages in the active conversation
   const [messages, setMessages] = useState<Message[]>([]);
@@ -53,9 +64,27 @@ export function App() {
     localStorage.setItem('vaidha_user_profile', JSON.stringify(userProfile));
   }, [userProfile]);
 
+  useEffect(() => {
+    localStorage.setItem('vaidha_text_size', textSize);
+  }, [textSize]);
+
+  // Pixel sizes are used throughout, so text size scales the whole app with CSS zoom.
+  // Width and height are divided by the same factor so the app still fills the window.
+  const zoom = TEXT_SIZE_SCALE[textSize];
+
+  useEffect(() => {
+    const mql = window.matchMedia(MOBILE_QUERY);
+    const onChange = (e: MediaQueryListEvent) => {
+      setIsMobile(e.matches);
+      if (!e.matches) setMobileNavOpen(false);
+    };
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+
   // Auto-scroll when messages update
   useEffect(() => {
-    if (scrollRef.current) {
+    if (scrollRef.current && messages.length > 0) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isLoading]);
@@ -64,6 +93,7 @@ export function App() {
   const handleNewChat = () => {
     setMessages([]);
     setActiveTab('home');
+    setMobileNavOpen(false);
   };
 
   const handleToggleSaveScheme = (id: string) => {
@@ -114,8 +144,9 @@ export function App() {
     <div
       style={{
         display: 'flex',
-        height: '100vh',
-        width: '100vw',
+        height: `${100 / zoom}vh`,
+        width: `${100 / zoom}vw`,
+        zoom,
         overflow: 'hidden',
         backgroundColor: 'var(--workspace-bg)',
       }}
@@ -125,10 +156,14 @@ export function App() {
         activeTab={activeTab}
         onSelectTab={(tab) => {
           setActiveTab(tab);
+          setMobileNavOpen(false);
         }}
         onNewChat={handleNewChat}
-        isCollapsed={sidebarCollapsed}
+        isCollapsed={!isMobile && sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        isMobile={isMobile}
+        isMobileOpen={mobileNavOpen}
+        onCloseMobile={() => setMobileNavOpen(false)}
       />
 
       {/* Main Workspace Area */}
@@ -147,6 +182,7 @@ export function App() {
         <ChatHeader
           selectedLanguage={selectedLanguage}
           onSelectLanguage={setSelectedLanguage}
+          onOpenMenu={isMobile ? () => setMobileNavOpen(true) : undefined}
         />
 
         {/* View Router based on active tab */}
@@ -219,6 +255,15 @@ export function App() {
             <MyProfile
               profile={userProfile}
               onUpdateProfile={setUserProfile}
+            />
+          )}
+
+          {activeTab === 'settings' && (
+            <Settings
+              textSize={textSize}
+              onChangeTextSize={setTextSize}
+              language={selectedLanguage}
+              onChangeLanguage={setSelectedLanguage}
             />
           )}
         </div>

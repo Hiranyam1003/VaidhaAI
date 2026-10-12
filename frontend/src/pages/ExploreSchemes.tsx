@@ -202,6 +202,8 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
                     backgroundColor: active ? 'var(--brand-sun)' : '#ffffff',
                     color: active ? '#ffffff' : 'var(--workspace-text-muted)',
                     border: active ? '1px solid var(--brand-sun)' : '1px solid var(--workspace-border)',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0,
                     transition: 'all 0.12s ease',
                   }}
                 >
@@ -214,7 +216,7 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
       </div>
 
       {/* Schemes Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(310px, 1fr))', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(310px, 100%), 1fr))', gap: '16px' }}>
         {filtered.map((scheme) => {
           const isSaved = savedIds.includes(scheme.id);
           return (

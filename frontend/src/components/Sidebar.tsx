@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Plus,
   Home,
@@ -8,8 +8,10 @@ import {
   Files,
   Bookmark,
   UserCircle,
+  Settings,
   PanelLeftClose,
   PanelLeft,
+  X,
 } from 'lucide-react';
 import type { NavTab } from '../types';
 
@@ -19,6 +21,9 @@ interface SidebarProps {
   onNewChat: () => void;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
+  isMobile: boolean;
+  isMobileOpen: boolean;
+  onCloseMobile: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -27,7 +32,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onNewChat,
   isCollapsed,
   onToggleCollapse,
+  isMobile,
+  isMobileOpen,
+  onCloseMobile,
 }) => {
+  useEffect(() => {
+    if (!isMobileOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onCloseMobile();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isMobileOpen, onCloseMobile]);
+
   const navItems = [
     { id: 'home' as NavTab, label: 'Home', icon: Home },
     { id: 'news' as NavTab, label: 'News & Updates', icon: Newspaper },
@@ -35,23 +52,45 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'eligibility' as NavTab, label: 'Eligibility Checker', icon: ClipboardCheck },
     { id: 'documents' as NavTab, label: 'Document Library', icon: Files },
     { id: 'saved' as NavTab, label: 'Saved Schemes', icon: Bookmark },
+    { id: 'settings' as NavTab, label: 'Settings', icon: Settings },
   ];
 
   return (
+    <>
+    {isMobile && isMobileOpen && (
+      <div
+        onClick={onCloseMobile}
+        aria-hidden="true"
+        style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(18, 19, 22, 0.45)', zIndex: 39 }}
+      />
+    )}
     <aside
+      aria-label="Main navigation"
+      inert={isMobile && !isMobileOpen}
       style={{
         width: isCollapsed ? '72px' : '268px',
         minWidth: isCollapsed ? '72px' : '268px',
         height: '100%',
+        ...(isMobile && {
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          bottom: 0,
+          maxWidth: '85vw',
+          transform: isMobileOpen ? 'translateX(0)' : 'translateX(-100%)',
+          boxShadow: isMobileOpen ? '0 0 40px rgba(0, 0, 0, 0.3)' : 'none',
+        }),
         backgroundColor: 'var(--sidebar-bg)',
+        backdropFilter: 'blur(16px) saturate(140%)',
+        WebkitBackdropFilter: 'blur(16px) saturate(140%)',
         borderRight: '1px solid var(--sidebar-border)',
         display: 'flex',
         flexDirection: 'column',
         color: 'var(--sidebar-text-main)',
         zIndex: 40,
-        position: 'relative',
+        ...(!isMobile && { position: 'relative' }),
         userSelect: 'none',
-        transition: 'width 0.22s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
+        transition: 'width 0.22s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
       }}
     >
       {/* Top Branding Section */}
@@ -64,14 +103,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
           borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
         }}
       >
-        <div
+        <button
           onClick={() => onSelectTab('home')}
+          aria-label="Vaidha AI home"
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '11px',
-            cursor: 'pointer',
             overflow: 'hidden',
+            color: 'inherit',
+            textAlign: 'left',
+            borderRadius: '8px',
           }}
         >
           {/* Actual Vaidha Logo Asset */}
@@ -91,7 +133,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <img
               src="/assets/vaidha-logo.jpeg"
-              alt="Vaidha AI Logo"
+              alt=""
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           </div>
@@ -122,12 +164,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </span>
             </div>
           )}
-        </div>
+        </button>
 
         {!isCollapsed && (
           <button
-            onClick={onToggleCollapse}
-            title="Collapse sidebar"
+            onClick={isMobile ? onCloseMobile : onToggleCollapse}
+            title={isMobile ? 'Close menu' : 'Collapse sidebar'}
+            aria-label={isMobile ? 'Close menu' : 'Collapse sidebar'}
             style={{
               padding: '6px',
               borderRadius: '6px',
@@ -145,7 +188,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               e.currentTarget.style.backgroundColor = 'transparent';
             }}
           >
-            <PanelLeftClose size={17} />
+            {isMobile ? <X size={18} /> : <PanelLeftClose size={17} />}
           </button>
         )}
       </div>
@@ -156,6 +199,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             onClick={onToggleCollapse}
             title="Expand sidebar"
+            aria-label="Expand sidebar"
             style={{
               padding: '6px',
               borderRadius: '6px',
@@ -177,6 +221,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           onClick={onNewChat}
           title="Start a new question"
+          aria-label={isCollapsed ? 'New Chat' : undefined}
           style={{
             width: '100%',
             height: '40px',
@@ -227,6 +272,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               key={item.id}
               onClick={() => onSelectTab(item.id)}
               title={isCollapsed ? item.label : undefined}
+              aria-label={isCollapsed ? item.label : undefined}
+              aria-current={isActive ? 'page' : undefined}
               style={{
                 width: '100%',
                 height: '38px',
@@ -290,12 +337,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         style={{
           padding: isCollapsed ? '12px 10px' : '12px 12px',
           borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-          backgroundColor: 'rgba(0, 0, 0, 0.18)',
+          backgroundColor: 'rgba(0, 0, 0, 0.12)',
         }}
       >
         <button
           onClick={() => onSelectTab('profile')}
           title={isCollapsed ? 'My Profile' : undefined}
+          aria-label={isCollapsed ? 'My Profile' : undefined}
+          aria-current={activeTab === 'profile' ? 'page' : undefined}
           style={{
             width: '100%',
             height: '42px',
@@ -332,5 +381,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
     </aside>
+    </>
   );
 };

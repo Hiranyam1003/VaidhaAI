@@ -1,22 +1,41 @@
-import React, { useState } from 'react';
-import { Globe, ChevronDown, Check } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Globe, ChevronDown, Check, Menu } from 'lucide-react';
 
 interface ChatHeaderProps {
   selectedLanguage: 'English' | 'Hindi' | 'Marathi';
   onSelectLanguage: (lang: 'English' | 'Hindi' | 'Marathi') => void;
+  onOpenMenu?: () => void;
 }
 
 export const ChatHeader: React.FC<ChatHeaderProps> = ({
   selectedLanguage,
   onSelectLanguage,
+  onOpenMenu,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!dropdownOpen) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (!dropdownRef.current?.contains(e.target as Node)) setDropdownOpen(false);
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setDropdownOpen(false);
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [dropdownOpen]);
 
   return (
     <header
       style={{
         height: '54px',
-        padding: '0 24px',
+        padding: onOpenMenu ? '0 12px' : '0 24px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -27,7 +46,24 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       }}
     >
       {/* Left: Compact brand identity */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        {onOpenMenu && (
+          <button
+            onClick={onOpenMenu}
+            aria-label="Open menu"
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--workspace-text-main)',
+            }}
+          >
+            <Menu size={20} />
+          </button>
+        )}
         <span
           style={{
             fontFamily: 'var(--font-heading)',
@@ -42,9 +78,12 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       </div>
 
       {/* Right: Language selection control */}
-      <div style={{ position: 'relative' }}>
+      <div ref={dropdownRef} style={{ position: 'relative' }}>
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
+          aria-label={`Language: ${selectedLanguage}`}
+          aria-haspopup="true"
+          aria-expanded={dropdownOpen}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -85,6 +124,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
             {(['English', 'Hindi', 'Marathi'] as const).map((lang) => (
               <button
                 key={lang}
+                aria-pressed={selectedLanguage === lang}
                 onClick={() => {
                   onSelectLanguage(lang);
                   setDropdownOpen(false);
