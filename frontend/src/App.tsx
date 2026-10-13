@@ -92,12 +92,25 @@ export function App() {
     return () => mql.removeEventListener('change', onChange);
   }, []);
 
-  // Auto-scroll when messages update
+  // Track the ID of the last user query sent so it can be anchored at the top
+  const [activeQueryId, setActiveQueryId] = useState<string | null>(null);
+
+  // When a new user message is submitted, position the conversation viewport so the user's question
+  // appears at the top (with appropriate padding) and stays anchored while the assistant response streams/renders.
   useEffect(() => {
-    if (scrollRef.current && messages.length > 0) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (!activeQueryId || !scrollRef.current) return;
+    const userElement = document.getElementById(activeQueryId);
+    if (userElement && scrollRef.current) {
+      // Calculate top position of the user question relative to the scroll container
+      const containerRect = scrollRef.current.getBoundingClientRect();
+      const elRect = userElement.getBoundingClientRect();
+      const targetScrollTop = scrollRef.current.scrollTop + (elRect.top - containerRect.top) - 16;
+      scrollRef.current.scrollTo({
+        top: Math.max(0, targetScrollTop),
+        behavior: 'smooth',
+      });
     }
-  }, [messages, isLoading]);
+  }, [activeQueryId]);
 
   // New Chat action: resets current conversation and returns to the clean welcome screen on Home
   const handleNewChat = () => {
@@ -132,6 +145,7 @@ export function App() {
 
     const history = messages.map((m) => ({ role: m.sender, content: m.content }));
     setMessages((prev) => [...prev, userMsg]);
+    setActiveQueryId(userMsg.id);
     setIsLoading(true);
 
     askVaidha(text, history, selectedLanguage).then((reply) => {

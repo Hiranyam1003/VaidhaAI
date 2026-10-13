@@ -25,6 +25,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   if (isUser) {
     return (
       <div
+        id={message.id}
         style={{
           display: 'flex',
           justifyContent: 'flex-end',

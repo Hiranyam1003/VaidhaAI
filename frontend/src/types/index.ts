@@ -16,18 +16,51 @@ export interface Message {
   isDemo?: boolean;
 }
 
+export interface SchemeSource {
+  title: string;
+  department: string;
+  documentType: string;
+  sourceUrl: string;
+  guidelinePdfUrl?: string;
+  publicationDate?: string;
+  lastVerifiedAt: string;
+}
+
 export interface SchemeItem {
   id: string;
   name: string;
+  regionalName?: string;
   hindiName?: string;
-  category: 'Housing' | 'Education' | 'Agriculture' | 'Healthcare' | 'Financial' | 'Women & Child';
+  category: 'Housing' | 'Education' | 'Agriculture' | 'Healthcare' | 'Financial' | 'Women & Child' | 'Employment' | 'Social Security';
   level: 'Central' | 'State' | 'Central-State';
-  beneficiaryGroup: 'Students' | 'Farmers' | 'Families' | 'Artisans' | 'Senior Citizens' | 'All Citizens';
+  beneficiaryGroup: 'Students' | 'Farmers' | 'Families' | 'Artisans' | 'Senior Citizens' | 'Youth & Job Seekers' | 'Women' | 'All Citizens';
+  beneficiaryGroups?: string[];
+  department: string;
   benefit: string;
   eligibility: string;
-  documents: string[];
-  department: string;
+  documents?: string[];
+  benefits?: string[];
+  eligibilityCriteria?: string[];
+  requiredDocuments?: {
+    mandatory: string[];
+    conditional?: string[];
+  };
+  applicationProcess?: {
+    mode: 'Online' | 'Offline' | 'Online & Offline';
+    description: string;
+    portalName?: string;
+  };
+  announcementDate?: string;
+  announcementSourceUrl?: string;
+  lastUpdatedAt?: string;
+  lastVerifiedAt?: string;
+  verificationStatus?: 'Verified source' | 'Needs review' | 'Information unavailable';
+  applicationStatus?: 'Open' | 'Continuous / Ongoing' | 'Closed' | 'Status unknown';
+  officialSourceUrl?: string;
+  officialApplicationUrl?: string;
   officialUrl?: string;
+  source?: SchemeSource;
+  searchKeywords?: string[];
   isSaved?: boolean;
 }
 
