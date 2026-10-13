@@ -1,17 +1,26 @@
-import { MOCK_NEWS_DATA } from '../data/mockData';
 import type { NewsItem } from '../types';
 
 /**
- * Service separating news data retrieval from UI components.
- * Structured so a future backend API (e.g. GET /api/news) can seamlessly replace
- * this local mock store without altering UI components.
+ * Live government news from the backend (GET /api/news, proxied to FastAPI in dev; see vite.config.ts).
+ * The backend caches the feed, so this fetches once per page load and filters locally.
+ * Never throws: if the backend is down the feed is simply empty.
  */
+let newsRequest: Promise<NewsItem[]> | null = null;
+
+function loadNews(): Promise<NewsItem[]> {
+  newsRequest ??= fetch('/api/news')
+    .then((res) => (res.ok ? res.json() : []))
+    .catch(() => [])
+    .then((items: NewsItem[]) => {
+      if (items.length === 0) newsRequest = null; // let the next visit retry
+      return items;
+    });
+  return newsRequest;
+}
+
 export const NewsService = {
   getNews: async (category?: string, query?: string): Promise<NewsItem[]> => {
-    // Simulated micro-delay representing local cache lookup
-    await new Promise((resolve) => setTimeout(resolve, 80));
-
-    let items = [...MOCK_NEWS_DATA];
+    let items = await loadNews();
 
     if (category && category !== 'All Updates') {
       items = items.filter((item) => item.category === category);
@@ -31,6 +40,6 @@ export const NewsService = {
   },
 
   getNewsById: async (id: string): Promise<NewsItem | undefined> => {
-    return MOCK_NEWS_DATA.find((item) => item.id === id);
+    return (await loadNews()).find((item) => item.id === id);
   },
 };

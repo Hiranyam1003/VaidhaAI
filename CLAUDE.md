@@ -42,4 +42,8 @@ Stack: React 19, TypeScript 6, Vite 8, `lucide-react` for icons. No router, stat
 cd backend && .venv/bin/uvicorn main:app --reload --port 8000   # run alongside `npm run dev`
 ```
 
+`GET /api/news` serves live news from Google News RSS (one search per News page category in `NEWS_QUERIES`), cached in memory for 15 minutes.
+
+Guardrails live in `backend/guardrails.py` (self-check: `python guardrails.py`): per-IP and global sliding-window rate limits (`CHAT_LIMITS`, `NEWS_LIMITS` in `main.py`, answered with 429 + `Retry-After`), Aadhaar/PAN/phone/bank/OTP/email redaction before text reaches Gemini and on the reply, a keyword prompt-injection check that returns a fixed refusal without calling Gemini, Gemini safety settings, and `strip_unofficial_links` so only https links to `OFFICIAL_DOMAINS` stay clickable. Rate limits are in-memory per process.
+
 `backend/.venv` is a Python 3.12 virtualenv (created with `uv`) from `backend/requirements.txt`. The key goes in `backend/.env` as `GEMINI_API_KEY` (see `.env.example`; `.env` and `.venv` are git-ignored). Free-tier quotas are small (for example 5 requests/minute on some models), which is why the fallback chain exists.

@@ -28,6 +28,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All Updates');
   const [selectedItemForModal, setSelectedItemForModal] = useState<NewsItem | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const categories = [
     'All Updates',
@@ -42,6 +43,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
   useEffect(() => {
     NewsService.getNews(selectedCategory, searchQuery).then((data) => {
       setNewsList(data);
+      setLoading(false);
     });
   }, [selectedCategory, searchQuery]);
 
@@ -86,7 +88,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
               borderRadius: '6px',
             }}
           >
-            Demonstration Feed
+            Live · Updated every 15 min
           </span>
         </div>
         <p style={{ fontSize: '14px', color: 'var(--workspace-text-muted)', lineHeight: '1.5' }}>
@@ -290,7 +292,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                     textDecoration: 'none',
                   }}
                 >
-                  Official Portal <ExternalLink size={12} />
+                  Read Full Story <ExternalLink size={12} />
                 </a>
               )}
             </div>
@@ -422,7 +424,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
           );
         })}
 
-        {newsList.length === 0 && (
+        {(loading || newsList.length === 0) && (
           <div
             style={{
               backgroundColor: '#ffffff',
@@ -433,7 +435,11 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
             }}
           >
             <p style={{ fontSize: '14px', color: 'var(--workspace-text-muted)' }}>
-              No government updates found matching &ldquo;{searchQuery}&rdquo;.
+              {loading
+                ? 'Loading the latest government news...'
+                : searchQuery
+                  ? <>No government updates found matching &ldquo;{searchQuery}&rdquo;.</>
+                  : 'Could not load the latest news right now. Make sure the backend is running, then refresh.'}
             </p>
           </div>
         )}
@@ -565,7 +571,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                     textDecoration: 'none',
                   }}
                 >
-                  Official Source <ExternalLink size={13} />
+                  Read Full Story <ExternalLink size={13} />
                 </a>
               )}
             </div>
