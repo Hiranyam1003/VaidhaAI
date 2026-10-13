@@ -53,6 +53,8 @@ The "no real details, SPECIMEN" rule keeps the pictures recognisable without loo
 cd backend && .venv/bin/uvicorn main:app --reload --port 8000   # run alongside `npm run dev`
 ```
 
+To keep answers current, every chat request adds today's date in India and the newest `NEWS_HEADLINES_IN_PROMPT` headlines from the news cache (`news_context()`, fenced off as untrusted data) to the system instruction. There is no web search: Google Search grounding needs a paid key, so scheme facts otherwise come from the model's training.
+
 `GET /api/news` serves live news from Google News RSS (one search per News page category in `NEWS_QUERIES`), cached in memory for 15 minutes.
 
 Guardrails live in `backend/guardrails.py` (self-check: `python guardrails.py`): per-IP and global sliding-window rate limits (`CHAT_LIMITS`, `NEWS_LIMITS` in `main.py`, answered with 429 + `Retry-After`), Aadhaar/PAN/phone/bank/OTP/email redaction before text reaches Gemini and on the reply, a keyword prompt-injection check that returns a fixed refusal without calling Gemini, Gemini safety settings, and `strip_unofficial_links` so only https links to `OFFICIAL_DOMAINS` stay clickable. Rate limits are in-memory per process.
