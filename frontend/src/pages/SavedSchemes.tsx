@@ -1,5 +1,6 @@
 import React from 'react';
 import { Bookmark, ExternalLink, Trash2 } from 'lucide-react';
+import { useT } from '../i18n';
 import type { SchemeItem } from '../types';
 
 interface SavedSchemesProps {
@@ -17,6 +18,7 @@ export const SavedSchemes: React.FC<SavedSchemesProps> = ({
   onAskScheme,
   onGoToExplore,
 }) => {
+  const t = useT();
   const bookmarked = schemes.filter((s) => savedIds.includes(s.id));
 
   return (
@@ -34,10 +36,10 @@ export const SavedSchemes: React.FC<SavedSchemesProps> = ({
     >
       <div style={{ marginBottom: '24px' }}>
         <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '24px', fontWeight: 700, color: '#1a1a1a', marginBottom: '6px' }}>
-          Saved Schemes
+          {t('saved.title')}
         </h2>
         <p style={{ fontSize: '13.5px', color: 'var(--workspace-text-muted)' }}>
-          Quick access to government initiatives and application guidelines you have bookmarked.
+          {t('saved.subtitle')}
         </p>
       </div>
 
@@ -56,9 +58,9 @@ export const SavedSchemes: React.FC<SavedSchemesProps> = ({
           }}
         >
           <Bookmark size={36} color="var(--workspace-text-subtle)" />
-          <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#1a1a1a' }}>No saved schemes yet</h3>
+          <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#1a1a1a' }}>{t('saved.emptyTitle')}</h3>
           <p style={{ fontSize: '13px', color: 'var(--workspace-text-muted)', maxWidth: '380px' }}>
-            Browse through the scheme catalog and bookmark the ones relevant to you or your family.
+            {t('saved.emptyText')}
           </p>
           <button
             onClick={onGoToExplore}
@@ -72,7 +74,7 @@ export const SavedSchemes: React.FC<SavedSchemesProps> = ({
               fontWeight: 600,
             }}
           >
-            Explore Schemes
+            {t('saved.explore')}
           </button>
         </div>
       ) : (
@@ -103,11 +105,12 @@ export const SavedSchemes: React.FC<SavedSchemesProps> = ({
                       borderRadius: '6px',
                     }}
                   >
-                    {scheme.category}
+                    {t(`category.${scheme.category}`)}
                   </span>
                   <button
                     onClick={() => onRemoveSaved(scheme.id)}
-                    title="Remove from saved"
+                    title={t('saved.remove')}
+                    aria-label={t('saved.remove')}
                     style={{ color: 'var(--workspace-text-subtle)', padding: '4px' }}
                   >
                     <Trash2 size={16} />
@@ -123,9 +126,9 @@ export const SavedSchemes: React.FC<SavedSchemesProps> = ({
               </div>
 
               <div style={{ borderTop: '1px solid #f2eee8', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '11px', color: 'var(--workspace-text-subtle)' }}>{scheme.level}</span>
+                <span style={{ fontSize: '11px', color: 'var(--workspace-text-subtle)' }}>{t(`level.${scheme.level}`)}</span>
                 <button
-                  onClick={() => onAskScheme(`How do I apply for ${scheme.name}?`)}
+                  onClick={() => onAskScheme(t('prompt.howApply', { name: scheme.name }))}
                   style={{
                     fontSize: '12px',
                     fontWeight: 600,
@@ -135,7 +138,7 @@ export const SavedSchemes: React.FC<SavedSchemesProps> = ({
                     gap: '4px',
                   }}
                 >
-                  Ask in Chat <ExternalLink size={12} />
+                  {t('saved.askInChat')} <ExternalLink size={12} />
                 </button>
               </div>
             </div>

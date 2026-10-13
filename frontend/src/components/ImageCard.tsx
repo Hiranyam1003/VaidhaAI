@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
+import { useT } from '../i18n';
 import type { ImageExploreCard } from '../utils/responseEngine';
 
 interface ImageCardProps {
@@ -8,6 +9,7 @@ interface ImageCardProps {
 }
 
 export const ImageCard: React.FC<ImageCardProps> = ({ card, onClick }) => {
+  const t = useT();
   const [imageError, setImageError] = useState(false);
 
   return (
@@ -166,7 +168,7 @@ export const ImageCard: React.FC<ImageCardProps> = ({ card, onClick }) => {
             color: 'var(--brand-sun)',
           }}
         >
-          <span>Ask Vaidha</span>
+          <span>{t('card.ask')}</span>
           <ArrowUpRight size={12} />
         </div>
       </div>

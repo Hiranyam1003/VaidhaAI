@@ -1,5 +1,6 @@
 import { MOCK_NEWS_DATA } from '../data/mockData';
-import type { NewsItem } from '../types';
+import { localizeNews } from '../i18n/content';
+import type { Language, NewsItem } from '../types';
 
 /**
  * Service separating news data retrieval from UI components.
@@ -7,11 +8,12 @@ import type { NewsItem } from '../types';
  * this local mock store without altering UI components.
  */
 export const NewsService = {
-  getNews: async (category?: string, query?: string): Promise<NewsItem[]> => {
+  getNews: async (category?: string, query?: string, language: Language = 'English'): Promise<NewsItem[]> => {
     // Simulated micro-delay representing local cache lookup
     await new Promise((resolve) => setTimeout(resolve, 80));
 
-    let items = [...MOCK_NEWS_DATA];
+    // Translate first so searching works in the selected language.
+    let items = localizeNews(MOCK_NEWS_DATA, language);
 
     if (category && category !== 'All Updates') {
       items = items.filter((item) => item.category === category);

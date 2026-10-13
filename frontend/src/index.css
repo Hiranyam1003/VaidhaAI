@@ -1,7 +1,8 @@
 /* Vaidha AI — Minimalist Design Tokens derived from the official logo */
 :root {
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  /* Noto Sans Devanagari supplies Hindi/Marathi glyphs the Latin fonts lack */
+  --font-sans: 'Plus Jakarta Sans', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Outfit', 'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif;
 
   /* Sidebar: translucent warm-black tint with a frosted blur over the parchment background */
   --sidebar-bg: rgba(28, 25, 23, 0.8);
@@ -106,6 +107,42 @@ input, textarea {
 
 .fade-in {
   animation: fadeIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Document Library: cards lift and the illustration tilts slightly on hover or keyboard focus */
+.doc-card {
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.doc-card:hover,
+.doc-card:focus-within {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.doc-card .doc-image {
+  transition: transform 0.35s ease;
+}
+
+.doc-card:hover .doc-image,
+.doc-card:focus-within .doc-image {
+  transform: scale(1.05) rotate(-1.5deg);
+}
+
+.doc-modal-image .doc-image {
+  animation: docImageIn 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes docImageIn {
+  from {
+    opacity: 0;
+    transform: scale(1.06) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @media (max-width: 768px) {

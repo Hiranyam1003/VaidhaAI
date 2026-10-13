@@ -12,16 +12,22 @@ import { Settings } from './pages/Settings';
 import { TEXT_SIZE_SCALE } from './utils/textSize';
 import { SCHEMES_DATA, USER_PROFILE_DEFAULT } from './data/mockData';
 import { askVaidha } from './utils/chatApi';
+import { LanguageContext } from './i18n';
+import { localizeSchemes } from './i18n/content';
 import type { Language, Message, NavTab, TextSize, UserProfile } from './types';
 
 const MOBILE_QUERY = '(max-width: 768px)';
+const HTML_LANG: Record<Language, string> = { English: 'en', Hindi: 'hi', Marathi: 'mr' };
 
 export function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('home');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(() => window.matchMedia(MOBILE_QUERY).matches);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState<Language>('English');
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>(() => {
+    const local = localStorage.getItem('vaidha_language');
+    return local === 'Hindi' || local === 'Marathi' ? local : 'English';
+  });
 
   const [textSize, setTextSize] = useState<TextSize>(() => {
     const local = localStorage.getItem('vaidha_text_size');
@@ -67,6 +73,13 @@ export function App() {
   useEffect(() => {
     localStorage.setItem('vaidha_text_size', textSize);
   }, [textSize]);
+
+  useEffect(() => {
+    localStorage.setItem('vaidha_language', selectedLanguage);
+    document.documentElement.lang = HTML_LANG[selectedLanguage];
+  }, [selectedLanguage]);
+
+  const schemes = localizeSchemes(SCHEMES_DATA, selectedLanguage);
 
   // Pixel sizes are used throughout, so text size scales the whole app with CSS zoom.
   // Width and height are divided by the same factor so the app still fills the window.
@@ -137,6 +150,7 @@ export function App() {
   };
 
   return (
+    <LanguageContext.Provider value={selectedLanguage}>
     <div
       style={{
         display: 'flex',
@@ -206,7 +220,7 @@ export function App() {
 
           {activeTab === 'schemes' && (
             <ExploreSchemes
-              schemes={SCHEMES_DATA}
+              schemes={schemes}
               savedIds={savedIds}
               onToggleSave={handleToggleSaveScheme}
               onAskScheme={(q) => {
@@ -236,7 +250,7 @@ export function App() {
 
           {activeTab === 'saved' && (
             <SavedSchemes
-              schemes={SCHEMES_DATA}
+              schemes={schemes}
               savedIds={savedIds}
               onRemoveSaved={handleToggleSaveScheme}
               onAskScheme={(q) => {
@@ -265,6 +279,7 @@ export function App() {
         </div>
       </div>
     </div>
+    </LanguageContext.Provider>
   );
 }
 

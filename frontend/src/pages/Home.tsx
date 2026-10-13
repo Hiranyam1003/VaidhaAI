@@ -2,6 +2,7 @@ import React from 'react';
 import { WelcomeScreen } from '../components/WelcomeScreen';
 import { MessageBubble } from '../components/MessageBubble';
 import { ChatComposer } from '../components/ChatComposer';
+import { useT } from '../i18n';
 import type { Message } from '../types';
 
 interface HomeProps {
@@ -19,6 +20,7 @@ export const Home: React.FC<HomeProps> = ({
   scrollRef,
   onNavigateTab,
 }) => {
+  const t = useT();
   const isWelcome = messages.length === 0;
 
   return (
@@ -110,7 +112,7 @@ export const Home: React.FC<HomeProps> = ({
                   }}
                 />
                 <span style={{ fontSize: '12.5px', color: 'var(--workspace-text-muted)' }}>
-                  Vaidha AI is researching...
+                  {t('home.researching')}
                 </span>
               </div>
             )}

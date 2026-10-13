@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import { EXPLORE_IMAGE_CARDS, QUICK_PROMPTS } from '../utils/responseEngine';
+import { useLanguage, useT } from '../i18n';
+import { getExploreCards, getQuickPrompts } from '../i18n/content';
 import { ImageCard } from './ImageCard';
 
 interface WelcomeScreenProps {
@@ -12,6 +13,8 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onSelectPrompt,
   onNavigateTab,
 }) => {
+  const t = useT();
+  const language = useLanguage();
   return (
     <div
       style={{
@@ -63,7 +66,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           marginBottom: '10px',
         }}
       >
-        How can I help you today?
+        {t('welcome.title')}
       </h1>
 
       {/* Supporting Text */}
@@ -76,7 +79,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           marginBottom: '38px',
         }}
       >
-        Your guide to government schemes, benefits and essential documents.
+        {t('welcome.subtitle')}
       </p>
 
       {/* Image-Based Explore Section */}
@@ -99,10 +102,10 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               letterSpacing: '-0.01em',
             }}
           >
-            What are you looking for today?
+            {t('welcome.lookingFor')}
           </h2>
           <span style={{ fontSize: '12px', color: 'var(--workspace-text-subtle)' }}>
-            Explore verified citizen services
+            {t('welcome.exploreServices')}
           </span>
         </div>
 
@@ -115,7 +118,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             width: '100%',
           }}
         >
-          {EXPLORE_IMAGE_CARDS.map((card) => (
+          {getExploreCards(language).map((card) => (
             <ImageCard
               key={card.id}
               card={card}
@@ -144,9 +147,9 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         }}
       >
         <span style={{ fontSize: '12px', color: 'var(--workspace-text-subtle)', marginRight: '4px' }}>
-          Suggested questions:
+          {t('welcome.suggested')}
         </span>
-        {QUICK_PROMPTS.map((qp, idx) => (
+        {getQuickPrompts(language).map((qp, idx) => (
           <button
             key={idx}
             onClick={() => onSelectPrompt(qp.prompt)}

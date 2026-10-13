@@ -34,6 +34,26 @@ Stack: React 19, TypeScript 6, Vite 8, `lucide-react` for icons. No router, stat
 - **Styling:** almost entirely inline `style={{...}}` objects referencing CSS custom properties defined in `src/index.css` (`--sidebar-*`, `--brand-*` such as `--brand-sun` red and `--brand-parchment` warm white, `--workspace-*`, `--shadow-*`, `--font-sans`/`--font-heading`). Keep the warm white and red palette; use these tokens rather than new hard-coded colors.
 - **Unused files:** `components/Composer.tsx`, `components/ConversationView.tsx`, `components/VaidhaLogo.tsx`, `components/SuggestionCard.tsx` and `src/App.css` are not imported anywhere. The live chat UI is `Home` → `WelcomeScreen` (image cards + suggested questions) / `MessageBubble` / `ChatComposer`.
 
+## Languages (English / Hindi / Marathi)
+
+The language picker (header and Settings) switches the whole UI, persisted as `vaidha_language`, and also sets `<html lang>` and the language Gemini answers in.
+
+- **Interface text:** never hard-code user-visible strings. Add a key to `src/i18n/strings.ts` and render it with `const t = useT()` from `src/i18n` (`t('key', { name })` fills `{name}` placeholders). English defines the keys; the Hindi and Marathi tables are typed `Record<StringKey, string>`, so the build fails until every language has the new key. Outside React (e.g. `utils/chatApi.ts`) use `translate(lang, key)`.
+- **Content:** scheme, news, document-guide, home-card and quick-prompt translations live in `src/i18n/content.ts`, keyed by ID. `localizeSchemes` / `localizeNews` overlay them on the English mock data; enum fields (category, level, beneficiary group, update type) stay English for filtering and are displayed via `category.*`, `level.*`, `group.*`, `update.*`, `newsCat.*` keys. In Hindi/Marathi a scheme's official English name is moved into `hindiName`, which the UI shows as the subtitle.
+- **Questions sent from buttons** (`prompt.*` keys) are translated too, so the chat question and Gemini's answer are in the selected language.
+- `Noto Sans Devanagari` (loaded in `index.html`, listed in the `--font-*` stacks) renders Devanagari, which the Latin fonts lack.
+- The Hindi and Marathi text was machine-written and should be reviewed by native speakers.
+
+## Document Library
+
+`src/pages/DocumentLibrary.tsx` lists the documents in `src/data/documents.ts` (27 documents that can be applied for online: who issues them, official portal, who can apply, papers needed, steps, tip). Hindi/Marathi text is in `src/i18n/documents.ts`, typed by `DocumentId` so every document needs both translations. Only link official `gov.in` / `nic.in` portals, and check each URL loads. Fees and processing times are deliberately left out because they change; guides point to the portal instead.
+
+Each card shows `public/assets/documents/<id>.jpg` (the file name is the document `id`). Until a picture exists the card shows a placeholder icon. The pictures are made with Nano Banana in the Gemini web app (the API key's free tier has no image quota), using one shared style so they match:
+
+> A friendly, flat, illustrated (cartoon-style) picture of an Indian <document name> lying on a warm parchment-coloured background (#faf8f5) with soft terracotta-red accents (#d9482b). Clearly a stylised illustration, with the word SPECIMEN across it. No real names, numbers, photos of real people, QR codes, signatures, government emblems or seals. Landscape 4:3.
+
+The "no real details, SPECIMEN" rule keeps the pictures recognisable without looking like usable ID documents. Save each as JPEG, about 640px wide and under 100 KB (`sips -Z 640 -s format jpeg -s formatOptions 70 in.png --out <id>.jpg`).
+
 ## Backend
 
 `backend/main.py` is a FastAPI app with `POST /api/chat` and `GET /api/health`. It calls Gemini (`google-genai`) with a system prompt and structured JSON output (`ChatReply` → `content`, `citations`, `followUps`), low thinking level for speed, and tries models in order (`GEMINI_MODEL`, default `gemini-3.1-flash-lite`, then `GEMINI_FALLBACK_MODELS`) when one returns 5xx, times out, or hits its 429 quota. The SDK's own retries are disabled so a busy model fails over quickly.

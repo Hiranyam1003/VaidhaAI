@@ -1,20 +1,46 @@
 import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { useT, type StringKey } from '../i18n';
+
+const STATE_OPTIONS: StringKey[] = [
+  'state.Maharashtra',
+  'state.Delhi NCR',
+  'state.Karnataka',
+  'state.Uttar Pradesh',
+  'state.Gujarat',
+  'state.All India',
+];
+const INCOME_OPTIONS: StringKey[] = ['income.bpl', 'income.ews', 'income.lig', 'income.ebc', 'income.mig'];
+const CATEGORY_OPTIONS: StringKey[] = ['social.general', 'social.ews', 'social.obc', 'social.scst', 'social.vjnt'];
+const OCCUPATION_OPTIONS: StringKey[] = [
+  'occupation.student',
+  'occupation.farmer',
+  'occupation.artisan',
+  'occupation.labourer',
+  'occupation.salaried',
+];
 
 interface EligibilityCheckerProps {
   onCheckCriteria: (prompt: string) => void;
 }
 
 export const EligibilityChecker: React.FC<EligibilityCheckerProps> = ({ onCheckCriteria }) => {
-  const [state, setState] = useState('Maharashtra');
-  const [incomeRange, setIncomeRange] = useState('< 3 Lakhs (EWS)');
-  const [category, setCategory] = useState('General / Open');
-  const [occupation, setOccupation] = useState('Student / Young Adult');
+  const t = useT();
+  const [state, setState] = useState<StringKey>('state.Maharashtra');
+  const [incomeRange, setIncomeRange] = useState<StringKey>('income.ews');
+  const [category, setCategory] = useState<StringKey>('social.general');
+  const [occupation, setOccupation] = useState<StringKey>('occupation.student');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const prompt = `Please evaluate all central and ${state} government welfare schemes for my household: Income: ${incomeRange}, Category: ${category}, Occupation: ${occupation}.`;
-    onCheckCriteria(prompt);
+    onCheckCriteria(
+      t('prompt.eligibility', {
+        state: t(state),
+        income: t(incomeRange),
+        category: t(category),
+        occupation: t(occupation),
+      }),
+    );
   };
 
   return (
@@ -32,11 +58,9 @@ export const EligibilityChecker: React.FC<EligibilityCheckerProps> = ({ onCheckC
     >
       <div style={{ marginBottom: '24px' }}>
         <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '24px', fontWeight: 700, color: '#1a1a1a', marginBottom: '6px' }}>
-          Interactive Eligibility Checker
+          {t('elig.title')}
         </h2>
-        <p style={{ fontSize: '13.5px', color: 'var(--workspace-text-muted)' }}>
-          Configure your household profile to discover high-match schemes and document prerequisites.
-        </p>
+        <p style={{ fontSize: '13.5px', color: 'var(--workspace-text-muted)' }}>{t('elig.subtitle')}</p>
       </div>
 
       <form
@@ -52,110 +76,16 @@ export const EligibilityChecker: React.FC<EligibilityCheckerProps> = ({ onCheckC
           gap: '18px',
         }}
       >
-        <div>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
-            State / Union Territory
-          </label>
-          <select
-            value={state}
-            onChange={(e) => setState(e.target.value)}
-            style={{
-              width: '100%',
-              height: '40px',
-              borderRadius: '8px',
-              border: '1px solid var(--workspace-border)',
-              padding: '0 12px',
-              fontSize: '13.5px',
-              backgroundColor: '#faf8f5',
-              color: 'var(--workspace-text-main)',
-            }}
-          >
-            <option value="Maharashtra">Maharashtra</option>
-            <option value="Delhi NCR">Delhi NCR</option>
-            <option value="Karnataka">Karnataka</option>
-            <option value="Uttar Pradesh">Uttar Pradesh</option>
-            <option value="Gujarat">Gujarat</option>
-            <option value="All India (Central Only)">All India (Central Only)</option>
-          </select>
-        </div>
-
-        <div>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
-            Annual Family Income
-          </label>
-          <select
-            value={incomeRange}
-            onChange={(e) => setIncomeRange(e.target.value)}
-            style={{
-              width: '100%',
-              height: '40px',
-              borderRadius: '8px',
-              border: '1px solid var(--workspace-border)',
-              padding: '0 12px',
-              fontSize: '13.5px',
-              backgroundColor: '#faf8f5',
-              color: 'var(--workspace-text-main)',
-            }}
-          >
-            <option value="< 1 Lakh (BPL / Antyodaya)">Less than ₹1 Lakh (BPL / Antyodaya)</option>
-            <option value="< 3 Lakhs (EWS)">₹1 Lakh – ₹3 Lakhs (Economically Weaker Section)</option>
-            <option value="3 - 6 Lakhs (LIG)">₹3 Lakhs – ₹6 Lakhs (Low Income Group)</option>
-            <option value="6 - 8 Lakhs (EBC Threshold)">₹6 Lakhs – ₹8 Lakhs (EBC Fee-Waiver Limit)</option>
-            <option value="8 - 18 Lakhs (MIG)">₹8 Lakhs – ₹18 Lakhs (Middle Income Group)</option>
-          </select>
-        </div>
-
-        <div>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
-            Social Category
-          </label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            style={{
-              width: '100%',
-              height: '40px',
-              borderRadius: '8px',
-              border: '1px solid var(--workspace-border)',
-              padding: '0 12px',
-              fontSize: '13.5px',
-              backgroundColor: '#faf8f5',
-              color: 'var(--workspace-text-main)',
-            }}
-          >
-            <option value="General / Open">General / Open</option>
-            <option value="EWS (Economically Weaker Section)">EWS (Economically Weaker Section)</option>
-            <option value="OBC (Non-Creamy Layer)">OBC (Non-Creamy Layer)</option>
-            <option value="SC / ST">Scheduled Caste (SC) / Scheduled Tribe (ST)</option>
-            <option value="VJNT / SBC">VJNT / SBC (State Specific)</option>
-          </select>
-        </div>
-
-        <div>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
-            Occupation / Primary Focus
-          </label>
-          <select
-            value={occupation}
-            onChange={(e) => setOccupation(e.target.value)}
-            style={{
-              width: '100%',
-              height: '40px',
-              borderRadius: '8px',
-              border: '1px solid var(--workspace-border)',
-              padding: '0 12px',
-              fontSize: '13.5px',
-              backgroundColor: '#faf8f5',
-              color: 'var(--workspace-text-main)',
-            }}
-          >
-            <option value="Student / Higher Technical Education">Student (Higher & Technical Education)</option>
-            <option value="Farmer / Small Landholder">Farmer / Small Landholder</option>
-            <option value="Artisan / Traditional Craftsman">Artisan / Traditional Craftsman</option>
-            <option value="Daily Wage / Unorganized Laborer">Daily Wage / Unorganized Laborer</option>
-            <option value="Salaried / Self-Employed">Salaried / Private Employee</option>
-          </select>
-        </div>
+        <SelectField id="elig-state" label={t('elig.state')} value={state} options={STATE_OPTIONS} onChange={setState} />
+        <SelectField id="elig-income" label={t('elig.income')} value={incomeRange} options={INCOME_OPTIONS} onChange={setIncomeRange} />
+        <SelectField id="elig-category" label={t('elig.category')} value={category} options={CATEGORY_OPTIONS} onChange={setCategory} />
+        <SelectField
+          id="elig-occupation"
+          label={t('elig.occupation')}
+          value={occupation}
+          options={OCCUPATION_OPTIONS}
+          onChange={setOccupation}
+        />
 
         <button
           type="submit"
@@ -174,10 +104,50 @@ export const EligibilityChecker: React.FC<EligibilityCheckerProps> = ({ onCheckC
             boxShadow: '0 2px 6px rgba(217, 72, 43, 0.3)',
           }}
         >
-          <span>Run Eligibility Assessment in Chat</span>
+          <span>{t('elig.submit')}</span>
           <ArrowRight size={16} />
         </button>
       </form>
+    </div>
+  );
+};
+
+interface SelectFieldProps {
+  id: string;
+  label: string;
+  value: StringKey;
+  options: StringKey[];
+  onChange: (value: StringKey) => void;
+}
+
+const SelectField: React.FC<SelectFieldProps> = ({ id, label, value, options, onChange }) => {
+  const t = useT();
+  return (
+    <div>
+      <label htmlFor={id} style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
+        {label}
+      </label>
+      <select
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value as StringKey)}
+        style={{
+          width: '100%',
+          height: '40px',
+          borderRadius: '8px',
+          border: '1px solid var(--workspace-border)',
+          padding: '0 12px',
+          fontSize: '13.5px',
+          backgroundColor: '#faf8f5',
+          color: 'var(--workspace-text-main)',
+        }}
+      >
+        {options.map((key) => (
+          <option key={key} value={key}>
+            {t(key)}
+          </option>
+        ))}
+      </select>
     </div>
   );
 };

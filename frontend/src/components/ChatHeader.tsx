@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Globe, ChevronDown, Check, Menu } from 'lucide-react';
+import { LANGUAGE_NAMES, useT } from '../i18n';
+import type { Language } from '../types';
 
 interface ChatHeaderProps {
-  selectedLanguage: 'English' | 'Hindi' | 'Marathi';
-  onSelectLanguage: (lang: 'English' | 'Hindi' | 'Marathi') => void;
+  selectedLanguage: Language;
+  onSelectLanguage: (lang: Language) => void;
   onOpenMenu?: () => void;
 }
 
@@ -12,6 +14,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   onSelectLanguage,
   onOpenMenu,
 }) => {
+  const t = useT();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -50,7 +53,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         {onOpenMenu && (
           <button
             onClick={onOpenMenu}
-            aria-label="Open menu"
+            aria-label={t('header.openMenu')}
             style={{
               width: '40px',
               height: '40px',
@@ -81,7 +84,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       <div ref={dropdownRef} style={{ position: 'relative' }}>
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
-          aria-label={`Language: ${selectedLanguage}`}
+          aria-label={t('header.languageAria', { lang: LANGUAGE_NAMES[selectedLanguage] })}
           aria-haspopup="true"
           aria-expanded={dropdownOpen}
           style={{
@@ -102,7 +105,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--workspace-border)')}
         >
           <Globe size={13} color="var(--brand-sun)" />
-          <span>{selectedLanguage}</span>
+          <span>{LANGUAGE_NAMES[selectedLanguage]}</span>
           <ChevronDown size={11} color="var(--workspace-text-subtle)" />
         </button>
 
@@ -147,7 +150,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                   if (selectedLanguage !== lang) e.currentTarget.style.backgroundColor = 'transparent';
                 }}
               >
-                <span>{lang}</span>
+                <span>{LANGUAGE_NAMES[lang]}</span>
                 {selectedLanguage === lang && <Check size={12} color="var(--brand-sun)" />}
               </button>
             ))}

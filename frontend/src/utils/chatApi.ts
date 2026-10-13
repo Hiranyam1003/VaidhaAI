@@ -1,6 +1,5 @@
+import { translate } from '../i18n';
 import type { Language, Message } from '../types';
-
-const SERVER_DOWN = 'Could not reach the Vaidha AI server. Make sure the backend is running.';
 
 type AssistantReply = Pick<Message, 'content' | 'citations' | 'followUps'>;
 
@@ -26,9 +25,11 @@ export async function askVaidha(
 
     if (!res.ok) {
       const body = await res.json().catch(() => null);
-      if (typeof body?.detail === 'string') return errorReply(body.detail);
       // No JSON body means the request never reached FastAPI (the dev proxy answers 502 when it is down).
-      return errorReply(res.status >= 500 ? SERVER_DOWN : `The server returned an error (${res.status}).`);
+      if (!body) return errorReply(language, 'chat.serverDown');
+      // Backend details are English and aimed at developers, so log them and show a translated message.
+      console.warn('Vaidha AI chat error:', res.status, body.detail);
+      return errorReply(language, res.status === 503 ? 'chat.busy' : 'chat.failed');
     }
 
     const data: ChatResponse = await res.json();
@@ -38,10 +39,10 @@ export async function askVaidha(
       followUps: data.followUps,
     };
   } catch {
-    return errorReply(SERVER_DOWN);
+    return errorReply(language, 'chat.serverDown');
   }
 }
 
-function errorReply(detail: string): AssistantReply {
-  return { content: `### Sorry, I couldn't get an answer\n\n${detail}` };
+function errorReply(language: Language, key: 'chat.serverDown' | 'chat.busy' | 'chat.failed'): AssistantReply {
+  return { content: `### ${translate(language, 'chat.errorTitle')}\n\n${translate(language, key)}` };
 }
