@@ -144,15 +144,14 @@ REFUSAL = ChatReply(
 
 def enforce_rate_limits(request: Request, limits: list[tuple[str, int, int]]) -> None:
     ip = request.client.host if request.client else "unknown"
-    for name, limit, window in limits:
-        wait = retry_after(name if name.startswith("all") else f"{name}:{ip}", limit, window)
-        if wait:
-            minutes = f"{wait // 60 + 1} minutes" if wait > 90 else f"{wait} seconds"
-            raise HTTPException(
-                429,
-                f"You're sending questions too quickly. Please wait about {minutes} and try again.",
-                headers={"Retry-After": str(wait)},
-            )
+    wait = retry_after([(name if name.startswith("all") else f"{name}:{ip}", limit, window) for name, limit, window in limits])
+    if wait:
+        minutes = f"{wait // 60 + 1} minutes" if wait > 90 else f"{wait} seconds"
+        raise HTTPException(
+            429,
+            f"You're sending questions too quickly. Please wait about {minutes} and try again.",
+            headers={"Retry-After": str(wait)},
+        )
 
 
 @app.post("/api/chat", response_model=ChatReply)
@@ -242,6 +241,7 @@ NEWS_QUERIES = {
 NEWS_PER_CATEGORY = 15
 NEWS_CACHE_SECONDS = 15 * 60  # ponytail: in-memory cache, per process; use Redis if you run several workers
 _news_cache: tuple[float, list[dict]] = (0.0, [])
+_news_lock = asyncio.Lock()  # when the cache expires, one request refreshes it and the rest wait for that result
 
 
 def update_type(title: str) -> str:
@@ -290,14 +290,25 @@ async def fetch_category(client: httpx.AsyncClient, category: str, query: str) -
     return items
 
 
+def cached_news() -> list[dict] | None:
+    cached_at, cached = _news_cache
+    return cached if cached and time.time() - cached_at < NEWS_CACHE_SECONDS else None
+
+
 @app.get("/api/news")
 async def news(request: Request) -> list[dict]:
     enforce_rate_limits(request, NEWS_LIMITS)
-    global _news_cache
-    cached_at, cached = _news_cache
-    if cached and time.time() - cached_at < NEWS_CACHE_SECONDS:
-        return cached
+    if (items := cached_news()) is not None:
+        return items
+    async with _news_lock:
+        # Another request may have refreshed the cache while this one waited for the lock.
+        if (items := cached_news()) is not None:
+            return items
+        return await refresh_news()
 
+
+async def refresh_news() -> list[dict]:
+    global _news_cache
     async with httpx.AsyncClient(timeout=10, follow_redirects=True) as client:
         results = await asyncio.gather(*(fetch_category(client, c, q) for c, q in NEWS_QUERIES.items()))
 
