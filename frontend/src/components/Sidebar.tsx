@@ -13,8 +13,8 @@ import {
   PanelLeft,
   X,
 } from 'lucide-react';
-import { useT } from '../i18n';
 import type { NavTab } from '../types';
+import { useT } from '../i18n';
 
 interface SidebarProps {
   activeTab: NavTab;
@@ -37,8 +37,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isMobileOpen,
   onCloseMobile,
 }) => {
-  const t = useT();
-
   useEffect(() => {
     if (!isMobileOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
@@ -48,14 +46,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [isMobileOpen, onCloseMobile]);
 
+  const t = useT();
   const navItems = [
-    { id: 'home' as NavTab, label: t('nav.home'), icon: Home },
-    { id: 'news' as NavTab, label: t('nav.news'), icon: Newspaper },
-    { id: 'schemes' as NavTab, label: t('nav.schemes'), icon: Landmark },
-    { id: 'eligibility' as NavTab, label: t('nav.eligibility'), icon: ClipboardCheck },
-    { id: 'documents' as NavTab, label: t('nav.documents'), icon: Files },
-    { id: 'saved' as NavTab, label: t('nav.saved'), icon: Bookmark },
-    { id: 'settings' as NavTab, label: t('nav.settings'), icon: Settings },
+    { id: 'home' as NavTab, label: t('Home'), icon: Home },
+    { id: 'news' as NavTab, label: t('News & Updates'), icon: Newspaper },
+    { id: 'schemes' as NavTab, label: t('Explore Schemes'), icon: Landmark },
+    { id: 'eligibility' as NavTab, label: t('Eligibility Checker'), icon: ClipboardCheck },
+    { id: 'documents' as NavTab, label: t('Document Library'), icon: Files },
+    { id: 'saved' as NavTab, label: t('Saved Schemes'), icon: Bookmark },
+    { id: 'settings' as NavTab, label: t('Settings'), icon: Settings },
   ];
 
   return (
@@ -68,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       />
     )}
     <aside
-      aria-label={t('sidebar.navAria')}
+      aria-label={t('Main navigation')}
       inert={isMobile && !isMobileOpen}
       style={{
         width: isCollapsed ? '72px' : '268px',
@@ -108,7 +107,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       >
         <button
           onClick={() => onSelectTab('home')}
-          aria-label={t('sidebar.homeAria')}
+          aria-label={t('Vaidha AI home')}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -163,7 +162,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   fontWeight: 500,
                 }}
               >
-                {t('sidebar.citizenPortal')}
+                {t('Citizen Portal')}
               </span>
             </div>
           )}
@@ -172,8 +171,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {!isCollapsed && (
           <button
             onClick={isMobile ? onCloseMobile : onToggleCollapse}
-            title={isMobile ? t('sidebar.closeMenu') : t('sidebar.collapse')}
-            aria-label={isMobile ? t('sidebar.closeMenu') : t('sidebar.collapse')}
+            title={t(isMobile ? 'Close menu' : 'Collapse sidebar')}
+            aria-label={t(isMobile ? 'Close menu' : 'Collapse sidebar')}
             style={{
               padding: '6px',
               borderRadius: '6px',
@@ -201,8 +200,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0' }}>
           <button
             onClick={onToggleCollapse}
-            title={t('sidebar.expand')}
-            aria-label={t('sidebar.expand')}
+            title={t('Expand sidebar')}
+            aria-label={t('Expand sidebar')}
             style={{
               padding: '6px',
               borderRadius: '6px',
@@ -223,8 +222,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div style={{ padding: isCollapsed ? '12px 10px' : '14px 14px' }}>
         <button
           onClick={onNewChat}
-          title={t('sidebar.newChatTitle')}
-          aria-label={isCollapsed ? t('sidebar.newChat') : undefined}
+          title={t('Start a new question')}
+          aria-label={isCollapsed ? t('New Chat') : undefined}
           style={{
             width: '100%',
             height: '40px',
@@ -251,7 +250,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }}
         >
           <Plus size={16} color="var(--brand-sun)" />
-          {!isCollapsed && <span>{t('sidebar.newChat')}</span>}
+          {!isCollapsed && <span>{t('New Chat')}</span>}
         </button>
       </div>
 
@@ -345,8 +344,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       >
         <button
           onClick={() => onSelectTab('profile')}
-          title={isCollapsed ? t('nav.profile') : undefined}
-          aria-label={isCollapsed ? t('nav.profile') : undefined}
+          title={isCollapsed ? t('My Profile') : undefined}
+          aria-label={isCollapsed ? t('My Profile') : undefined}
           aria-current={activeTab === 'profile' ? 'page' : undefined}
           style={{
             width: '100%',
@@ -377,8 +376,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <UserCircle size={20} color={activeTab === 'profile' ? 'var(--brand-sun)' : 'currentColor'} />
           {!isCollapsed && (
             <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left', lineHeight: 1.2 }}>
-              <span style={{ fontSize: '13px', fontWeight: 600, color: '#f1f5f9' }}>{t('nav.profile')}</span>
-              <span style={{ fontSize: '10.5px', color: 'var(--sidebar-text-muted)' }}>{t('sidebar.profileStatus')}</span>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: '#f1f5f9' }}>{t('My Profile')}</span>
+              <span style={{ fontSize: '10.5px', color: 'var(--sidebar-text-muted)' }}>{t('Aadhaar & KYC Verified')}</span>
             </div>
           )}
         </button>

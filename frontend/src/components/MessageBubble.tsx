@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Copy, Check, FileText, ExternalLink, Sparkles } from 'lucide-react';
-import { useT } from '../i18n';
 import type { Message } from '../types';
+import { useT } from '../i18n';
 
 interface MessageBubbleProps {
   message: Message;
@@ -25,6 +25,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   if (isUser) {
     return (
       <div
+        id={message.id}
         style={{
           display: 'flex',
           justifyContent: 'flex-end',
@@ -104,14 +105,14 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               fontWeight: 600,
             }}
           >
-            {message.isDemo ? t('msg.demo') : t('msg.ai')}
+            {t(message.isDemo ? 'Demo Response' : 'AI answer')}
           </span>
           <span style={{ fontSize: '11px', color: 'var(--workspace-text-subtle)' }}>{message.timestamp}</span>
         </div>
 
         <button
           onClick={handleCopy}
-          title={t('msg.copyTitle')}
+          title={t('Copy response')}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -126,11 +127,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         >
           {copied ? (
             <>
-              <Check size={12} color="#16a34a" /> <span style={{ color: '#16a34a' }}>{t('msg.copied')}</span>
+              <Check size={12} color="#16a34a" /> <span style={{ color: '#16a34a' }}>{t('Copied')}</span>
             </>
           ) : (
             <>
-              <Copy size={12} /> <span>{t('msg.copy')}</span>
+              <Copy size={12} /> <span>{t('Copy')}</span>
             </>
           )}
         </button>
@@ -174,7 +175,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               }}
             >
               <FileText size={13} color="var(--brand-sun)" />
-              <span>{t('msg.sources')}{message.isDemo ? t('msg.demoSuffix') : ''}</span>
+              <span>{t('Referenced Official Documentation')}{message.isDemo ? ` ${t('(Demo)')}` : ''}</span>
             </div>
 
             <div
@@ -208,7 +209,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                         borderRadius: '4px',
                       }}
                     >
-                      {cit.badge || t('msg.source')}
+                      {cit.badge || t('Source')}
                     </span>
                     <ExternalLink size={12} color="var(--workspace-text-subtle)" />
                   </div>

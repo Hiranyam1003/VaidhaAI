@@ -1,13 +1,13 @@
 import React from 'react';
 import { Check } from 'lucide-react';
 import { TEXT_SIZE_SCALE } from '../utils/textSize';
-import { useT, type StringKey } from '../i18n';
 import type { Language, TextSize } from '../types';
+import { useT } from '../i18n';
 
-const TEXT_SIZE_OPTIONS: { id: TextSize; label: StringKey }[] = [
-  { id: 'normal', label: 'size.normal' },
-  { id: 'large', label: 'size.large' },
-  { id: 'larger', label: 'size.larger' },
+const TEXT_SIZE_OPTIONS: { id: TextSize; label: string }[] = [
+  { id: 'normal', label: 'Default' },
+  { id: 'large', label: 'Large' },
+  { id: 'larger', label: 'Extra large' },
 ];
 
 const LANGUAGE_OPTIONS: { id: Language; label: string }[] = [
@@ -49,14 +49,14 @@ export const Settings: React.FC<SettingsProps> = ({ textSize, onChangeTextSize, 
           marginBottom: '6px',
         }}
       >
-        {t('settings.title')}
+        {t('Settings')}
       </h2>
       <p style={{ fontSize: '14px', color: 'var(--workspace-text-muted)' }}>
-        {t('settings.subtitle')}
+        {t('Make Vaidha AI easier to read and use. Changes are saved on this device.')}
       </p>
     </div>
 
-    <Section title={t('settings.textSize')} description={t('settings.textSizeDesc')}>
+    <Section title={t('Text size')} description={t('Makes all text and buttons bigger across the app.')}>
       {TEXT_SIZE_OPTIONS.map((option) => (
         <OptionButton
           key={option.id}
@@ -69,7 +69,7 @@ export const Settings: React.FC<SettingsProps> = ({ textSize, onChangeTextSize, 
       ))}
     </Section>
 
-    <Section title={t('settings.language')} description={t('settings.languageDesc')}>
+    <Section title={t('Language')} description={t('The language for the whole website and Vaidha AI’s answers.')}>
       {LANGUAGE_OPTIONS.map((option) => (
         <OptionButton
           key={option.id}

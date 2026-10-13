@@ -1,5 +1,5 @@
 // Documents citizens can apply for online, with how to apply. English is the source;
-// Hindi and Marathi text lives in src/i18n/documents.ts. Pictures are /assets/documents/<id>.jpg.
+// Hindi and Marathi text lives in src/data/documentTranslations.ts. Pictures are /assets/documents/<id>.jpg.
 
 export type DocumentId =
   | 'aadhaar'

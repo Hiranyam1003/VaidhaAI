@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
-import { useT } from '../i18n';
 import type { ImageExploreCard } from '../utils/responseEngine';
+import { useT } from '../i18n';
 
 interface ImageCardProps {
   card: ImageExploreCard;
@@ -53,7 +53,7 @@ export const ImageCard: React.FC<ImageCardProps> = ({ card, onClick }) => {
         {!imageError ? (
           <img
             src={card.imageUrl}
-            alt={card.altText}
+            alt={t(card.altText)}
             onError={() => setImageError(true)}
             style={{
               width: '100%',
@@ -76,7 +76,7 @@ export const ImageCard: React.FC<ImageCardProps> = ({ card, onClick }) => {
               fontSize: '12px',
             }}
           >
-            {card.category}
+            {t(card.category)}
           </div>
         )}
 
@@ -97,7 +97,7 @@ export const ImageCard: React.FC<ImageCardProps> = ({ card, onClick }) => {
             boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
           }}
         >
-          {card.category}
+          {t(card.category)}
         </div>
 
         {/* Small Arrow Badge */}
@@ -143,7 +143,7 @@ export const ImageCard: React.FC<ImageCardProps> = ({ card, onClick }) => {
               marginBottom: '6px',
             }}
           >
-            {card.title}
+            {t(card.title)}
           </h3>
 
           <p
@@ -153,7 +153,7 @@ export const ImageCard: React.FC<ImageCardProps> = ({ card, onClick }) => {
               lineHeight: '1.45',
             }}
           >
-            {card.description}
+            {t(card.description)}
           </p>
         </div>
 
@@ -168,7 +168,7 @@ export const ImageCard: React.FC<ImageCardProps> = ({ card, onClick }) => {
             color: 'var(--brand-sun)',
           }}
         >
-          <span>{t('card.ask')}</span>
+          <span>{t('Ask Vaidha')}</span>
           <ArrowUpRight size={12} />
         </div>
       </div>

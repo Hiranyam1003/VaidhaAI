@@ -1,5 +1,7 @@
-import { translate } from '../i18n';
 import type { Language, Message } from '../types';
+import { translate } from '../i18n';
+
+const SERVER_DOWN = 'Could not reach the Vaidha AI server. Make sure the backend is running.';
 
 type AssistantReply = Pick<Message, 'content' | 'citations' | 'followUps'>;
 
@@ -16,6 +18,11 @@ export async function askVaidha(
   history: { role: Message['sender']; content: string }[],
   language: Language,
 ): Promise<AssistantReply> {
+  const t = (text: string, vars?: Record<string, string | number>) => translate(language, text, vars);
+  const errorReply = (detail: string): AssistantReply => ({
+    content: `### ${t("Sorry, I couldn't get an answer")}\n\n${detail}`,
+  });
+
   try {
     const res = await fetch('/api/chat', {
       method: 'POST',
@@ -25,11 +32,9 @@ export async function askVaidha(
 
     if (!res.ok) {
       const body = await res.json().catch(() => null);
+      if (typeof body?.detail === 'string') return errorReply(body.detail);
       // No JSON body means the request never reached FastAPI (the dev proxy answers 502 when it is down).
-      if (!body) return errorReply(language, 'chat.serverDown');
-      // Backend details are English and aimed at developers, so log them and show a translated message.
-      console.warn('Vaidha AI chat error:', res.status, body.detail);
-      return errorReply(language, res.status === 503 ? 'chat.busy' : 'chat.failed');
+      return errorReply(res.status >= 500 ? t(SERVER_DOWN) : t('The server returned an error ({status}).', { status: res.status }));
     }
 
     const data: ChatResponse = await res.json();
@@ -39,10 +44,6 @@ export async function askVaidha(
       followUps: data.followUps,
     };
   } catch {
-    return errorReply(language, 'chat.serverDown');
+    return errorReply(t(SERVER_DOWN));
   }
-}
-
-function errorReply(language: Language, key: 'chat.serverDown' | 'chat.busy' | 'chat.failed'): AssistantReply {
-  return { content: `### ${translate(language, 'chat.errorTitle')}\n\n${translate(language, key)}` };
 }

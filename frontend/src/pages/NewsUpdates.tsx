@@ -11,8 +11,8 @@ import {
   X,
 } from 'lucide-react';
 import { NewsService } from '../utils/newsService';
-import { useLanguage, useT, type StringKey } from '../i18n';
 import type { NewsItem } from '../types';
+import { useFormatDate, useT } from '../i18n';
 
 interface NewsUpdatesProps {
   bookmarkedNewsIds: string[];
@@ -26,11 +26,15 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
   onAskAboutNews,
 }) => {
   const t = useT();
-  const language = useLanguage();
+  const formatDate = useFormatDate();
+  // Live items only carry a headline, so their summary line is built here in the reader's language.
+  const summaryOf = (item: NewsItem) =>
+    item.isDemo ? item.summary : t('Reported by {source}. Open the source for the full story.', { source: item.authority });
   const [newsList, setNewsList] = useState<NewsItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All Updates');
   const [selectedItemForModal, setSelectedItemForModal] = useState<NewsItem | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const categories = [
     'All Updates',
@@ -43,10 +47,11 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
   ];
 
   useEffect(() => {
-    NewsService.getNews(selectedCategory, searchQuery, language).then((data) => {
+    NewsService.getNews(selectedCategory, searchQuery).then((data) => {
       setNewsList(data);
+      setLoading(false);
     });
-  }, [selectedCategory, searchQuery, language]);
+  }, [selectedCategory, searchQuery]);
 
   // Featured entry
   const featuredItem = newsList.find((item) => item.featured);
@@ -77,7 +82,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
               letterSpacing: '-0.02em',
             }}
           >
-            {t('news.title')}
+            {t('News & Updates')}
           </h2>
           <span
             style={{
@@ -89,11 +94,11 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
               borderRadius: '6px',
             }}
           >
-            {t('news.demoFeed')}
+            {t('Live · Updated every 15 min')}
           </span>
         </div>
         <p style={{ fontSize: '14px', color: 'var(--workspace-text-muted)', lineHeight: '1.5' }}>
-          {t('news.subtitle')}
+          {t('Stay informed about government policies, scheme announcements and important public updates.')}
         </p>
       </div>
 
@@ -115,7 +120,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
         <Search size={16} color="var(--workspace-text-subtle)" />
         <input
           type="text"
-          placeholder={t('news.searchPlaceholder')}
+          placeholder={t('Search policies, schemes or government updates...')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           style={{
@@ -126,7 +131,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
           }}
         />
         {searchQuery && (
-          <button onClick={() => setSearchQuery('')} aria-label={t('common.clearSearch')} style={{ color: '#888', padding: '2px' }}>
+          <button onClick={() => setSearchQuery('')} style={{ color: '#888', padding: '2px' }}>
             <X size={14} />
           </button>
         )}
@@ -161,7 +166,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                 boxShadow: isSelected ? '0 2px 6px rgba(217, 72, 43, 0.25)' : 'none',
               }}
             >
-              {t(`newsCat.${cat}` as StringKey)}
+              {t(cat)}
             </button>
           );
         })}
@@ -194,7 +199,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                   textTransform: 'uppercase',
                 }}
               >
-                {t('news.featured')}
+                {t('Featured Update')}
               </span>
               <span
                 style={{
@@ -206,14 +211,13 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                   borderRadius: '6px',
                 }}
               >
-                {t(`update.${featuredItem.updateType}`)}
+                {t(featuredItem.updateType)}
               </span>
             </div>
 
             <button
               onClick={() => onToggleBookmarkNews(featuredItem.id)}
-              title={bookmarkedNewsIds.includes(featuredItem.id) ? t('news.removeBookmark') : t('news.bookmark')}
-              aria-label={bookmarkedNewsIds.includes(featuredItem.id) ? t('news.removeBookmark') : t('news.bookmark')}
+              title={t(bookmarkedNewsIds.includes(featuredItem.id) ? 'Remove bookmark' : 'Bookmark update')}
               style={{
                 color: bookmarkedNewsIds.includes(featuredItem.id) ? 'var(--brand-sun)' : 'var(--workspace-text-subtle)',
                 padding: '4px',
@@ -239,7 +243,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
           </h3>
 
           <p style={{ fontSize: '13.5px', color: 'var(--workspace-text-muted)', lineHeight: '1.55', marginBottom: '16px' }}>
-            {featuredItem.summary}
+            {summaryOf(featuredItem)}
           </p>
 
           <div
@@ -261,13 +265,13 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
               </span>
               <span>•</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Calendar size={13} /> {featuredItem.publishedAt}
+                <Calendar size={13} /> {formatDate(featuredItem.publishedAt)}
               </span>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <button
-                onClick={() => onAskAboutNews(t('prompt.newsImpact', { title: featuredItem.title }))}
+                onClick={() => onAskAboutNews(t('Explain the impact and requirements of: {title}', { title: featuredItem.title }))}
                 style={{
                   fontSize: '12px',
                   fontWeight: 600,
@@ -277,7 +281,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                   gap: '4px',
                 }}
               >
-                <Sparkles size={13} /> {t('news.discuss')}
+                <Sparkles size={13} /> {t('Discuss in Chat')}
               </button>
               {featuredItem.sourceUrl && (
                 <a
@@ -294,7 +298,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                     textDecoration: 'none',
                   }}
                 >
-                  {t('news.officialPortal')} <ExternalLink size={12} />
+                  {t('Read Full Story')} <ExternalLink size={12} />
                 </a>
               )}
             </div>
@@ -330,7 +334,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                       borderRadius: '6px',
                     }}
                   >
-                    {t(`update.${item.updateType}`)}
+                    {t(item.updateType)}
                   </span>
                   <span
                     style={{
@@ -341,14 +345,13 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                       gap: '4px',
                     }}
                   >
-                    <Tag size={11} /> {t(`newsCat.${item.category}`)}
+                    <Tag size={11} /> {t(item.category)}
                   </span>
                 </div>
 
                 <button
                   onClick={() => onToggleBookmarkNews(item.id)}
-                  title={isBookmarked ? t('news.removeBookmark') : t('news.bookmark')}
-                  aria-label={isBookmarked ? t('news.removeBookmark') : t('news.bookmark')}
+                  title={t(isBookmarked ? 'Remove bookmark' : 'Bookmark update')}
                   style={{
                     color: isBookmarked ? 'var(--brand-sun)' : 'var(--workspace-text-subtle)',
                     padding: '2px',
@@ -374,7 +377,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
               </h3>
 
               <p style={{ fontSize: '13px', color: 'var(--workspace-text-muted)', lineHeight: '1.5', marginBottom: '14px' }}>
-                {item.summary}
+                {summaryOf(item)}
               </p>
 
               <div
@@ -393,12 +396,12 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span>{item.authority}</span>
                   <span>•</span>
-                  <span>{item.publishedAt}</span>
+                  <span>{formatDate(item.publishedAt)}</span>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <button
-                    onClick={() => onAskAboutNews(t('prompt.newsCitizens', { title: item.title }))}
+                    onClick={() => onAskAboutNews(t("How does the update '{title}' apply to citizens?", { title: item.title }))}
                     style={{
                       fontSize: '12px',
                       fontWeight: 600,
@@ -408,7 +411,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                       gap: '4px',
                     }}
                   >
-                    <Sparkles size={12} /> {t('news.askInChat')}
+                    <Sparkles size={12} /> {t('Ask in Chat')}
                   </button>
 
                   <button
@@ -419,7 +422,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                       fontWeight: 500,
                     }}
                   >
-                    {t('news.viewDetails')}
+                    {t('View Details')}
                   </button>
                 </div>
               </div>
@@ -427,7 +430,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
           );
         })}
 
-        {newsList.length === 0 && (
+        {(loading || newsList.length === 0) && (
           <div
             style={{
               backgroundColor: '#ffffff',
@@ -438,7 +441,11 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
             }}
           >
             <p style={{ fontSize: '14px', color: 'var(--workspace-text-muted)' }}>
-              {t('news.noResults', { query: searchQuery })}
+              {loading
+                ? t('Loading the latest government news...')
+                : searchQuery
+                  ? t('No government updates found matching “{query}”.', { query: searchQuery })
+                  : t('Could not load the latest news right now. Make sure the backend is running, then refresh.')}
             </p>
           </div>
         )}
@@ -486,11 +493,10 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                   borderRadius: '6px',
                 }}
               >
-                {t(`update.${selectedItemForModal.updateType}`)} • {t(`newsCat.${selectedItemForModal.category}`)}
+                {t(selectedItemForModal.updateType)} • {t(selectedItemForModal.category)}
               </span>
               <button
                 onClick={() => setSelectedItemForModal(null)}
-                aria-label={t('common.close')}
                 style={{ color: '#888', padding: '4px' }}
               >
                 <X size={18} />
@@ -502,11 +508,11 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
             </h3>
 
             <div style={{ fontSize: '12px', color: 'var(--workspace-text-subtle)', marginBottom: '16px' }}>
-              {t('news.publishedBy', { authority: selectedItemForModal.authority, date: selectedItemForModal.publishedAt })}
+              {t('Published by:')} <strong>{selectedItemForModal.authority}</strong> · {formatDate(selectedItemForModal.publishedAt)}
             </div>
 
             <p style={{ fontSize: '13.5px', color: 'var(--workspace-text-main)', lineHeight: '1.6', marginBottom: '14px' }}>
-              {selectedItemForModal.summary}
+              {summaryOf(selectedItemForModal)}
             </p>
 
             {selectedItemForModal.details && (
@@ -522,7 +528,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                   marginBottom: '20px',
                 }}
               >
-                <strong style={{ color: '#1a1a1a', display: 'block', marginBottom: '4px' }}>{t('news.adminSummary')}</strong>
+                <strong style={{ color: '#1a1a1a', display: 'block', marginBottom: '4px' }}>{t('Administrative Summary:')}</strong>
                 {selectedItemForModal.details}
               </div>
             )}
@@ -532,7 +538,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                 onClick={() => {
                   const title = selectedItemForModal.title;
                   setSelectedItemForModal(null);
-                  onAskAboutNews(t('prompt.newsImpact', { title }));
+                  onAskAboutNews(t('Explain the impact and requirements of: {title}', { title }));
                 }}
                 style={{
                   flex: 1,
@@ -548,7 +554,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                   gap: '6px',
                 }}
               >
-                <Sparkles size={14} /> {t('news.askVaidhaInChat')}
+                <Sparkles size={14} /> {t('Ask Vaidha in Chat')}
               </button>
 
               {selectedItemForModal.sourceUrl && (
@@ -571,7 +577,7 @@ export const NewsUpdates: React.FC<NewsUpdatesProps> = ({
                     textDecoration: 'none',
                   }}
                 >
-                  {t('news.officialSource')} <ExternalLink size={13} />
+                  {t('Read Full Story')} <ExternalLink size={13} />
                 </a>
               )}
             </div>

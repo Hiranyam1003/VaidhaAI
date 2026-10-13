@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CheckCircle2, ShieldCheck, Award, Save } from 'lucide-react';
-import { useT } from '../i18n';
 import type { UserProfile } from '../types';
+import { useT } from '../i18n';
 
 interface MyProfileProps {
   profile: UserProfile;
@@ -44,10 +44,10 @@ export const MyProfile: React.FC<MyProfileProps> = ({ profile, onUpdateProfile }
             marginBottom: '6px',
           }}
         >
-          {t('profile.title')}
+          {t('My Profile & Verification Status')}
         </h2>
         <p style={{ fontSize: '14px', color: 'var(--workspace-text-muted)' }}>
-          {t('profile.subtitle')}
+          {t('Manage citizen profile parameters used for automated scheme matching and DBT verification.')}
         </p>
       </div>
 
@@ -87,8 +87,8 @@ export const MyProfile: React.FC<MyProfileProps> = ({ profile, onUpdateProfile }
             <ShieldCheck size={20} />
           </div>
           <div>
-            <div style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a1a' }}>{t('profile.kyc')}</div>
-            <div style={{ fontSize: '11.5px', color: '#059669', fontWeight: 500 }}>{t('profile.kycOk')}</div>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a1a' }}>{t('Aadhaar e-KYC')}</div>
+            <div style={{ fontSize: '11.5px', color: '#059669', fontWeight: 500 }}>{t('Verified & Active')}</div>
           </div>
         </div>
 
@@ -119,8 +119,8 @@ export const MyProfile: React.FC<MyProfileProps> = ({ profile, onUpdateProfile }
             <Award size={20} />
           </div>
           <div>
-            <div style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a1a' }}>{t('profile.dbt')}</div>
-            <div style={{ fontSize: '11.5px', color: '#2563eb', fontWeight: 500 }}>{t('profile.dbtOk')}</div>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a1a' }}>{t('NPCI DBT Mapping')}</div>
+            <div style={{ fontSize: '11.5px', color: '#2563eb', fontWeight: 500 }}>{t('Bank Account Seeded')}</div>
           </div>
         </div>
       </div>
@@ -142,7 +142,7 @@ export const MyProfile: React.FC<MyProfileProps> = ({ profile, onUpdateProfile }
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: '14px' }}>
           <div>
             <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
-              {t('profile.fullName')}
+              {t('Full Name')}
             </label>
             <input
               type="text"
@@ -163,7 +163,7 @@ export const MyProfile: React.FC<MyProfileProps> = ({ profile, onUpdateProfile }
 
           <div>
             <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
-              {t('profile.email')}
+              {t('Email Address')}
             </label>
             <input
               type="email"
@@ -186,7 +186,7 @@ export const MyProfile: React.FC<MyProfileProps> = ({ profile, onUpdateProfile }
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: '14px' }}>
           <div>
             <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
-              {t('profile.state')}
+              {t('Primary State')}
             </label>
             <select
               value={formData.state}
@@ -202,17 +202,17 @@ export const MyProfile: React.FC<MyProfileProps> = ({ profile, onUpdateProfile }
                 backgroundColor: '#faf8f5',
               }}
             >
-              <option value="Maharashtra">{t('state.Maharashtra')}</option>
-              <option value="Delhi NCR">{t('state.Delhi NCR')}</option>
-              <option value="Karnataka">{t('state.Karnataka')}</option>
-              <option value="Uttar Pradesh">{t('state.Uttar Pradesh')}</option>
-              <option value="Gujarat">{t('state.Gujarat')}</option>
+              <option value="Maharashtra">{t('Maharashtra')}</option>
+              <option value="Delhi NCR">{t('Delhi NCR')}</option>
+              <option value="Karnataka">{t('Karnataka')}</option>
+              <option value="Uttar Pradesh">{t('Uttar Pradesh')}</option>
+              <option value="Gujarat">{t('Gujarat')}</option>
             </select>
           </div>
 
           <div>
             <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
-              {t('profile.district')}
+              {t('District')}
             </label>
             <input
               type="text"
@@ -235,7 +235,7 @@ export const MyProfile: React.FC<MyProfileProps> = ({ profile, onUpdateProfile }
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: '14px' }}>
           <div>
             <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
-              {t('profile.category')}
+              {t('Social Category')}
             </label>
             <select
               value={formData.category}
@@ -251,16 +251,16 @@ export const MyProfile: React.FC<MyProfileProps> = ({ profile, onUpdateProfile }
                 backgroundColor: '#faf8f5',
               }}
             >
-              <option value="General / Open">{t('social.general')}</option>
-              <option value="EWS (Economically Weaker Section)">{t('social.ews')}</option>
-              <option value="OBC (Non-Creamy Layer)">{t('social.obc')}</option>
-              <option value="SC / ST">{t('social.scst')}</option>
+              <option value="General / Open">{t('General / Open')}</option>
+              <option value="EWS (Economically Weaker Section)">{t('EWS')}</option>
+              <option value="OBC (Non-Creamy Layer)">{t('OBC')}</option>
+              <option value="SC / ST">{t('SC / ST')}</option>
             </select>
           </div>
 
           <div>
             <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
-              {t('profile.income')}
+              {t('Annual Income Tier')}
             </label>
             <select
               value={formData.incomeRange}
@@ -276,11 +276,11 @@ export const MyProfile: React.FC<MyProfileProps> = ({ profile, onUpdateProfile }
                 backgroundColor: '#faf8f5',
               }}
             >
-              <option value="< 1 Lakh (BPL)">{t('income.bpl')}</option>
-              <option value="< 3 Lakhs (EWS)">{t('income.ews')}</option>
-              <option value="3L - 6L (LIG)">{t('income.lig')}</option>
-              <option value="₹6 Lakh – ₹8 Lakh (EBC)">{t('income.ebc')}</option>
-              <option value="8L - 18L (MIG)">{t('income.mig')}</option>
+              <option value="< 1 Lakh (BPL)">{t('Less than ₹1 Lakh (BPL)')}</option>
+              <option value="< 3 Lakhs (EWS)">{t('₹1L – ₹3L (EWS)')}</option>
+              <option value="3L - 6L (LIG)">{t('₹3L – ₹6L (LIG)')}</option>
+              <option value="₹6 Lakh – ₹8 Lakh (EBC)">{t('₹6L – ₹8L (EBC)')}</option>
+              <option value="8L - 18L (MIG)">{t('₹8L – ₹18L (MIG)')}</option>
             </select>
           </div>
         </div>
@@ -288,7 +288,7 @@ export const MyProfile: React.FC<MyProfileProps> = ({ profile, onUpdateProfile }
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '10px' }}>
           {savedSuccess && (
             <span style={{ fontSize: '12px', color: '#059669', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <CheckCircle2 size={14} /> {t('profile.updated')}
+              <CheckCircle2 size={14} /> {t('Profile preferences updated locally')}
             </span>
           )}
 
@@ -309,7 +309,7 @@ export const MyProfile: React.FC<MyProfileProps> = ({ profile, onUpdateProfile }
               boxShadow: '0 2px 6px rgba(217, 72, 43, 0.3)',
             }}
           >
-            <Save size={14} /> {t('profile.save')}
+            <Save size={14} /> {t('Save Profile')}
           </button>
         </div>
       </form>

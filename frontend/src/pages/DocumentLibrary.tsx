@@ -1,8 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ExternalLink, FileText, Lightbulb, Search, Sparkles, X } from 'lucide-react';
-import { useLanguage, useT } from '../i18n';
-import { localizeDocuments } from '../i18n/documents';
+import { LanguageContext, useT } from '../i18n';
+import { localizeDocuments } from '../data/documentTranslations';
 import { DOCUMENTS, DOCUMENT_CATEGORIES, type DocumentCategory, type DocumentGuide } from '../data/documents';
+
+const CATEGORY_LABELS: Record<DocumentCategory, string> = {
+  identity: 'Identity',
+  civil: 'Birth, death & marriage',
+  certificates: 'Certificates',
+  welfare: 'Welfare cards',
+  transport: 'Vehicles & police',
+  land: 'Land & property',
+  business: 'Business',
+  education: 'Education',
+};
 
 const imageFor = (doc: DocumentGuide) => `/assets/documents/${doc.id}.jpg`;
 const englishName = (doc: DocumentGuide) => DOCUMENTS.find((d) => d.id === doc.id)?.name ?? '';
@@ -13,7 +24,7 @@ interface DocumentLibraryProps {
 
 export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({ onAskDoc }) => {
   const t = useT();
-  const documents = localizeDocuments(useLanguage());
+  const documents = localizeDocuments(useContext(LanguageContext));
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<DocumentCategory | 'all'>('all');
   const [openId, setOpenId] = useState<string | null>(null);
@@ -53,9 +64,9 @@ export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({ onAskDoc }) =>
             marginBottom: '6px',
           }}
         >
-          {t('docs.title')}
+          {t('Document Library')}
         </h2>
-        <p style={{ fontSize: '14px', color: 'var(--workspace-text-muted)' }}>{t('docs.subtitle')}</p>
+        <p style={{ fontSize: '14px', color: 'var(--workspace-text-muted)' }}>{t('Every common document you can apply for online, and how to apply for it.')}</p>
       </div>
 
       {/* Search */}
@@ -76,14 +87,14 @@ export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({ onAskDoc }) =>
         <Search size={16} color="var(--workspace-text-subtle)" />
         <input
           type="text"
-          placeholder={t('docs.searchPlaceholder')}
-          aria-label={t('docs.searchPlaceholder')}
+          placeholder={t('Search documents, for example “PAN” or “income”...')}
+          aria-label={t('Search documents, for example “PAN” or “income”...')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{ width: '100%', background: 'transparent', fontSize: '13.5px', color: 'var(--workspace-text-main)' }}
         />
         {search && (
-          <button onClick={() => setSearch('')} aria-label={t('common.clearSearch')} style={{ color: '#888' }}>
+          <button onClick={() => setSearch('')} aria-label={t('Clear search')} style={{ color: '#888' }}>
             <X size={14} />
           </button>
         )}
@@ -110,7 +121,7 @@ export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({ onAskDoc }) =>
                 transition: 'all 0.12s ease',
               }}
             >
-              {cat === 'all' ? t('common.all') : t(`docCat.${cat}`)}
+              {cat === 'all' ? t('All') : t(CATEGORY_LABELS[cat])}
             </button>
           );
         })}
@@ -134,7 +145,7 @@ export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({ onAskDoc }) =>
               color: 'var(--workspace-text-muted)',
             }}
           >
-            {t('docs.noMatch')}
+            {t('No documents match your search.')}
           </div>
         )}
       </div>
@@ -145,7 +156,7 @@ export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({ onAskDoc }) =>
           onClose={() => setOpenId(null)}
           onAsk={() => {
             setOpenId(null);
-            onAskDoc(t('prompt.docProcess', { doc: openDoc.name }));
+            onAskDoc(t('What is the step-by-step process and timeline to obtain a {doc}?', { doc: openDoc.name }));
           }}
         />
       )}
@@ -175,7 +186,7 @@ const DocumentImage: React.FC<{ doc: DocumentGuide; height: number; className?: 
       ) : (
         <img
           src={imageFor(doc)}
-          alt={t('docs.imageAlt', { name: doc.name })}
+          alt={t('Illustration of {name}', { name: doc.name })}
           loading="lazy"
           onError={() => setFailed(true)}
           className="doc-image"
@@ -201,7 +212,7 @@ const DocumentCard: React.FC<{ doc: DocumentGuide; onOpen: () => void }> = ({ do
         flexDirection: 'column',
       }}
     >
-      <button onClick={onOpen} style={{ textAlign: 'left', display: 'block', position: 'relative' }} aria-label={`${doc.name}: ${t('docs.howToApply')}`}>
+      <button onClick={onOpen} style={{ textAlign: 'left', display: 'block', position: 'relative' }} aria-label={`${doc.name}: ${t('How to apply')}`}>
         <DocumentImage doc={doc} height={150} />
         <span
           style={{
@@ -216,7 +227,7 @@ const DocumentCard: React.FC<{ doc: DocumentGuide; onOpen: () => void }> = ({ do
             borderRadius: '6px',
           }}
         >
-          {t(`docCat.${doc.category}`)}
+          {t(CATEGORY_LABELS[doc.category])}
         </span>
       </button>
 
@@ -226,7 +237,7 @@ const DocumentCard: React.FC<{ doc: DocumentGuide; onOpen: () => void }> = ({ do
         </h3>
         <p style={{ fontSize: '12.5px', color: 'var(--workspace-text-muted)', lineHeight: 1.45 }}>{doc.summary}</p>
         <p style={{ fontSize: '11.5px', color: 'var(--workspace-text-subtle)' }}>
-          {t('docs.issuedBy')}: {doc.issuedBy}
+          {t('Issued by')}: {doc.issuedBy}
         </p>
 
         <div
@@ -242,7 +253,7 @@ const DocumentCard: React.FC<{ doc: DocumentGuide; onOpen: () => void }> = ({ do
           }}
         >
           <button onClick={onOpen} style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--workspace-text-main)' }}>
-            {t('docs.howToApply')}
+            {t('How to apply')}
           </button>
           <a
             href={doc.portalUrl}
@@ -258,7 +269,7 @@ const DocumentCard: React.FC<{ doc: DocumentGuide; onOpen: () => void }> = ({ do
               textDecoration: 'none',
             }}
           >
-            {t('docs.applyOnline')} <ExternalLink size={12} />
+            {t('Apply online')} <ExternalLink size={12} />
           </a>
         </div>
       </div>
@@ -316,7 +327,7 @@ const DocumentModal: React.FC<{ doc: DocumentGuide; onClose: () => void; onAsk: 
       >
         <button
           onClick={onClose}
-          aria-label={t('common.close')}
+          aria-label={t('Close')}
           autoFocus
           style={{
             position: 'absolute',
@@ -350,7 +361,7 @@ const DocumentModal: React.FC<{ doc: DocumentGuide; onClose: () => void; onAsk: 
               borderRadius: '6px',
             }}
           >
-            {t(`docCat.${doc.category}`)}
+            {t(CATEGORY_LABELS[doc.category])}
           </span>
           <h3
             style={{
@@ -366,17 +377,17 @@ const DocumentModal: React.FC<{ doc: DocumentGuide; onClose: () => void; onAsk: 
           </h3>
           <p style={{ fontSize: '14px', color: 'var(--workspace-text-main)', lineHeight: 1.55, marginBottom: '6px' }}>{doc.summary}</p>
           <p style={{ fontSize: '12.5px', color: 'var(--workspace-text-muted)', marginBottom: '18px' }}>
-            {t('docs.issuedBy')}: <strong>{doc.issuedBy}</strong>
+            {t('Issued by')}: <strong>{doc.issuedBy}</strong>
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '22px' }}>
             <div>
-              <SectionTitle>{t('docs.whoCanApply')}</SectionTitle>
+              <SectionTitle>{t('Who can apply')}</SectionTitle>
               <p style={{ fontSize: '13px', color: 'var(--workspace-text-main)', lineHeight: 1.55 }}>{doc.whoCanApply}</p>
             </div>
 
             <div>
-              <SectionTitle>{t('docs.papers')}</SectionTitle>
+              <SectionTitle>{t('Papers you need')}</SectionTitle>
               <ul style={{ paddingLeft: '18px', fontSize: '13px', color: 'var(--workspace-text-main)', lineHeight: 1.6 }}>
                 {doc.papers.map((paper) => (
                   <li key={paper}>{paper}</li>
@@ -385,7 +396,7 @@ const DocumentModal: React.FC<{ doc: DocumentGuide; onClose: () => void; onAsk: 
             </div>
 
             <div>
-              <SectionTitle>{t('docs.steps')}</SectionTitle>
+              <SectionTitle>{t('How to apply online')}</SectionTitle>
               <ol style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {doc.steps.map((step, i) => (
                   <li key={step} style={{ display: 'flex', gap: '10px', fontSize: '13px', lineHeight: 1.55, color: 'var(--workspace-text-main)' }}>
@@ -429,7 +440,7 @@ const DocumentModal: React.FC<{ doc: DocumentGuide; onClose: () => void; onAsk: 
             >
               <Lightbulb size={16} color="var(--brand-sun)" style={{ flexShrink: 0, marginTop: '2px' }} aria-hidden="true" />
               <span>
-                <strong>{t('docs.tip')}:</strong> {doc.tip}
+                <strong>{t('Tip')}:</strong> {doc.tip}
               </span>
             </div>
           </div>
@@ -457,7 +468,7 @@ const DocumentModal: React.FC<{ doc: DocumentGuide; onClose: () => void; onAsk: 
                 boxShadow: '0 2px 6px rgba(217, 72, 43, 0.3)',
               }}
             >
-              {t('docs.applyOn', { portal: doc.portalName })} <ExternalLink size={14} />
+              {t('Apply on {portal}', { portal: doc.portalName })} <ExternalLink size={14} />
             </a>
             <button
               onClick={onAsk}
@@ -477,7 +488,7 @@ const DocumentModal: React.FC<{ doc: DocumentGuide; onClose: () => void; onAsk: 
                 gap: '6px',
               }}
             >
-              <Sparkles size={14} color="var(--brand-sun)" /> {t('docs.ask')}
+              <Sparkles size={14} color="var(--brand-sun)" /> {t('Ask Vaidha about this')}
             </button>
           </div>
         </div>

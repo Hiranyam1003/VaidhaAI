@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Globe, ChevronDown, Check, Menu } from 'lucide-react';
 import { LANGUAGE_NAMES, useT } from '../i18n';
-import type { Language } from '../types';
 
 interface ChatHeaderProps {
-  selectedLanguage: Language;
-  onSelectLanguage: (lang: Language) => void;
+  selectedLanguage: 'English' | 'Hindi' | 'Marathi';
+  onSelectLanguage: (lang: 'English' | 'Hindi' | 'Marathi') => void;
   onOpenMenu?: () => void;
 }
 
@@ -53,7 +52,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         {onOpenMenu && (
           <button
             onClick={onOpenMenu}
-            aria-label={t('header.openMenu')}
+            aria-label={t('Open menu')}
             style={{
               width: '40px',
               height: '40px',
@@ -84,7 +83,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       <div ref={dropdownRef} style={{ position: 'relative' }}>
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
-          aria-label={t('header.languageAria', { lang: LANGUAGE_NAMES[selectedLanguage] })}
+          aria-label={t('Language: {lang}', { lang: LANGUAGE_NAMES[selectedLanguage] })}
           aria-haspopup="true"
           aria-expanded={dropdownOpen}
           style={{

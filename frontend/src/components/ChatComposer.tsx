@@ -76,10 +76,10 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
           }}
         >
           <FileText size={12} color="var(--brand-sun)" />
-          <span>{t('composer.attached')} <strong>{selectedFile}</strong> {t('composer.demo')}</span>
+          <span>{t('Attached:')} <strong>{selectedFile}</strong> {t('(Demo)')}</span>
           <button
             onClick={() => setSelectedFile(null)}
-            aria-label={t('composer.removeAttachment')}
+            aria-label={t('Remove attachment')}
             style={{ marginLeft: '4px', color: '#888', fontSize: '13px' }}
           >
             ×
@@ -112,8 +112,8 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
         {/* Attachment Button */}
         <button
           onClick={() => fileInputRef.current?.click()}
-          title={t('composer.attachTitle')}
-          aria-label={t('composer.attachAria')}
+          title={t('Attach document for verification (Demo)')}
+          aria-label={t('Attach document')}
           style={{
             width: '36px',
             height: '36px',
@@ -146,8 +146,8 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={t('composer.placeholder')}
-          aria-label={t('composer.inputAria')}
+          placeholder={t('Ask about schemes, eligibility or required documents…')}
+          aria-label={t('Message Vaidha AI')}
           style={{
             flex: 1,
             maxHeight: '160px',
@@ -165,8 +165,8 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
         <button
           onClick={handleSend}
           disabled={!inputText.trim() || disabled}
-          title={t('composer.sendTitle')}
-          aria-label={t('composer.sendAria')}
+          title={t('Send message (Enter)')}
+          aria-label={t('Send message')}
           style={{
             width: '36px',
             height: '36px',
@@ -210,15 +210,15 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
           color: 'var(--workspace-text-subtle)',
         }}
       >
-        <KeyHint text={t('composer.hintAsk')} keyLabel="Enter ↵" />
+        <KeyHint text={t('Press {key} to ask')} keyLabel="Enter ↵" />
         <span>•</span>
-        <KeyHint text={t('composer.hintNewLine')} keyLabel="Shift + Enter" />
+        <KeyHint text={t('{key} for new line')} keyLabel="Shift + Enter" />
       </div>
     </div>
   );
 };
 
-// Renders a translated hint such as "Press {key} to ask" with the key shown as a <kbd>.
+// Word order differs between languages, so the key goes wherever {key} sits in the translated sentence.
 const KeyHint: React.FC<{ text: string; keyLabel: string }> = ({ text, keyLabel }) => {
   const [before, after] = text.split('{key}');
   return (

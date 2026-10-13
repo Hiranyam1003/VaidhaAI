@@ -1,7 +1,7 @@
-import { DOCUMENTS, type DocumentGuide, type DocumentId, type DocumentText } from '../data/documents';
+import { DOCUMENTS, type DocumentGuide, type DocumentId, type DocumentText } from './documents';
 import type { Language } from '../types';
 
-// Hindi and Marathi text for src/data/documents.ts. Typed per document id,
+// Hindi and Marathi text for src/data/documents.ts (interface labels are in src/translations.ts). Typed per document id,
 // so the build fails if a document or field is missing.
 
 const HI: Record<DocumentId, DocumentText> = {

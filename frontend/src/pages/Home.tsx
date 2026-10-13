@@ -2,8 +2,8 @@ import React from 'react';
 import { WelcomeScreen } from '../components/WelcomeScreen';
 import { MessageBubble } from '../components/MessageBubble';
 import { ChatComposer } from '../components/ChatComposer';
-import { useT } from '../i18n';
 import type { Message } from '../types';
+import { useT } from '../i18n';
 
 interface HomeProps {
   messages: Message[];
@@ -112,7 +112,7 @@ export const Home: React.FC<HomeProps> = ({
                   }}
                 />
                 <span style={{ fontSize: '12.5px', color: 'var(--workspace-text-muted)' }}>
-                  {t('home.researching')}
+                  {t('Vaidha AI is researching...')}
                 </span>
               </div>
             )}

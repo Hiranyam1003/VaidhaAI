@@ -12,12 +12,10 @@ import { Settings } from './pages/Settings';
 import { TEXT_SIZE_SCALE } from './utils/textSize';
 import { SCHEMES_DATA, USER_PROFILE_DEFAULT } from './data/mockData';
 import { askVaidha } from './utils/chatApi';
-import { LanguageContext } from './i18n';
-import { localizeSchemes } from './i18n/content';
+import { HTML_LANG, LanguageContext } from './i18n';
 import type { Language, Message, NavTab, TextSize, UserProfile } from './types';
 
 const MOBILE_QUERY = '(max-width: 768px)';
-const HTML_LANG: Record<Language, string> = { English: 'en', Hindi: 'hi', Marathi: 'mr' };
 
 export function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('home');
@@ -76,10 +74,9 @@ export function App() {
 
   useEffect(() => {
     localStorage.setItem('vaidha_language', selectedLanguage);
+    // Lets screen readers and the browser use the right voice and fonts for Hindi/Marathi.
     document.documentElement.lang = HTML_LANG[selectedLanguage];
   }, [selectedLanguage]);
-
-  const schemes = localizeSchemes(SCHEMES_DATA, selectedLanguage);
 
   // Pixel sizes are used throughout, so text size scales the whole app with CSS zoom.
   // Width and height are divided by the same factor so the app still fills the window.
@@ -95,12 +92,25 @@ export function App() {
     return () => mql.removeEventListener('change', onChange);
   }, []);
 
-  // Auto-scroll when messages update
+  // Track the ID of the last user query sent so it can be anchored at the top
+  const [activeQueryId, setActiveQueryId] = useState<string | null>(null);
+
+  // When a new user message is submitted, position the conversation viewport so the user's question
+  // appears at the top (with appropriate padding) and stays anchored while the assistant response streams/renders.
   useEffect(() => {
-    if (scrollRef.current && messages.length > 0) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (!activeQueryId || !scrollRef.current) return;
+    const userElement = document.getElementById(activeQueryId);
+    if (userElement && scrollRef.current) {
+      // Calculate top position of the user question relative to the scroll container
+      const containerRect = scrollRef.current.getBoundingClientRect();
+      const elRect = userElement.getBoundingClientRect();
+      const targetScrollTop = scrollRef.current.scrollTop + (elRect.top - containerRect.top) - 16;
+      scrollRef.current.scrollTo({
+        top: Math.max(0, targetScrollTop),
+        behavior: 'smooth',
+      });
     }
-  }, [messages, isLoading]);
+  }, [activeQueryId]);
 
   // New Chat action: resets current conversation and returns to the clean welcome screen on Home
   const handleNewChat = () => {
@@ -135,6 +145,7 @@ export function App() {
 
     const history = messages.map((m) => ({ role: m.sender, content: m.content }));
     setMessages((prev) => [...prev, userMsg]);
+    setActiveQueryId(userMsg.id);
     setIsLoading(true);
 
     askVaidha(text, history, selectedLanguage).then((reply) => {
@@ -150,7 +161,7 @@ export function App() {
   };
 
   return (
-    <LanguageContext.Provider value={selectedLanguage}>
+    <LanguageContext value={selectedLanguage}>
     <div
       style={{
         display: 'flex',
@@ -220,7 +231,7 @@ export function App() {
 
           {activeTab === 'schemes' && (
             <ExploreSchemes
-              schemes={schemes}
+              schemes={SCHEMES_DATA}
               savedIds={savedIds}
               onToggleSave={handleToggleSaveScheme}
               onAskScheme={(q) => {
@@ -250,7 +261,7 @@ export function App() {
 
           {activeTab === 'saved' && (
             <SavedSchemes
-              schemes={schemes}
+              schemes={SCHEMES_DATA}
               savedIds={savedIds}
               onRemoveSaved={handleToggleSaveScheme}
               onAskScheme={(q) => {
@@ -279,7 +290,7 @@ export function App() {
         </div>
       </div>
     </div>
-    </LanguageContext.Provider>
+    </LanguageContext>
   );
 }
 
