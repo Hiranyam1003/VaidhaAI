@@ -1,10 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { ChatHeader } from './components/ChatHeader';
 import { Home } from './pages/Home';
 import { NewsUpdates } from './pages/NewsUpdates';
 import { ExploreSchemes } from './pages/ExploreSchemes';
-import { EligibilityChecker } from './pages/EligibilityChecker';
+import { EligibilityChecker, type EligibilitySession } from './pages/EligibilityChecker';
 import { DocumentLibrary } from './pages/DocumentLibrary';
 import { SavedSchemes } from './pages/SavedSchemes';
 import { MyProfile } from './pages/MyProfile';
@@ -12,6 +12,9 @@ import { Settings } from './pages/Settings';
 import { TEXT_SIZE_SCALE } from './utils/textSize';
 import { SCHEMES_DATA, USER_PROFILE_DEFAULT } from './data/mockData';
 import { askVaidha } from './utils/chatApi';
+import { authApi, type Account } from './utils/authApi';
+import { Login } from './pages/Login';
+import { Onboarding } from './pages/Onboarding';
 import { HTML_LANG, LanguageContext } from './i18n';
 import type { Language, Message, NavTab, TextSize, UserProfile } from './types';
 
@@ -48,6 +51,14 @@ export function App() {
     return local ? JSON.parse(local) : ['news-1'];
   });
 
+  // Kept here so eligibility results survive a trip to the Document Library and back.
+  const [eligibilitySession, setEligibilitySession] = useState<EligibilitySession | null>(null);
+  // Set when another page links straight to one document guide.
+  const [openDocId, setOpenDocId] = useState<string | undefined>();
+
+  // Logged-in account: undefined while checking the session, null when logged out.
+  const [account, setAccount] = useState<Account | null | undefined>(undefined);
+
   // User Profile
   const [userProfile, setUserProfile] = useState<UserProfile>(() => {
     const local = localStorage.getItem('vaidha_user_profile');
@@ -55,6 +66,48 @@ export function App() {
   });
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  // The account is the source of truth for language and basic details once someone logs in.
+  const applyAccount = useCallback((next: Account | null) => {
+    setAccount(next);
+    if (!next) return;
+    const { name, state, district, language } = next.details;
+    if (language) setSelectedLanguage(language);
+    setUserProfile((prev) => ({
+      ...prev,
+      phone: next.phone,
+      ...(name && { name }),
+      ...(state && { state }),
+      ...(district !== undefined && { district }),
+    }));
+  }, []);
+
+  useEffect(() => {
+    authApi.me('English').then((result) => applyAccount(result.ok ? result.data : null));
+  }, [applyAccount]);
+
+  const handleChangeLanguage = (language: Language) => {
+    setSelectedLanguage(language);
+    if (account) authApi.updateDetails({ language }, language).then((r) => r.ok && applyAccount(r.data));
+  };
+
+  const handleUpdateProfile = (profile: UserProfile) => {
+    setUserProfile(profile);
+    if (account && profile.name.trim()) {
+      authApi
+        .updateDetails({ name: profile.name.trim(), state: profile.state, district: profile.district }, selectedLanguage)
+        .then((r) => r.ok && applyAccount(r.data));
+    }
+  };
+
+  const handleLogout = async () => {
+    await authApi.logout(selectedLanguage);
+    setAccount(null);
+    setMessages([]);
+    setEligibilitySession(null);
+    setUserProfile(USER_PROFILE_DEFAULT);
+    setActiveTab('home');
+  };
 
   useEffect(() => {
     localStorage.setItem('vaidha_saved_schemes', JSON.stringify(savedIds));
@@ -160,6 +213,18 @@ export function App() {
     });
   };
 
+  // Login comes first; a new account fills in its details once before entering the app.
+  if (!account || account.needsDetails) {
+    return (
+      <LanguageContext value={selectedLanguage}>
+        <div style={{ height: `${100 / zoom}vh`, width: `${100 / zoom}vw`, zoom, overflowY: 'auto', backgroundColor: 'var(--workspace-bg)' }}>
+          {account === null && <Login onLanguageChange={setSelectedLanguage} onLoggedIn={applyAccount} />}
+          {account?.needsDetails && <Onboarding account={account} onLanguageChange={setSelectedLanguage} onDone={applyAccount} />}
+        </div>
+      </LanguageContext>
+    );
+  }
+
   return (
     <LanguageContext value={selectedLanguage}>
     <div
@@ -177,6 +242,7 @@ export function App() {
         activeTab={activeTab}
         onSelectTab={(tab) => {
           setActiveTab(tab);
+          setOpenDocId(undefined);
           setMobileNavOpen(false);
         }}
         onNewChat={handleNewChat}
@@ -243,15 +309,26 @@ export function App() {
 
           {activeTab === 'eligibility' && (
             <EligibilityChecker
-              onCheckCriteria={(q) => {
+              schemes={SCHEMES_DATA}
+              userProfile={userProfile}
+              savedIds={savedIds}
+              onToggleSave={handleToggleSaveScheme}
+              onAsk={(q) => {
                 setActiveTab('home');
                 handleSendMessage(q);
               }}
+              onOpenDocument={(id) => {
+                setOpenDocId(id);
+                setActiveTab('documents');
+              }}
+              session={eligibilitySession}
+              onSession={setEligibilitySession}
             />
           )}
 
           {activeTab === 'documents' && (
             <DocumentLibrary
+              initialOpenId={openDocId}
               onAskDoc={(q) => {
                 setActiveTab('home');
                 handleSendMessage(q);
@@ -275,7 +352,7 @@ export function App() {
           {activeTab === 'profile' && (
             <MyProfile
               profile={userProfile}
-              onUpdateProfile={setUserProfile}
+              onUpdateProfile={handleUpdateProfile}
             />
           )}
 
@@ -284,7 +361,9 @@ export function App() {
               textSize={textSize}
               onChangeTextSize={setTextSize}
               language={selectedLanguage}
-              onChangeLanguage={setSelectedLanguage}
+              onChangeLanguage={handleChangeLanguage}
+              phone={account.phone}
+              onLogout={handleLogout}
             />
           )}
         </div>

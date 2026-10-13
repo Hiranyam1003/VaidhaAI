@@ -45,6 +45,20 @@ Each card shows `public/assets/documents/<id>.jpg` (the file name is the documen
 
 The "no real details, SPECIMEN" rule keeps the pictures recognisable without looking like usable ID documents. Save each as JPEG, about 640px wide and under 100 KB (`sips -Z 640 -s format jpeg -s formatOptions 70 in.png --out <id>.jpg`).
 
+## Eligibility checker (RAG)
+
+- **Shared data:** schemes and document guides live in `frontend/src/data/schemes.json` and `documents.json`. The frontend imports them through `schemes.ts` / `documents.ts` (which keep the TypeScript types); the backend reads the same files. Edit the JSON, not a copy.
+- **Flow:** `pages/EligibilityChecker.tsx` sends a structured profile (state, age, gender, income bracket, category, occupation, yes/no facts) via `utils/eligibilityApi.ts` to `POST /api/eligibility`. The backend (`backend/main.py`) turns it into a plain-language description, retrieves the closest schemes and then the document guides closest to those schemes' required papers (`backend/rag.py`), and asks Gemini to judge each retrieved scheme only from those records (likely / maybe / unlikely, reason, things to confirm, papers, matching document guide ids, steps). Unknown scheme or document ids from the model are dropped.
+- **Retrieval:** one chunk per scheme or guide, embedded with `gemini-embedding-001` (768 dims) and cached in `backend/.cache/embeddings.json` (git-ignored) by text hash; the index rebuilds automatically when the JSON files change. Search is plain cosine similarity because the corpus is small. State-level schemes in the data are Maharashtra schemes, so they are excluded for other states.
+- Results live in `App` state (`eligibilitySession`) so they survive opening a document guide, which deep-links via `DocumentLibrary`'s `initialOpenId`.
+
+## Login (mobile number + password)
+
+- **Flow:** `App.tsx` checks `GET /api/auth/me` on load (it returns `null` when logged out). Logged out → `pages/Login.tsx`, which opens on Register for a first visit and on Log in once this device has been used (`vaidha_has_account` in localStorage). A new account → `pages/Onboarding.tsx` (full name, gender, age, state, district, preferred language) once; then the app. Login is required for the whole UI. The account's language and details are applied through `applyAccount`, which also fills My Profile; changing the language in Settings (or name/state/district in My Profile) saves it to the account. Settings has the Log out button.
+- **Backend:** `backend/auth.py` (router included in `main.py`): `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`, `POST /api/auth/logout`, `PUT`/`PATCH /api/account`. Everything is stored locally in SQLite at `backend/vaidha.db` (git-ignored); nothing goes to an outside service. Passwords (min 8 characters) are hashed with scrypt; login is rate-limited per number and per visitor, and a wrong password and an unknown number get the same message and timing. Sessions are random tokens in an HttpOnly `vaidha_session` cookie (30 days), stored only as hashes. Accounts created by the earlier OTP login have no password; registering with that number sets one.
+- There is no "forgot password" yet (it needs a way to prove who you are, such as SMS or email).
+- The chat, eligibility and news APIs don't check the session themselves; login is enforced by the UI.
+
 ## Backend
 
 `backend/main.py` is a FastAPI app with `POST /api/chat` and `GET /api/health`. It calls Gemini (`google-genai`) with a system prompt and structured JSON output (`ChatReply` → `content`, `citations`, `followUps`), low thinking level for speed, and tries models in order (`GEMINI_MODEL`, default `gemini-3.1-flash-lite`, then `GEMINI_FALLBACK_MODELS`) when one returns 5xx, times out, or hits its 429 quota. The SDK's own retries are disabled so a busy model fails over quickly.

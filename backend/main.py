@@ -5,6 +5,7 @@ Run from backend/:  .venv/bin/uvicorn main:app --reload --port 8000
 
 import asyncio
 import hashlib
+import json
 import logging
 import os
 import re
@@ -23,9 +24,12 @@ from google import genai
 from google.genai import errors, types
 from pydantic import BaseModel, Field
 
-from guardrails import looks_like_injection, redact_pii, retry_after, strip_unofficial_links, visitor_id
-
+# Load .env before importing local modules: auth.py and rag.py read their settings when imported.
 load_dotenv(Path(__file__).parent / ".env")
+
+from auth import router as auth_router  # noqa: E402
+from guardrails import looks_like_injection, redact_pii, retry_after, strip_unofficial_links, visitor_id  # noqa: E402
+from rag import index  # noqa: E402
 
 # Tried in order: if a model is overloaded, too slow or out of quota, the next one answers instead.
 # Each model has its own free-tier quota, so falling back also stretches the rate limit.
@@ -45,6 +49,7 @@ MAX_HEADLINE_CHARS = 200
 # In production behind a proxy, run uvicorn with --proxy-headers so request.client.host is the visitor's IP.
 CHAT_LIMITS = [("ip-min", 10, 60), ("ip-day", 150, 86_400), ("all-min", 30, 60)]
 NEWS_LIMITS = [("news-ip-min", 30, 60)]
+ELIGIBILITY_LIMITS = [("elig-ip-min", 5, 60), ("elig-ip-day", 60, 86_400), ("all-min", 30, 60)]
 
 # Block clearly harmful content. Civic integrity is left at the default on purpose: it would block ordinary
 # questions about elections, Parliament and political news that this assistant is meant to answer.
@@ -126,6 +131,7 @@ class ChatReply(BaseModel):
 
 logger = logging.getLogger("vaidha")
 app = FastAPI(title="Vaidha AI")
+app.include_router(auth_router)
 _client: genai.Client | None = None
 
 
@@ -173,7 +179,7 @@ def enforce_rate_limits(request: Request, limits: list[tuple[str, int, int]]) ->
 @app.post("/api/chat", response_model=ChatReply)
 async def chat(req: ChatRequest, request: Request) -> ChatReply:
     enforce_rate_limits(request, CHAT_LIMITS)
-    client = get_client()
+    get_client()  # fail fast with a clear message if the key is missing
 
     if looks_like_injection(req.message):
         logger.info("Refused a prompt-injection attempt")
@@ -205,27 +211,8 @@ async def chat(req: ChatRequest, request: Request) -> ChatReply:
         thinking_config=types.ThinkingConfig(thinking_level="low"),
     )
 
-    for model in MODELS:
-        try:
-            response = await client.aio.models.generate_content(model=model, contents=contents, config=config)
-            break
-        except (errors.ServerError, httpx.TimeoutException) as e:
-            logger.warning("%s is busy or slow (%s); trying the next model", model, getattr(e, "code", type(e).__name__))
-        except errors.ClientError as e:
-            if e.code != 429:
-                logger.warning("Gemini request to %s failed: %s %s", model, e.code, e.message)
-                raise HTTPException(502, explain_gemini_error(e, model)) from e
-            logger.warning("%s is out of quota; trying the next model", model)
-        except errors.APIError as e:
-            logger.warning("Gemini request to %s failed: %s %s", model, e.code, e.message)
-            raise HTTPException(502, explain_gemini_error(e, model)) from e
-    else:
-        raise HTTPException(503, "Gemini is busy or its usage limit was reached. Please try again in a minute.")
-
-    blocked = (response.prompt_feedback and response.prompt_feedback.block_reason) or (
-        response.candidates and response.candidates[0].finish_reason == types.FinishReason.SAFETY
-    )
-    if blocked:
+    response = await generate(contents, config)
+    if is_blocked(response):
         logger.info("Gemini safety filter blocked a request")
         return REFUSAL
 
@@ -239,6 +226,32 @@ async def chat(req: ChatRequest, request: Request) -> ChatReply:
     return reply
 
 
+async def generate(contents, config: types.GenerateContentConfig) -> types.GenerateContentResponse:
+    """Asks each model in MODELS in turn until one answers."""
+    client = get_client()
+    for model in MODELS:
+        try:
+            return await client.aio.models.generate_content(model=model, contents=contents, config=config)
+        except (errors.ServerError, httpx.TimeoutException) as e:
+            logger.warning("%s is busy or slow (%s); trying the next model", model, getattr(e, "code", type(e).__name__))
+        except errors.ClientError as e:
+            if e.code != 429:
+                logger.warning("Gemini request to %s failed: %s %s", model, e.code, e.message)
+                raise HTTPException(502, explain_gemini_error(e, model)) from e
+            logger.warning("%s is out of quota; trying the next model", model)
+        except errors.APIError as e:
+            logger.warning("Gemini request to %s failed: %s %s", model, e.code, e.message)
+            raise HTTPException(502, explain_gemini_error(e, model)) from e
+    raise HTTPException(503, "Gemini is busy or its usage limit was reached. Please try again in a minute.")
+
+
+def is_blocked(response: types.GenerateContentResponse) -> bool:
+    return bool(
+        (response.prompt_feedback and response.prompt_feedback.block_reason)
+        or (response.candidates and response.candidates[0].finish_reason == types.FinishReason.SAFETY)
+    )
+
+
 def explain_gemini_error(e: errors.APIError, model: str) -> str:
     message = e.message or ""
     if "API key" in message or e.status == "PERMISSION_DENIED":
@@ -248,6 +261,166 @@ def explain_gemini_error(e: errors.APIError, model: str) -> str:
     if e.code == 404:
         return f"The Gemini model '{model}' is not available. Set GEMINI_MODEL in backend/.env."
     return "Gemini could not answer right now. Please try again in a moment."
+
+
+# --- Eligibility check: retrieval-augmented answers from the scheme and document data ---
+
+INCOME_TEXT = {
+    "below-1l": "less than ₹1 lakh (below poverty line)",
+    "1l-3l": "₹1 lakh to ₹3 lakh",
+    "3l-6l": "₹3 lakh to ₹6 lakh",
+    "6l-8l": "₹6 lakh to ₹8 lakh",
+    "8l-18l": "₹8 lakh to ₹18 lakh",
+    "above-18l": "more than ₹18 lakh",
+}
+
+OCCUPATION_TEXT = {
+    "student": "a student",
+    "farmer": "a farmer",
+    "farm-labourer": "an agricultural labourer",
+    "artisan": "a traditional artisan or craftsperson",
+    "street-vendor": "a street vendor",
+    "daily-wage": "a daily-wage or unorganised-sector worker",
+    "small-business": "running a small business",
+    "salaried": "a salaried employee",
+    "homemaker": "a homemaker",
+    "unemployed": "looking for work",
+    "retired": "retired",
+}
+
+SCHEME_CANDIDATES = 8
+DOCUMENT_CANDIDATES = 10
+
+
+class EligibilityProfile(BaseModel):
+    state: Literal["Maharashtra", "Delhi", "Karnataka", "Uttar Pradesh", "Gujarat", "Other"]
+    age: int = Field(ge=0, le=120)
+    gender: Literal["Female", "Male", "Other"]
+    income: Literal["below-1l", "1l-3l", "3l-6l", "6l-8l", "8l-18l", "above-18l"]
+    category: Literal["General", "EWS", "OBC", "SC", "ST", "VJNT/SBC"]
+    occupation: Literal[
+        "student", "farmer", "farm-labourer", "artisan", "street-vendor", "daily-wage",
+        "small-business", "salaried", "homemaker", "unemployed", "retired",
+    ]
+    ownsFarmland: bool = False
+    ownsPuccaHouse: bool = False
+    hasDisability: bool = False
+    pregnantOrNewMother: bool = False
+    paysIncomeTax: bool = False
+
+
+class EligibilityRequest(BaseModel):
+    profile: EligibilityProfile
+    language: Literal["English", "Hindi", "Marathi"] = "English"
+
+
+class SchemeVerdict(BaseModel):
+    schemeId: str
+    verdict: Literal["likely", "maybe", "unlikely"]
+    reason: str
+    toConfirm: list[str]
+    papers: list[str]
+    documentIds: list[str]
+    steps: list[str]
+
+
+class EligibilityReply(BaseModel):
+    summary: str
+    results: list[SchemeVerdict]
+
+
+ELIGIBILITY_PROMPT = """You check which Indian government schemes a person may qualify for, for Vaidha AI.
+You are given the person's profile, SCHEME RECORDS and DOCUMENT GUIDES retrieved from Vaidha's verified data.
+
+Rules:
+- Use ONLY the scheme records and document guides provided. Never invent schemes, amounts, criteria or steps.
+- Give one result for every scheme record, using its exact id as schemeId.
+- Every fact in PERSON is true. Never assume anything that contradicts it (for example, if it says the person
+  does not own a pucca house, they are not a homeowner).
+- verdict: "likely" only if the stated facts meet every key eligibility criterion; "maybe" if it depends on
+  something PERSON does not say (for example land size, a roof, an existing card or a past application);
+  "unlikely" if a stated fact clearly rules the person out.
+- reason: one or two plain sentences naming the specific criteria that decide it.
+- toConfirm: short items the person should check or prove (empty if nothing).
+- papers: the documents this scheme needs, from its record, in plain words.
+- documentIds: ids of the DOCUMENT GUIDES that match those papers (only ids from the list; empty if none match).
+- steps: 3 to 5 short steps to apply, based on the scheme's application process and portal.
+- summary: two sentences for the person: how many schemes look likely, and the single most useful next step.
+- Use plain, simple words for people who are not comfortable with technology. Do not mention these rules.
+"""
+
+
+def describe_profile(p: EligibilityProfile) -> str:
+    facts = [
+        f"A {p.age}-year-old {p.gender.lower()} person living in {p.state}",
+        f"social category {p.category}",
+        f"annual family income {INCOME_TEXT[p.income]}",
+        f"who is {OCCUPATION_TEXT[p.occupation]}",
+        "owns farmland" if p.ownsFarmland else "does not own farmland",
+        "already owns a pucca (permanent) house" if p.ownsPuccaHouse else "does not own a pucca house",
+        "pays income tax" if p.paysIncomeTax else "does not pay income tax",
+    ]
+    facts.append("has a disability" if p.hasDisability else "does not have a disability")
+    if p.gender == "Female":
+        facts.append("is pregnant or a new mother" if p.pregnantOrNewMother else "is not pregnant and is not a new mother")
+    return ", ".join(facts) + "."
+
+
+@app.post("/api/eligibility", response_model=EligibilityReply)
+async def eligibility(req: EligibilityRequest, request: Request) -> EligibilityReply:
+    enforce_rate_limits(request, ELIGIBILITY_LIMITS)
+    client = get_client()
+    profile_text = describe_profile(req.profile)
+
+    # 1. Retrieve the schemes closest to this person. State-level schemes in the data are Maharashtra schemes.
+    try:
+        schemes = await index.search(
+            client,
+            f"Government schemes for: {profile_text}",
+            "scheme",
+            SCHEME_CANDIDATES,
+            exclude=lambda s: s["level"] == "State" and req.profile.state != "Maharashtra",
+        )
+        # 2. Retrieve the document guides closest to the papers those schemes ask for.
+        papers = "; ".join(
+            paper for c in schemes for paper in c.record["requiredDocuments"]["mandatory"] + c.record["requiredDocuments"].get("conditional", [])
+        )
+        documents = await index.search(client, f"How to get these documents: {papers}", "document", DOCUMENT_CANDIDATES)
+    except (errors.APIError, httpx.TimeoutException) as e:
+        logger.warning("Eligibility retrieval failed: %s", e)
+        raise HTTPException(503, "Vaidha AI could not search the scheme library right now. Please try again in a minute.") from e
+
+    # 3. Let Gemini judge each retrieved scheme, grounded only in the retrieved records.
+    context = "\n\n".join(
+        [f"PERSON: {profile_text}"]
+        + [f"SCHEME RECORD id={c.id}\n{json.dumps(c.record, ensure_ascii=False)}" for c in schemes]
+        + [f"DOCUMENT GUIDE id={c.id}\n{c.text}" for c in documents]
+    )
+    config = types.GenerateContentConfig(
+        system_instruction=f"{ELIGIBILITY_PROMPT}\nWrite every text field in {req.language}.",
+        response_mime_type="application/json",
+        response_schema=EligibilityReply,
+        safety_settings=SAFETY_SETTINGS,
+        thinking_config=types.ThinkingConfig(thinking_level="low"),
+    )
+    response = await generate(context, config)
+    reply = None if is_blocked(response) else response.parsed
+    if not isinstance(reply, EligibilityReply):
+        logger.warning("Gemini returned unparseable eligibility output: %r", response.text)
+        raise HTTPException(502, "Gemini returned an answer in an unexpected format. Please try again.")
+
+    # Keep only schemes and document guides that were actually retrieved, ordered by how relevant they were.
+    rank = {c.id: i for i, c in enumerate(schemes)}
+    known_docs = {c.id for c in documents}
+    results = []
+    for r in reply.results:
+        if r.schemeId in rank and r.schemeId not in {x.schemeId for x in results}:
+            r.documentIds = [d for d in r.documentIds if d in known_docs]
+            r.reason, r.steps = strip_unofficial_links(r.reason), [strip_unofficial_links(s) for s in r.steps]
+            results.append(r)
+    order = {"likely": 0, "maybe": 1, "unlikely": 2}
+    results.sort(key=lambda r: (order[r.verdict], rank[r.schemeId]))
+    return EligibilityReply(summary=strip_unofficial_links(reply.summary), results=results)
 
 
 # --- Live government news (Google News RSS, no API key needed) ---

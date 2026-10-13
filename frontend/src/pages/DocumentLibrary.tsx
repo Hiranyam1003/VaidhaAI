@@ -20,14 +20,15 @@ const englishName = (doc: DocumentGuide) => DOCUMENTS.find((d) => d.id === doc.i
 
 interface DocumentLibraryProps {
   onAskDoc: (question: string) => void;
+  initialOpenId?: string;
 }
 
-export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({ onAskDoc }) => {
+export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({ onAskDoc, initialOpenId }) => {
   const t = useT();
   const documents = localizeDocuments(useContext(LanguageContext));
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<DocumentCategory | 'all'>('all');
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(initialOpenId ?? null);
 
   const query = search.trim().toLowerCase();
   const filtered = documents.filter(

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check } from 'lucide-react';
+import { Check, LogOut } from 'lucide-react';
 import { TEXT_SIZE_SCALE } from '../utils/textSize';
 import type { Language, TextSize } from '../types';
 import { useT } from '../i18n';
@@ -21,9 +21,11 @@ interface SettingsProps {
   onChangeTextSize: (size: TextSize) => void;
   language: Language;
   onChangeLanguage: (lang: Language) => void;
+  phone: string;
+  onLogout: () => void;
 }
 
-export const Settings: React.FC<SettingsProps> = ({ textSize, onChangeTextSize, language, onChangeLanguage }) => {
+export const Settings: React.FC<SettingsProps> = ({ textSize, onChangeTextSize, language, onChangeLanguage, phone, onLogout }) => {
   const t = useT();
   return (
   <div
@@ -55,6 +57,27 @@ export const Settings: React.FC<SettingsProps> = ({ textSize, onChangeTextSize, 
         {t('Make Vaidha AI easier to read and use. Changes are saved on this device.')}
       </p>
     </div>
+
+    <Section title={t('Account')} description={t('Logged in with {phone}', { phone: phone.replace(/^\+91(\d{5})(\d{5})$/, '+91 $1 $2') })}>
+      <button
+        onClick={onLogout}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          minHeight: '44px',
+          padding: '8px 16px',
+          borderRadius: '10px',
+          fontSize: '13.5px',
+          fontWeight: 600,
+          color: '#b42318',
+          backgroundColor: '#ffffff',
+          border: '1px solid #fecdca',
+        }}
+      >
+        <LogOut size={15} /> {t('Log out')}
+      </button>
+    </Section>
 
     <Section title={t('Text size')} description={t('Makes all text and buttons bigger across the app.')}>
       {TEXT_SIZE_OPTIONS.map((option) => (

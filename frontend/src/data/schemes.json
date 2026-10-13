@@ -1,0 +1,1087 @@
+[
+  {
+    "id": "pmay-u-2",
+    "name": "Pradhan Mantri Awas Yojana - Urban 2.0 (PMAY-U 2.0)",
+    "hindiName": "प्रधानमंत्री आवास योजना (शहरी) २.०",
+    "category": "Housing",
+    "level": "Central-State",
+    "beneficiaryGroup": "Families",
+    "beneficiaryGroups": [
+      "Families",
+      "Urban Poor",
+      "EWS/LIG/MIG"
+    ],
+    "department": "Ministry of Housing and Urban Affairs (MoHUA)",
+    "benefit": "Interest subsidy of up to ₹1.80 Lakh on home loans up to ₹25 Lakh for eligible urban families.",
+    "eligibility": "EWS/LIG/MIG families living in statutory towns without a pucca house in their name anywhere in India.",
+    "benefits": [
+      "Credit Linked Subsidy Scheme (CLSS) providing up to ₹1.80 Lakh interest subsidy over a 5-year tenure.",
+      "Applicable for home loans up to ₹25 Lakh on property values up to ₹35 Lakh.",
+      "Financial assistance provided for construction under Beneficiary-Led Construction (BLC) and Affordable Housing in Partnership (AHP)."
+    ],
+    "eligibilityCriteria": [
+      "Economically Weaker Section (EWS) annual household income up to ₹3 Lakh.",
+      "Low Income Group (LIG) annual household income between ₹3 Lakh and ₹6 Lakh.",
+      "Middle Income Group (MIG) annual household income between ₹6 Lakh and ₹9 Lakh.",
+      "The beneficiary family must not own a pucca house in any part of India.",
+      "Woman ownership or co-ownership of the residential unit is required under statutory rules."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Aadhaar cards of all household members",
+        "Income Certificate issued by the competent revenue authority / Tahsildar",
+        "Self-declaration / Affidavit confirming no pucca house ownership in India",
+        "Bank account details linked with Aadhaar and seeded with NPCI",
+        "Registered property title / agreement to sale or allotment letter"
+      ],
+      "conditional": [
+        "Caste / Category certificate for SC/ST/OBC beneficiaries",
+        "Disability Certificate issued by a government medical board (if applicable)"
+      ]
+    },
+    "applicationProcess": {
+      "mode": "Online",
+      "description": "Apply online through the PMAY-Urban 2.0 unified citizen portal or via Common Service Centres (CSCs). Applications are verified by local municipal bodies and State Level Nodal Agencies.",
+      "portalName": "PMAY-Urban Portal"
+    },
+    "announcementDate": "2024-09-01",
+    "announcementSourceUrl": "https://pib.gov.in/PressReleasePage.aspx?PRID=2043685",
+    "lastUpdatedAt": "2024-10-15",
+    "lastVerifiedAt": "2026-10-10",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://pmay-urban.gov.in",
+    "officialApplicationUrl": "https://pmay-urban.gov.in",
+    "source": {
+      "title": "PMAY-Urban 2.0 Operational Guidelines",
+      "department": "Ministry of Housing and Urban Affairs",
+      "documentType": "Official Scheme Guidelines",
+      "sourceUrl": "https://pmay-urban.gov.in",
+      "publicationDate": "2024-09-01",
+      "lastVerifiedAt": "2026-10-10"
+    },
+    "searchKeywords": [
+      "housing",
+      "flat",
+      "loan",
+      "subsidy",
+      "urban",
+      "ews",
+      "lig",
+      "mig",
+      "pucca house",
+      "mohua"
+    ]
+  },
+  {
+    "id": "pm-jay",
+    "name": "Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (PM-JAY)",
+    "hindiName": "आयुष्मान भारत प्रधानमंत्री जन आरोग्य योजना",
+    "category": "Healthcare",
+    "level": "Central",
+    "beneficiaryGroup": "Families",
+    "beneficiaryGroups": [
+      "Families",
+      "Senior Citizens",
+      "Low-income households"
+    ],
+    "department": "National Health Authority (NHA), Ministry of Health and Family Welfare",
+    "benefit": "Cashless hospitalisation health cover up to ₹5,00,000 per family per year across empaneled hospitals.",
+    "eligibility": "Deprivation and occupational criteria under SECC 2011; recently expanded to include all senior citizens aged 70+ irrespective of income.",
+    "benefits": [
+      "Cashless and paperless access to medical services up to ₹5 Lakh per eligible family per year.",
+      "Covers secondary and tertiary care hospitalisation across 29,000+ public and private empaneled hospitals nationwide.",
+      "Pre-existing conditions are covered from day one of enrolment.",
+      "Universal coverage of ₹5 Lakh per year for all senior citizens aged 70 and above, on a family basis."
+    ],
+    "eligibilityCriteria": [
+      "Households identified under rural deprivation categories (D1 to D7) or defined urban occupational categories of SECC 2011.",
+      "All Indian senior citizens aged 70 years and older (under the universal senior citizen expansion).",
+      "No cap on family size, age, or gender."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Aadhaar card / biometric identification",
+        "Valid Ration Card or SECC beneficiary letter"
+      ],
+      "conditional": [
+        "Proof of age (Voter ID or Aadhaar) for senior citizen 70+ category"
+      ]
+    },
+    "applicationProcess": {
+      "mode": "Online & Offline",
+      "description": "Check eligibility and generate the Ayushman Card through the Beneficiary Portal (beneficiary.nha.gov.in) or by visiting any empaneled hospital or Common Service Centre (CSC).",
+      "portalName": "NHA Beneficiary Portal"
+    },
+    "announcementDate": "2018-09-23",
+    "announcementSourceUrl": "https://pib.gov.in/PressReleasePage.aspx?PRID=1546959",
+    "lastUpdatedAt": "2024-09-11",
+    "lastVerifiedAt": "2026-10-11",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://pmjay.gov.in",
+    "officialApplicationUrl": "https://beneficiary.nha.gov.in",
+    "source": {
+      "title": "Ayushman Bharat PM-JAY Implementation Guidelines",
+      "department": "National Health Authority",
+      "documentType": "Statutory Guidelines",
+      "sourceUrl": "https://pmjay.gov.in",
+      "publicationDate": "2024-09-11",
+      "lastVerifiedAt": "2026-10-11"
+    },
+    "searchKeywords": [
+      "health",
+      "hospital",
+      "medical",
+      "insurance",
+      "treatment",
+      "ayushman card",
+      "golden card",
+      "pmjay",
+      "cashless",
+      "senior citizen"
+    ]
+  },
+  {
+    "id": "pm-vishwakarma",
+    "name": "PM Vishwakarma Scheme",
+    "hindiName": "पीएम विश्वकर्मा योजना",
+    "category": "Employment",
+    "level": "Central",
+    "beneficiaryGroup": "Artisans",
+    "beneficiaryGroups": [
+      "Artisans",
+      "Craftspeople",
+      "Self-employed"
+    ],
+    "department": "Ministry of Micro, Small and Medium Enterprises (MSME)",
+    "benefit": "Collateral-free enterprise credit up to ₹3 Lakh at 5% interest, ₹15,000 toolkit grant, and skill stipend.",
+    "eligibility": "Traditional artisans and craftspeople working in 18 specified trades with hands and tools; minimum age 18.",
+    "benefits": [
+      "Recognition as a Vishwakarma with an official PM Vishwakarma Certificate and ID Card.",
+      "Basic skill verification (5-7 days) with a stipend of ₹500 per day during training.",
+      "Modern toolkit incentive of ₹15,000 issued via e-RUPI / digital voucher upon completion of basic skill assessment.",
+      "Collateral-free Enterprise Development Loans: First tranche up to ₹1 Lakh (18-month tenure) and second tranche up to ₹2 Lakh (30-month tenure) at a concessional interest rate of 5%."
+    ],
+    "eligibilityCriteria": [
+      "An artisan or craftsperson working with hands and tools in one of the 18 eligible traditional trades (carpenters, blacksmiths, goldsmiths, potters, sculptors, cobblers, tailors, etc.).",
+      "Minimum age of 18 years on the date of registration.",
+      "The beneficiary should not have availed credit under similar credit-based schemes (PMEGP, PM SVANidhi, Mudra) in the past 5 years.",
+      "Registration and benefits are restricted to one member per family."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Aadhaar card with linked active mobile number",
+        "Bank Account passbook or cancelled cheque",
+        "Ration Card for family verification"
+      ],
+      "conditional": [
+        "Trade practice recommendation by Gram Panchayat or Urban Local Body"
+      ]
+    },
+    "applicationProcess": {
+      "mode": "Online",
+      "description": "Registration is carried out through Common Service Centres (CSCs) on the PM Vishwakarma portal followed by three-stage verification: Gram Panchayat / ULB level, District Implementation Committee, and Screening Committee.",
+      "portalName": "PM Vishwakarma Portal"
+    },
+    "announcementDate": "2023-09-17",
+    "announcementSourceUrl": "https://pib.gov.in/PressReleasePage.aspx?PRID=1958210",
+    "lastUpdatedAt": "2024-08-20",
+    "lastVerifiedAt": "2026-10-10",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://pmvishwakarma.gov.in",
+    "officialApplicationUrl": "https://pmvishwakarma.gov.in",
+    "source": {
+      "title": "PM Vishwakarma Operational Guidelines",
+      "department": "Ministry of MSME, Government of India",
+      "documentType": "Operational Directives",
+      "sourceUrl": "https://pmvishwakarma.gov.in",
+      "publicationDate": "2023-09-17",
+      "lastVerifiedAt": "2026-10-10"
+    },
+    "searchKeywords": [
+      "artisan",
+      "craftsman",
+      "carpenter",
+      "blacksmith",
+      "tailor",
+      "loan",
+      "toolkit",
+      "msme",
+      "skill",
+      "stipend",
+      "vishwakarma"
+    ]
+  },
+  {
+    "id": "pm-kisan",
+    "name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+    "hindiName": "प्रधानमंत्री किसान सम्मान निधि",
+    "category": "Agriculture",
+    "level": "Central",
+    "beneficiaryGroup": "Farmers",
+    "beneficiaryGroups": [
+      "Farmers",
+      "Landholders"
+    ],
+    "department": "Department of Agriculture and Farmers Welfare (DA&FW)",
+    "benefit": "Direct income support of ₹6,000 per year transferred into bank accounts in three equal installments of ₹2,000.",
+    "eligibility": "All landholding farmer families with cultivable land parcels in their name, subject to institutional exclusions.",
+    "benefits": [
+      "Financial assistance of ₹6,000 per annum paid directly into Aadhaar-seeded bank accounts.",
+      "Disbursed every four months (₹2,000 per installment) through Direct Benefit Transfer (DBT)."
+    ],
+    "eligibilityCriteria": [
+      "Landholding farmer families with cultivable land registered in state land revenue records.",
+      "Mandatory completion of biometric / OTP-based e-KYC on the PM-KISAN portal.",
+      "Exclusions apply to institutional landholders, income tax payees in previous assessment year, serving or retired government employees, and constitutional post holders."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Aadhaar Card linked with active mobile number",
+        "Official landholding proof (RoR / 7/12 extract / Khatauni)",
+        "Active bank account with NPCI Aadhaar seeding"
+      ],
+      "conditional": []
+    },
+    "applicationProcess": {
+      "mode": "Online & Offline",
+      "description": "Self-registration through the Farmers Corner on pmkisan.gov.in, or registration via local CSC centres or revenue / agriculture officers.",
+      "portalName": "PM-KISAN Portal"
+    },
+    "announcementDate": "2019-02-24",
+    "announcementSourceUrl": "https://pib.gov.in/PressReleasePage.aspx?PRID=1566113",
+    "lastUpdatedAt": "2024-06-18",
+    "lastVerifiedAt": "2026-10-11",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://pmkisan.gov.in",
+    "officialApplicationUrl": "https://pmkisan.gov.in",
+    "source": {
+      "title": "PM-KISAN Scheme Guidelines",
+      "department": "Ministry of Agriculture and Farmers Welfare",
+      "documentType": "Official Scheme Manual",
+      "sourceUrl": "https://pmkisan.gov.in",
+      "publicationDate": "2019-02-24",
+      "lastVerifiedAt": "2026-10-11"
+    },
+    "searchKeywords": [
+      "farmer",
+      "agriculture",
+      "kisan",
+      "installment",
+      "dbt",
+      "land",
+      "pmkisan",
+      "crop"
+    ]
+  },
+  {
+    "id": "namo-shetkari",
+    "name": "Namo Shetkari Mahasanman Nidhi Yojana",
+    "regionalName": "नमो शेतकरी महासन्मान निधी योजना",
+    "hindiName": "नमो शेतकरी महासन्मान निधी योजना",
+    "category": "Agriculture",
+    "level": "State",
+    "beneficiaryGroup": "Farmers",
+    "beneficiaryGroups": [
+      "Farmers",
+      "Maharashtra Landholders"
+    ],
+    "department": "Department of Agriculture, Government of Maharashtra",
+    "benefit": "Additional annual direct benefit transfer of ₹6,000 from the Government of Maharashtra to PM-KISAN beneficiaries.",
+    "eligibility": "Farmer families in Maharashtra registered and verified under PM-KISAN with active land records and e-KYC.",
+    "benefits": [
+      "Additional annual direct cash support of ₹6,000 paid in three equal installments of ₹2,000 each.",
+      "Combined with central PM-KISAN, eligible Maharashtra farmers receive total annual income support of ₹12,000."
+    ],
+    "eligibilityCriteria": [
+      "Must be a resident farmer of Maharashtra with cultivable landholding recorded on 7/12 & 8A land extracts.",
+      "Must be an approved and verified beneficiary under the Central PM-KISAN portal.",
+      "Bank account must be Aadhaar-seeded with active DBT enablement."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Aadhaar Card",
+        "Maharashtra 7/12 and 8A land records extract",
+        "PM-KISAN beneficiary registration number",
+        "Aadhaar-seeded bank account"
+      ],
+      "conditional": []
+    },
+    "applicationProcess": {
+      "mode": "Online",
+      "description": "Automatic onboarding for verified Maharashtra PM-KISAN beneficiaries. Inquiries and grievance redressal handled through the Commissionerate of Agriculture, Pune.",
+      "portalName": "MahaDBT / Krishi Maharashtra"
+    },
+    "announcementDate": "2023-05-30",
+    "announcementSourceUrl": "https://www.maharashtra.gov.in",
+    "lastUpdatedAt": "2024-03-01",
+    "lastVerifiedAt": "2026-10-10",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://krishi.maharashtra.gov.in",
+    "officialApplicationUrl": "https://krishi.maharashtra.gov.in",
+    "source": {
+      "title": "Government Resolution No. KISAN-2023/C.R.74/11-A",
+      "department": "Agriculture and Farmers Welfare Department, Maharashtra",
+      "documentType": "Government Resolution (GR)",
+      "sourceUrl": "https://krishi.maharashtra.gov.in",
+      "publicationDate": "2023-05-30",
+      "lastVerifiedAt": "2026-10-10"
+    },
+    "searchKeywords": [
+      "maharashtra",
+      "shetkari",
+      "namo shetkari",
+      "farmer",
+      "krishi",
+      "7/12",
+      "kisan",
+      "dbt"
+    ]
+  },
+  {
+    "id": "ladki-bahin",
+    "name": "Mukhyamantri Majhi Ladki Bahin Yojana",
+    "regionalName": "मुख्यमंत्री माझी लाडकी बहीण योजना",
+    "hindiName": "मुख्यमंत्री माझी लाड़की बहिन योजना",
+    "category": "Women & Child",
+    "level": "State",
+    "beneficiaryGroup": "Women",
+    "beneficiaryGroups": [
+      "Women",
+      "Low-income households",
+      "Maharashtra Residents"
+    ],
+    "department": "Women and Child Development Department, Government of Maharashtra",
+    "benefit": "Monthly financial assistance of ₹1,500 transferred directly into the bank accounts of eligible women.",
+    "eligibility": "Women residents of Maharashtra aged 21 to 65 years with annual family income up to ₹2.5 Lakh.",
+    "benefits": [
+      "Direct monthly cash transfer of ₹1,500 (totaling ₹18,000 per year) via Aadhaar-linked bank account.",
+      "Empowers economic self-reliance and health/nutrition support for women."
+    ],
+    "eligibilityCriteria": [
+      "Permanent female resident of Maharashtra aged between 21 and 65 years.",
+      "Married, widowed, divorced, abandoned, or destitute women.",
+      "Combined annual family income must not exceed ₹2.50 Lakh.",
+      "No family member should be a regular/permanent government employee or income tax payer.",
+      "Beneficiary family should not own a four-wheeler (excluding agricultural tractor)."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Aadhaar Card of applicant",
+        "Maharashtra Domicile Certificate or Birth Certificate or School Leaving Certificate showing birth in Maharashtra",
+        "Income Certificate issued by Tahsildar (family income <= ₹2.5 Lakh) or Yellow/Orange Ration Card",
+        "Bank Passbook with Aadhaar linked & DBT active",
+        "Self-declaration undertaking adhering to scheme criteria"
+      ],
+      "conditional": [
+        "Divorce decree or husband death certificate (for widowed/divorced category)"
+      ]
+    },
+    "applicationProcess": {
+      "mode": "Online & Offline",
+      "description": "Online application through the official portal (ladakibahin.maharashtra.gov.in) or mobile app, and offline submission via Anganwadi centres, Gram Panchayat offices, or Setu Suvidha Kendras.",
+      "portalName": "Ladki Bahin Portal"
+    },
+    "announcementDate": "2024-06-28",
+    "announcementSourceUrl": "https://ladakibahin.maharashtra.gov.in",
+    "lastUpdatedAt": "2024-07-15",
+    "lastVerifiedAt": "2026-10-11",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://ladakibahin.maharashtra.gov.in",
+    "officialApplicationUrl": "https://ladakibahin.maharashtra.gov.in",
+    "source": {
+      "title": "Government Resolution No. WCD-2024/C.R.181/K-02",
+      "department": "Women and Child Development Department, Maharashtra",
+      "documentType": "Government Resolution (GR)",
+      "sourceUrl": "https://ladakibahin.maharashtra.gov.in",
+      "publicationDate": "2024-06-28",
+      "lastVerifiedAt": "2026-10-11"
+    },
+    "searchKeywords": [
+      "ladki bahin",
+      "maharashtra",
+      "women",
+      "stipend",
+      "dbt",
+      "wcd",
+      "majhi ladki bahin",
+      "monthly grant"
+    ]
+  },
+  {
+    "id": "ebc-scholarship-maha",
+    "name": "Rajarshi Chhatrapati Shahu Maharaj Shikshan Shulkh Shishyavrutti Yojna",
+    "regionalName": "राजर्षी छत्रपती शाहू महाराज शिक्षण शुल्क शिष्यवृत्ती योजना",
+    "hindiName": "राजर्षी छत्रपती शाहू महाराज शिक्षण शुल्क शिष्यवृत्ती",
+    "category": "Education",
+    "level": "State",
+    "beneficiaryGroup": "Students",
+    "beneficiaryGroups": [
+      "Students",
+      "EBC",
+      "Higher Education"
+    ],
+    "department": "Directorate of Higher Education / Directorate of Technical Education, Maharashtra",
+    "benefit": "50% Tuition Fee and 50% Exam Fee reimbursement for students pursuing higher and professional education.",
+    "eligibility": "Maharashtra domicile students admitted via Centralized Admission Process (CAP) with family income up to ₹8 Lakh.",
+    "benefits": [
+      "50% reimbursement of tuition fees and exam fees in government-aided and private un-aided higher/technical institutes.",
+      "Covers engineering, management, pharmacy, medical, agriculture, and general degree courses."
+    ],
+    "eligibilityCriteria": [
+      "Applicant must be an Indian citizen and domicile of Maharashtra.",
+      "Annual family income from all sources must not exceed ₹8.00 Lakh (attested by Tahsildar).",
+      "Admission must be through Centralized Admission Process (CAP round).",
+      "Maximum two children from the same family can avail the scholarship.",
+      "Minimum 50% attendance required in the ongoing academic course."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Domicile Certificate of Maharashtra issued by competent authority",
+        "Current Financial Year Income Certificate issued by Tahsildar",
+        "CAP Allotment Letter and admission fee receipt",
+        "Previous year passing mark sheet (SSC / HSC / Degree)",
+        "College Bonafide Certificate and Identity Card",
+        "Aadhaar-seeded bank account details"
+      ],
+      "conditional": [
+        "Declaration certificate of parents regarding number of children"
+      ]
+    },
+    "applicationProcess": {
+      "mode": "Online",
+      "description": "Apply every academic year on the MahaDBT Portal (mahadbt.maharashtra.gov.in) under Directorate of Higher Education / Technical Education.",
+      "portalName": "MahaDBT Portal"
+    },
+    "announcementDate": "2016-10-07",
+    "announcementSourceUrl": "https://mahadbt.maharashtra.gov.in",
+    "lastUpdatedAt": "2024-07-01",
+    "lastVerifiedAt": "2026-10-10",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://mahadbt.maharashtra.gov.in",
+    "officialApplicationUrl": "https://mahadbt.maharashtra.gov.in",
+    "source": {
+      "title": "MahaDBT Post-Matric Scholarship Scheme Guidelines",
+      "department": "Higher and Technical Education Department, Maharashtra",
+      "documentType": "Official Scheme Manual",
+      "sourceUrl": "https://mahadbt.maharashtra.gov.in",
+      "publicationDate": "2016-10-07",
+      "lastVerifiedAt": "2026-10-10"
+    },
+    "searchKeywords": [
+      "scholarship",
+      "student",
+      "college",
+      "tuition fee",
+      "ebc",
+      "mahadbt",
+      "engineering",
+      "cap",
+      "education"
+    ]
+  },
+  {
+    "id": "panjabrao-deshmukh",
+    "name": "Dr. Panjabrao Deshmukh Vasatigruh Nirvah Bhatta Yojna",
+    "regionalName": "डॉ. पंजाबराव देशमुख वसतिगृह निर्वाह भत्ता योजना",
+    "hindiName": "डॉ. पंजाबराव देशमुख वसतिगृह निर्वाह भत्ता योजना",
+    "category": "Education",
+    "level": "State",
+    "beneficiaryGroup": "Students",
+    "beneficiaryGroups": [
+      "Students",
+      "Children of Small Farmers",
+      "Hostelers"
+    ],
+    "department": "Directorate of Technical Education (DTE), Maharashtra",
+    "benefit": "Hostel maintenance allowance up to ₹30,000/year in metropolitan areas or ₹20,000/year in other areas.",
+    "eligibility": "Children of registered small/marginal farmers or agricultural laborers admitted to technical/professional degrees.",
+    "benefits": [
+      "Hostel maintenance allowance of ₹30,000 for 10 months for institutes situated in MMR / Pune / Nagpur / Aurangabad municipal corporations.",
+      "Hostel allowance of ₹20,000 for 10 months for other district municipal and rural locations."
+    ],
+    "eligibilityCriteria": [
+      "Student must be admitted through Centralized Admission Process (CAP) in an approved technical/professional degree or diploma course.",
+      "Child of registered Alpabhudharak (marginal/small landholder farmer) or agricultural laborer registered in Maharashtra.",
+      "Annual family income must not exceed ₹8.00 Lakh.",
+      "Student must not be a resident of a government-run free hostel."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Alpabhudharak (Small Landholder) Certificate issued by Tahsildar, or Registered Agricultural Labour Certificate",
+        "Registered Hostel admission letter and hostel rent payment receipts",
+        "Current Financial Year Income Certificate from Tahsildar",
+        "CAP Allotment Letter",
+        "Maharashtra Domicile Certificate"
+      ],
+      "conditional": []
+    },
+    "applicationProcess": {
+      "mode": "Online",
+      "description": "Submit online application through the MahaDBT portal under Directorate of Technical Education post-matric schemes.",
+      "portalName": "MahaDBT Portal"
+    },
+    "announcementDate": "2018-06-08",
+    "announcementSourceUrl": "https://mahadbt.maharashtra.gov.in",
+    "lastUpdatedAt": "2024-07-01",
+    "lastVerifiedAt": "2026-10-10",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://mahadbt.maharashtra.gov.in",
+    "officialApplicationUrl": "https://mahadbt.maharashtra.gov.in",
+    "source": {
+      "title": "Government Resolution No. TEM-2018/C.R.185/TE-4",
+      "department": "Higher and Technical Education Department, Maharashtra",
+      "documentType": "Government Resolution (GR)",
+      "sourceUrl": "https://mahadbt.maharashtra.gov.in",
+      "publicationDate": "2018-06-08",
+      "lastVerifiedAt": "2026-10-10"
+    },
+    "searchKeywords": [
+      "hostel",
+      "panjabrao",
+      "deshmukh",
+      "allowance",
+      "student",
+      "farmer",
+      "alpabhudharak",
+      "dte",
+      "mahadbt"
+    ]
+  },
+  {
+    "id": "pm-surya-ghar",
+    "name": "PM-Surya Ghar: Muft Bijli Yojana",
+    "hindiName": "पीएम-सूर्य घर: मुफ्त बिजली योजना",
+    "category": "Financial",
+    "level": "Central",
+    "beneficiaryGroup": "Families",
+    "beneficiaryGroups": [
+      "Families",
+      "Homeowners",
+      "Consumers"
+    ],
+    "department": "Ministry of New and Renewable Energy (MNRE)",
+    "benefit": "Subsidy up to ₹78,000 for rooftop solar installations up to 3 kW capacity, enabling up to 300 units of free electricity monthly.",
+    "eligibility": "Residential households with a suitable rooftop and a valid grid-connected residential electricity connection.",
+    "benefits": [
+      "Central Financial Assistance (CFA) subsidy of ₹30,000 for 1 kW system.",
+      "Subsidy of ₹60,000 for 2 kW system.",
+      "Subsidy of ₹78,000 for systems of 3 kW capacity and above.",
+      "Saves up to 300 electricity units monthly with surplus power exportable via net-metering."
+    ],
+    "eligibilityCriteria": [
+      "The applicant must be an Indian citizen with a residential property suitable for rooftop solar panel installation.",
+      "Must have a valid residential electricity connection in their name.",
+      "The applicant must not have availed any other central subsidy for solar rooftop panels previously."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Aadhaar card of the applicant",
+        "Latest residential electricity bill (showing consumer number & sanction load)",
+        "Proof of roof ownership / residential property documents",
+        "Bank account details (cancelled cheque / passbook copy)"
+      ],
+      "conditional": []
+    },
+    "applicationProcess": {
+      "mode": "Online",
+      "description": "Register on the National Portal for Rooftop Solar (pmsuryaghar.gov.in), select DISCOM, obtain technical feasibility approval, install through empaneled vendors, and submit net-meter report to claim direct subsidy.",
+      "portalName": "National Rooftop Solar Portal"
+    },
+    "announcementDate": "2024-02-13",
+    "announcementSourceUrl": "https://pib.gov.in/PressReleasePage.aspx?PRID=2005615",
+    "lastUpdatedAt": "2024-06-15",
+    "lastVerifiedAt": "2026-10-11",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://pmsuryaghar.gov.in",
+    "officialApplicationUrl": "https://pmsuryaghar.gov.in",
+    "source": {
+      "title": "PM - Surya Ghar: Muft Bijli Yojana Scheme Directives",
+      "department": "Ministry of New and Renewable Energy",
+      "documentType": "Operational Guidelines",
+      "sourceUrl": "https://pmsuryaghar.gov.in",
+      "publicationDate": "2024-02-13",
+      "lastVerifiedAt": "2026-10-11"
+    },
+    "searchKeywords": [
+      "solar",
+      "rooftop solar",
+      "electricity",
+      "free power",
+      "surya ghar",
+      "mnre",
+      "energy",
+      "subsidy"
+    ]
+  },
+  {
+    "id": "pm-svanidhi",
+    "name": "PM Street Vendor's AtmaNirbhar Nidhi (PM SVANidhi)",
+    "hindiName": "पीएम स्वनिधि योजना",
+    "category": "Employment",
+    "level": "Central",
+    "beneficiaryGroup": "Youth & Job Seekers",
+    "beneficiaryGroups": [
+      "Street Vendors",
+      "Urban Informal Workers",
+      "Micro-entrepreneurs"
+    ],
+    "department": "Ministry of Housing and Urban Affairs (MoHUA)",
+    "benefit": "Affordable working capital credit: 1st tranche up to ₹10,000, 2nd tranche up to ₹20,000, and 3rd tranche up to ₹50,000 with 7% interest subsidy.",
+    "eligibility": "Urban street vendors vending in urban areas on or before March 24, 2020, possessing a Certificate of Vending or LOR.",
+    "benefits": [
+      "Initial working capital collateral-free loan of up to ₹10,000 repayable in 1-year monthly installments.",
+      "Enhanced tranches of ₹20,000 and ₹50,000 upon timely repayment.",
+      "Interest subsidy of 7% per annum credited quarterly on timely loan service.",
+      "Cashback of up to ₹1,200 per year on digital transactions."
+    ],
+    "eligibilityCriteria": [
+      "Street vendors possessing a Certificate of Vending / Identity Card issued by Urban Local Bodies (ULBs).",
+      "Vendors identified in survey who did not receive ID card, supported by a Letter of Recommendation (LOR) from ULB / Town Vending Committee.",
+      "Vendors from surrounding peri-urban or rural areas vending in geographical limits of ULBs."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Aadhaar Card linked to active mobile phone",
+        "Certificate of Vending / ID Card or Letter of Recommendation (LoR)",
+        "Bank Account details"
+      ],
+      "conditional": []
+    },
+    "applicationProcess": {
+      "mode": "Online",
+      "description": "Apply through the PM SVANidhi portal (pmsvanidhi.mohua.gov.in) directly or through Common Service Centres (CSCs) and local Urban Local Bodies.",
+      "portalName": "PM SVANidhi Portal"
+    },
+    "announcementDate": "2020-06-01",
+    "announcementSourceUrl": "https://pib.gov.in/PressReleasePage.aspx?PRID=1628383",
+    "lastUpdatedAt": "2024-05-10",
+    "lastVerifiedAt": "2026-10-10",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://pmsvanidhi.mohua.gov.in",
+    "officialApplicationUrl": "https://pmsvanidhi.mohua.gov.in",
+    "source": {
+      "title": "Scheme Guidelines for PM Street Vendor’s AtmaNirbhar Nidhi",
+      "department": "Ministry of Housing and Urban Affairs",
+      "documentType": "Official Scheme Manual",
+      "sourceUrl": "https://pmsvanidhi.mohua.gov.in",
+      "publicationDate": "2020-06-01",
+      "lastVerifiedAt": "2026-10-10"
+    },
+    "searchKeywords": [
+      "vendor",
+      "street vendor",
+      "svanidhi",
+      "hawker",
+      "working capital",
+      "micro loan",
+      "urban"
+    ]
+  },
+  {
+    "id": "pm-mudra",
+    "name": "Pradhan Mantri MUDRA Yojana (PMMY)",
+    "hindiName": "प्रधानमंत्री मुद्रा योजना",
+    "category": "Financial",
+    "level": "Central",
+    "beneficiaryGroup": "Youth & Job Seekers",
+    "beneficiaryGroups": [
+      "Entrepreneurs",
+      "Small Businesses",
+      "Youth & Job Seekers"
+    ],
+    "department": "Department of Financial Services, Ministry of Finance",
+    "benefit": "Collateral-free institutional loans up to ₹20 Lakh (Tarun Plus category enhanced in Budget 2024) for non-corporate micro enterprises.",
+    "eligibility": "Non-farm micro and small enterprises in manufacturing, trading, and services sectors requiring business loans.",
+    "benefits": [
+      "Shishu category: Loans up to ₹50,000 for early-stage ventures.",
+      "Kishore category: Loans between ₹50,000 and ₹5,00,000.",
+      "Tarun category: Loans between ₹5,00,000 and ₹10,00,000.",
+      "Tarun Plus: Loans enhanced up to ₹20,00,000 for entrepreneurs who have previously repaid Tarun loans successfully.",
+      "No collateral security or processing charges for Shishu loans."
+    ],
+    "eligibilityCriteria": [
+      "Any Indian citizen having a business plan for non-farm income-generating activity.",
+      "Must not be a defaulter to any bank or financial institution.",
+      "Business must fall under manufacturing, processing, trading, or services."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Proof of Identity (Aadhaar / Voter ID / Passport / Driving Licence)",
+        "Proof of Residence (Electricity bill / Aadhaar / Domicile)",
+        "Business address and establishment registration proof",
+        "Bank statement of past 6 months"
+      ],
+      "conditional": [
+        "Audited financial statements and income tax returns for loans exceeding ₹5 Lakh"
+      ]
+    },
+    "applicationProcess": {
+      "mode": "Online & Offline",
+      "description": "Apply through the Udyami Mitra portal (udyamimitra.in) or by visiting any commercial bank, Regional Rural Bank (RRB), or Small Finance Bank branch.",
+      "portalName": "Udyami Mitra Portal"
+    },
+    "announcementDate": "2015-04-08",
+    "announcementSourceUrl": "https://pib.gov.in/PressReleasePage.aspx?PRID=1166705",
+    "lastUpdatedAt": "2024-07-23",
+    "lastVerifiedAt": "2026-10-11",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://www.mudra.org.in",
+    "officialApplicationUrl": "https://www.udyamimitra.in",
+    "source": {
+      "title": "Pradhan Mantri MUDRA Yojana Guidelines & Tarun Plus Directives",
+      "department": "Department of Financial Services, Ministry of Finance",
+      "documentType": "Statutory Directives",
+      "sourceUrl": "https://www.mudra.org.in",
+      "publicationDate": "2024-07-23",
+      "lastVerifiedAt": "2026-10-11"
+    },
+    "searchKeywords": [
+      "mudra",
+      "business loan",
+      "startup",
+      "shishu",
+      "kishore",
+      "tarun",
+      "credit",
+      "finance",
+      "msme"
+    ]
+  },
+  {
+    "id": "pmmvy",
+    "name": "Pradhan Mantri Matru Vandana Yojana (PMMVY)",
+    "hindiName": "प्रधानमंत्री मातृ वंदना योजना",
+    "category": "Women & Child",
+    "level": "Central",
+    "beneficiaryGroup": "Women",
+    "beneficiaryGroups": [
+      "Women",
+      "Mothers",
+      "Families"
+    ],
+    "department": "Ministry of Women and Child Development (MoWCD)",
+    "benefit": "Maternity cash incentive of ₹5,000 for the first child and ₹6,000 for the second child (if girl) disbursed via DBT.",
+    "eligibility": "Pregnant women and lactating mothers who are not regular employees of Central/State Government or PSUs.",
+    "benefits": [
+      "Cash incentive of ₹5,000 in two installments for the first live birth upon timely registration of pregnancy and institutional birth.",
+      "Incentive of ₹6,000 in single installment for the second child, provided the child is a girl, promoting positive sex ratio.",
+      "Direct wage compensation and nutrition encouragement transferred directly to mother's bank account."
+    ],
+    "eligibilityCriteria": [
+      "Pregnant Women and Lactating Mothers (PW&LM) who are at least 19 years of age at pregnancy registration.",
+      "Household belongs to socially / economically disadvantaged groups (e.g. SC/ST, BPL/EWS cardholder, Ayushman PM-JAY beneficiary, farmer family, income under ₹8 Lakh).",
+      "Excludes regular employees of Central Govt, State Govt, or Public Sector Undertakings."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Mother and Child Protection (MCP) Card registered with Anganwadi / Health Centre",
+        "Aadhaar card of the mother with mobile link",
+        "Bank Passbook of mother (Aadhaar seeded, NPCI mapped)",
+        "Child Birth Registration Certificate"
+      ],
+      "conditional": [
+        "Eligibility qualification document (EWS / Ration Card / PM-JAY card)"
+      ]
+    },
+    "applicationProcess": {
+      "mode": "Online & Offline",
+      "description": "Apply on the PMMVY portal (pmmvy.wcd.gov.in) directly or submit physical forms at local Anganwadi Centres (AWC) or approved health facilities.",
+      "portalName": "PMMVY Citizen Portal"
+    },
+    "announcementDate": "2017-01-01",
+    "announcementSourceUrl": "https://pib.gov.in/PressReleasePage.aspx?PRID=1490918",
+    "lastUpdatedAt": "2023-04-01",
+    "lastVerifiedAt": "2026-10-10",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://pmmvy.wcd.gov.in",
+    "officialApplicationUrl": "https://pmmvy.wcd.gov.in",
+    "source": {
+      "title": "PMMVY Scheme Implementation Guidelines (Mission Shakti)",
+      "department": "Ministry of Women and Child Development",
+      "documentType": "Official Scheme Manual",
+      "sourceUrl": "https://pmmvy.wcd.gov.in",
+      "publicationDate": "2023-04-01",
+      "lastVerifiedAt": "2026-10-10"
+    },
+    "searchKeywords": [
+      "maternity",
+      "pregnancy",
+      "mother",
+      "child",
+      "infant",
+      "mcp card",
+      "pmmvy",
+      "wcd",
+      "women"
+    ]
+  },
+  {
+    "id": "nsap-ignoaps",
+    "name": "Indira Gandhi National Old Age Pension Scheme (IGNOAPS)",
+    "hindiName": "इंदिरा गांधी राष्ट्रीय वृद्धावस्था पेंशन योजना",
+    "category": "Social Security",
+    "level": "Central-State",
+    "beneficiaryGroup": "Senior Citizens",
+    "beneficiaryGroups": [
+      "Senior Citizens",
+      "BPL Households"
+    ],
+    "department": "Ministry of Rural Development (MoRD) / State Social Welfare Departments",
+    "benefit": "Monthly pension of ₹200 to ₹500 (central contribution) plus state top-up (typically ₹1,000–₹1,500 total in Maharashtra) for elderly citizens in BPL families.",
+    "eligibility": "Citizens aged 60 years and above belonging to households living Below Poverty Line (BPL).",
+    "benefits": [
+      "Guaranteed monthly social security pension directly transferred into bank/postal accounts.",
+      "Central component of ₹200/month for age 60–79 and ₹500/month for age 80+ supplemented with state social pension grants."
+    ],
+    "eligibilityCriteria": [
+      "Applicant must be 60 years of age or older.",
+      "Must belong to a household living Below the official Poverty Line according to criteria prescribed by Govt of India."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Aadhaar Card / Voter ID for proof of age",
+        "BPL Ration Card or BPL certificate issued by Tahsildar / Block Development Officer",
+        "Bank Passbook or Post Office Savings Account passbook"
+      ],
+      "conditional": []
+    },
+    "applicationProcess": {
+      "mode": "Online & Offline",
+      "description": "Submit application through the NSAP portal (nsap.nic.in), local Gram Panchayat, Block Development Office (BDO), or Taluka Tahsil office.",
+      "portalName": "National Social Assistance Portal (NSAP)"
+    },
+    "announcementDate": "1995-08-15",
+    "announcementSourceUrl": "https://nsap.nic.in",
+    "lastUpdatedAt": "2023-03-20",
+    "lastVerifiedAt": "2026-10-10",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://nsap.nic.in",
+    "officialApplicationUrl": "https://nsap.nic.in",
+    "source": {
+      "title": "National Social Assistance Programme Guidelines",
+      "department": "Ministry of Rural Development",
+      "documentType": "Programme Guidelines",
+      "sourceUrl": "https://nsap.nic.in",
+      "publicationDate": "1995-08-15",
+      "lastVerifiedAt": "2026-10-10"
+    },
+    "searchKeywords": [
+      "pension",
+      "old age",
+      "senior citizen",
+      "nsap",
+      "ignoaps",
+      "bpl",
+      "social security"
+    ]
+  },
+  {
+    "id": "pm-ujjwala",
+    "name": "Pradhan Mantri Ujjwala Yojana (PMUY 2.0)",
+    "hindiName": "प्रधानमंत्री उज्ज्वला योजना",
+    "category": "Women & Child",
+    "level": "Central",
+    "beneficiaryGroup": "Women",
+    "beneficiaryGroups": [
+      "Women",
+      "Low-income households",
+      "Rural Poor"
+    ],
+    "department": "Ministry of Petroleum and Natural Gas (MoPNG)",
+    "benefit": "Deposit-free LPG connection with first refill and hotplate free of cost, plus ongoing targeted subsidy of ₹300 per 14.2 kg cylinder.",
+    "eligibility": "Adult woman belonging to poor households (SC/ST, PMAY, Antyodaya, or 14-point declaration) without an existing LPG connection.",
+    "benefits": [
+      "Deposit-free LPG connection including security deposit of cylinder, pressure regulator, and installation charges borne by Govt.",
+      "First LPG refill and cooking stove (hotplate) provided free of cost.",
+      "Targeted subsidy of ₹300 per refill (up to 12 refills per year) credited directly to bank account via PAHAL (DBTL)."
+    ],
+    "eligibilityCriteria": [
+      "Applicant must be an adult woman (minimum 18 years old).",
+      "There should not be any other LPG connection from any Oil Marketing Company (IOCL, BPCL, HPCL) in the same household.",
+      "Must belong to eligible categories: SC/ST households, PMAY (Gramin), Antyodaya Anna Yojana (AAY), Most Backward Classes, or rural/urban poor meeting 14-point declaration."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Aadhaar card of the applicant woman for KYC verification",
+        "Ration card issued by State Government confirming family composition",
+        "Bank Account Passbook / IFSC code",
+        "Supplementary KYC / 14-point declaration form"
+      ],
+      "conditional": []
+    },
+    "applicationProcess": {
+      "mode": "Online & Offline",
+      "description": "Apply online through the PMUY portal (pmuy.gov.in) or submit application form at the nearest LPG distributor (Indane, Bharatgas, or HP Gas).",
+      "portalName": "PMUY 2.0 Portal"
+    },
+    "announcementDate": "2016-05-01",
+    "announcementSourceUrl": "https://pib.gov.in/PressReleasePage.aspx?PRID=1453915",
+    "lastUpdatedAt": "2024-03-07",
+    "lastVerifiedAt": "2026-10-10",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://www.pmuy.gov.in",
+    "officialApplicationUrl": "https://www.pmuy.gov.in",
+    "source": {
+      "title": "Ujjwala 2.0 Guidelines and Citizen Charter",
+      "department": "Ministry of Petroleum and Natural Gas",
+      "documentType": "Official Scheme Directives",
+      "sourceUrl": "https://www.pmuy.gov.in",
+      "publicationDate": "2021-08-10",
+      "lastVerifiedAt": "2026-10-10"
+    },
+    "searchKeywords": [
+      "lpg",
+      "gas cylinder",
+      "ujjwala",
+      "cooking gas",
+      "women",
+      "mopng",
+      "subsidy"
+    ]
+  },
+  {
+    "id": "pm-egp",
+    "name": "Prime Minister's Employment Generation Programme (PMEGP)",
+    "hindiName": "प्रधानमंत्री रोजगार सृजन कार्यक्रम",
+    "category": "Employment",
+    "level": "Central",
+    "beneficiaryGroup": "Youth & Job Seekers",
+    "beneficiaryGroups": [
+      "Youth & Job Seekers",
+      "Entrepreneurs",
+      "Micro-enterprises"
+    ],
+    "department": "Ministry of Micro, Small and Medium Enterprises (MSME) & KVIC",
+    "benefit": "Credit-linked capital subsidy up to 35% for project costs up to ₹50 Lakh (manufacturing) or ₹20 Lakh (service).",
+    "eligibility": "Individuals aged 18+; minimum 8th class pass for manufacturing projects above ₹10 Lakh and service projects above ₹5 Lakh.",
+    "benefits": [
+      "Margin money subsidy of 15% (General Urban), 25% (General Rural / Special Category Urban), and 35% (Special Category Rural including SC/ST/OBC/Women/Minorities).",
+      "Maximum admissible project cost is ₹50 Lakh for manufacturing sector and ₹20 Lakh for service/business sector."
+    ],
+    "eligibilityCriteria": [
+      "Any individual above 18 years of age.",
+      "At least VIII standard pass for projects costing above ₹10 Lakh in manufacturing and above ₹5 Lakh in business/service sector.",
+      "Only new micro enterprises are eligible for initial assistance."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Aadhaar Card and PAN Card",
+        "Project Report / Detailed Project Feasibility Summary (DPR)",
+        "Educational qualification certificate (minimum 8th pass certificate)",
+        "Rural area certificate from competent authority (if claiming rural subsidy)"
+      ],
+      "conditional": [
+        "Special category certificate (Caste / PH / Ex-Serviceman / Minority certificate)"
+      ]
+    },
+    "applicationProcess": {
+      "mode": "Online",
+      "description": "Apply exclusively online through the KVIC PMEGP e-Portal (kviconline.gov.in/pmegpeportal). Applications are vetted by District Level Task Force Committees.",
+      "portalName": "KVIC PMEGP Portal"
+    },
+    "announcementDate": "2008-08-15",
+    "announcementSourceUrl": "https://kviconline.gov.in",
+    "lastUpdatedAt": "2024-04-12",
+    "lastVerifiedAt": "2026-10-10",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://kviconline.gov.in/pmegpeportal",
+    "officialApplicationUrl": "https://kviconline.gov.in/pmegpeportal/pmegphome/index.jsp",
+    "source": {
+      "title": "PMEGP Operational Guidelines & Margin Money Norms",
+      "department": "Khadi and Village Industries Commission (KVIC), Ministry of MSME",
+      "documentType": "Operational Manual",
+      "sourceUrl": "https://kviconline.gov.in",
+      "publicationDate": "2022-05-30",
+      "lastVerifiedAt": "2026-10-10"
+    },
+    "searchKeywords": [
+      "pmegp",
+      "kvic",
+      "subsidy",
+      "margin money",
+      "manufacturing",
+      "employment",
+      "business loan",
+      "msme"
+    ]
+  },
+  {
+    "id": "atal-pension",
+    "name": "Atal Pension Yojana (APY)",
+    "hindiName": "अटल पेंशन योजना",
+    "category": "Social Security",
+    "level": "Central",
+    "beneficiaryGroup": "All Citizens",
+    "beneficiaryGroups": [
+      "All Citizens",
+      "Unorganized Sector Workers",
+      "Youth & Job Seekers"
+    ],
+    "department": "Pension Fund Regulatory and Development Authority (PFRDA), Ministry of Finance",
+    "benefit": "Guaranteed monthly pension of ₹1,000, ₹2,000, ₹3,000, ₹4,000, or ₹5,000 from age 60 based on contribution.",
+    "eligibility": "All Indian citizens aged 18 to 40 years having a savings bank account; not liable to pay income tax.",
+    "benefits": [
+      "Guaranteed minimum pension of ₹1,000 to ₹5,000 per month upon reaching 60 years of age.",
+      "Same pension amount to the spouse upon demise of subscriber.",
+      "Return of accumulated pension corpus to nominee after demise of both subscriber and spouse."
+    ],
+    "eligibilityCriteria": [
+      "Any citizen of India between 18 and 40 years of age.",
+      "Must have an active savings bank account with auto-debit facility.",
+      "Effective October 1, 2022, citizens who are or have been income tax payers are not eligible to join APY."
+    ],
+    "requiredDocuments": {
+      "mandatory": [
+        "Aadhaar Card",
+        "Savings bank account passbook with auto-debit consent",
+        "Active mobile number linked to bank account"
+      ],
+      "conditional": []
+    },
+    "applicationProcess": {
+      "mode": "Online & Offline",
+      "description": "Subscribe through net banking or mobile banking apps of your bank, or visit your savings bank branch or post office branch with APY subscriber form.",
+      "portalName": "Protean CRA / PFRDA APY Portal"
+    },
+    "announcementDate": "2015-05-09",
+    "announcementSourceUrl": "https://pib.gov.in/PressReleasePage.aspx?PRID=1166705",
+    "lastUpdatedAt": "2022-10-01",
+    "lastVerifiedAt": "2026-10-11",
+    "verificationStatus": "Verified source",
+    "applicationStatus": "Continuous / Ongoing",
+    "officialSourceUrl": "https://www.npscra.nsdl.co.in/scheme-details.php",
+    "officialApplicationUrl": "https://enps.nsdl.co.in/eNPS/ApySubRegistration.html",
+    "source": {
+      "title": "Atal Pension Yojana Scheme Notification & Rules",
+      "department": "Department of Financial Services, Ministry of Finance",
+      "documentType": "Statutory Gazette Notification",
+      "sourceUrl": "https://www.npscra.nsdl.co.in",
+      "publicationDate": "2015-05-09",
+      "lastVerifiedAt": "2026-10-11"
+    },
+    "searchKeywords": [
+      "pension",
+      "apy",
+      "atal pension",
+      "retirement",
+      "pfrda",
+      "guaranteed pension",
+      "social security"
+    ]
+  }
+]
