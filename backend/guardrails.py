@@ -3,6 +3,7 @@
 Run `.venv/Scripts/python guardrails.py` (Windows) or `.venv/bin/python guardrails.py` to self-check.
 """
 
+import ipaddress
 import re
 import time
 from urllib.parse import urlparse
@@ -21,6 +22,23 @@ def _evict(now: float) -> None:
         del _windows[key]
     for key in list(_windows)[: max(0, len(_windows) - MAX_TRACKED_KEYS + MAX_TRACKED_KEYS // 10)]:
         del _windows[key]  # still full: drop the least recently active 10%
+
+
+def visitor_id(host: str) -> str:
+    """Rate-limit key for a client address.
+
+    One IPv6 connection usually owns a whole /64 network (billions of addresses), so limiting per exact
+    address would let a visitor switch address on every request. All addresses in a /64 count as one visitor.
+    """
+    try:
+        ip = ipaddress.ip_address(host)
+    except ValueError:
+        return host
+    if ip.version == 6:
+        if ip.ipv4_mapped:
+            return str(ip.ipv4_mapped)
+        return str(ipaddress.ip_network(f"{ip}/64", strict=False))
+    return str(ip)
 
 
 def retry_after(limits: list[tuple[str, int, int]]) -> int:
@@ -126,6 +144,12 @@ if __name__ == "__main__":
     assert not is_official("http://pmkisan.gov.in") and not is_official("https://pmkisan.gov.in.evil.com")
     assert strip_unofficial_links("[PM-KISAN](https://pmkisan.gov.in) or [x](https://evil.com)") == \
         "[PM-KISAN](https://pmkisan.gov.in) or x"
+
+    # Every address in one IPv6 /64 is the same visitor; IPv4 and IPv4-mapped IPv6 are per address.
+    assert visitor_id("2001:db8:1:2::1") == visitor_id("2001:db8:1:2:ffff:1234:5678:9abc") == "2001:db8:1:2::/64"
+    assert visitor_id("2001:db8:1:3::1") != visitor_id("2001:db8:1:2::1")
+    assert visitor_id("203.0.113.7") == visitor_id("::ffff:203.0.113.7") == "203.0.113.7"
+    assert visitor_id("unknown") == "unknown"
 
     assert retry_after([("t", 2, 60)]) == 0 and retry_after([("t", 2, 60)]) == 0 and retry_after([("t", 2, 60)]) > 0
     # A request blocked by the global limit must not use up the visitor's own limit.

@@ -22,7 +22,7 @@ from google import genai
 from google.genai import errors, types
 from pydantic import BaseModel, Field
 
-from guardrails import looks_like_injection, redact_pii, retry_after, strip_unofficial_links
+from guardrails import looks_like_injection, redact_pii, retry_after, strip_unofficial_links, visitor_id
 
 load_dotenv(Path(__file__).parent / ".env")
 
@@ -143,7 +143,7 @@ REFUSAL = ChatReply(
 
 
 def enforce_rate_limits(request: Request, limits: list[tuple[str, int, int]]) -> None:
-    ip = request.client.host if request.client else "unknown"
+    ip = visitor_id(request.client.host) if request.client else "unknown"
     wait = retry_after([(name if name.startswith("all") else f"{name}:{ip}", limit, window) for name, limit, window in limits])
     if wait:
         minutes = f"{wait // 60 + 1} minutes" if wait > 90 else f"{wait} seconds"
