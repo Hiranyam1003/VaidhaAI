@@ -53,7 +53,7 @@ The "no real details, SPECIMEN" rule keeps the pictures recognisable without loo
 cd backend && .venv/bin/uvicorn main:app --reload --port 8000   # run alongside `npm run dev`
 ```
 
-To keep answers current, every chat request adds today's date in India and the newest `NEWS_HEADLINES_IN_PROMPT` headlines from the news cache (`news_context()`, fenced off as untrusted data) to the system instruction. There is no web search: Google Search grounding needs a paid key, so scheme facts otherwise come from the model's training.
+To keep answers current, the system instruction carries today's date in India, and the newest `NEWS_HEADLINES_IN_PROMPT` headlines from the news cache go into the latest user turn as a fenced `NEWS HEADLINES` data block (`news_context()`). Headlines come from outside publishers, so they stay out of the system instruction, are flattened by `clean_text()` and filtered with `looks_like_injection()`. A chat waits at most `NEWS_CONTEXT_TIMEOUT_S` for them and answers without headlines if the feed is slow or failing. There is no web search: Google Search grounding needs a paid key, so scheme facts otherwise come from the model's training.
 
 `GET /api/news` serves live news from Google News RSS (one search per News page category in `NEWS_QUERIES`), cached in memory for 15 minutes.
 
