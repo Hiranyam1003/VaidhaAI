@@ -31,3 +31,15 @@ uv pip install --python .venv/bin/python -r requirements.txt
 ```
 
 `.venv` and `.env` are git-ignored; never commit the API key.
+
+### Running the chat API
+
+```bash
+cd backend
+.venv/bin/uvicorn main:app --reload --port 8000
+```
+
+- `POST /api/chat` takes `{ "message", "history": [{ "role": "user" | "assistant", "content" }], "language" }` and returns `{ "content", "citations", "followUps" }` using Gemini structured output.
+- `GET /api/health` shows the model order and whether a key is configured.
+- Models are tried in order (`GEMINI_MODEL`, then `GEMINI_FALLBACK_MODELS`): if one is overloaded, times out (15–25 s) or hits its free-tier quota, the next one answers.
+- In development the frontend calls `/api/...`, which Vite proxies to `http://127.0.0.1:8000` (see `frontend/vite.config.ts`). Run both servers.

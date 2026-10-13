@@ -11,7 +11,7 @@ import { MyProfile } from './pages/MyProfile';
 import { Settings } from './pages/Settings';
 import { TEXT_SIZE_SCALE } from './utils/textSize';
 import { SCHEMES_DATA, USER_PROFILE_DEFAULT } from './data/mockData';
-import { getAssistantResponse } from './utils/responseEngine';
+import { askVaidha } from './utils/chatApi';
 import type { Language, Message, NavTab, TextSize, UserProfile } from './types';
 
 const MOBILE_QUERY = '(max-width: 768px)';
@@ -120,24 +120,20 @@ export function App() {
       content: text,
     };
 
+    const history = messages.map((m) => ({ role: m.sender, content: m.content }));
     setMessages((prev) => [...prev, userMsg]);
     setIsLoading(true);
 
-    setTimeout(() => {
-      const resp = getAssistantResponse(text);
+    askVaidha(text, history, selectedLanguage).then((reply) => {
       const assistantMsg: Message = {
         id: `asst-${Date.now()}`,
         sender: 'assistant',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        content: resp.content,
-        citations: resp.citations,
-        followUps: resp.followUps,
-        isDemo: true,
+        ...reply,
       };
-
       setMessages((prev) => [...prev, assistantMsg]);
       setIsLoading(false);
-    }, 800);
+    });
   };
 
   return (

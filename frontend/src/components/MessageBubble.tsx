@@ -102,7 +102,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               fontWeight: 600,
             }}
           >
-            Demo Response
+            {message.isDemo ? 'Demo Response' : 'AI answer'}
           </span>
           <span style={{ fontSize: '11px', color: 'var(--workspace-text-subtle)' }}>{message.timestamp}</span>
         </div>
@@ -172,7 +172,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               }}
             >
               <FileText size={13} color="var(--brand-sun)" />
-              <span>Referenced Official Documentation (Demo)</span>
+              <span>Referenced Official Documentation{message.isDemo ? ' (Demo)' : ''}</span>
             </div>
 
             <div
@@ -206,7 +206,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                         borderRadius: '4px',
                       }}
                     >
-                      {cit.badge || 'Verified Scheme'}
+                      {cit.badge || 'Source'}
                     </span>
                     <ExternalLink size={12} color="var(--workspace-text-subtle)" />
                   </div>
@@ -330,7 +330,19 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     });
   }
 
+  // Answers come from Gemini, so escape any HTML before adding the <strong> and <a> tags we render.
   function formatBold(str: string) {
-    return str.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    const escaped = str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+    return escaped
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(
+        /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+        '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: var(--brand-sun); text-decoration: underline;">$1</a>',
+      );
   }
 };
