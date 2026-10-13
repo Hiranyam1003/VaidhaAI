@@ -12,6 +12,7 @@ import { Settings } from './pages/Settings';
 import { TEXT_SIZE_SCALE } from './utils/textSize';
 import { SCHEMES_DATA, USER_PROFILE_DEFAULT } from './data/mockData';
 import { askVaidha } from './utils/chatApi';
+import { HTML_LANG, LanguageContext } from './i18n';
 import type { Language, Message, NavTab, TextSize, UserProfile } from './types';
 
 const MOBILE_QUERY = '(max-width: 768px)';
@@ -21,7 +22,10 @@ export function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(() => window.matchMedia(MOBILE_QUERY).matches);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState<Language>('English');
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>(() => {
+    const local = localStorage.getItem('vaidha_language');
+    return local === 'Hindi' || local === 'Marathi' ? local : 'English';
+  });
 
   const [textSize, setTextSize] = useState<TextSize>(() => {
     const local = localStorage.getItem('vaidha_text_size');
@@ -67,6 +71,12 @@ export function App() {
   useEffect(() => {
     localStorage.setItem('vaidha_text_size', textSize);
   }, [textSize]);
+
+  useEffect(() => {
+    localStorage.setItem('vaidha_language', selectedLanguage);
+    // Lets screen readers and the browser use the right voice and fonts for Hindi/Marathi.
+    document.documentElement.lang = HTML_LANG[selectedLanguage];
+  }, [selectedLanguage]);
 
   // Pixel sizes are used throughout, so text size scales the whole app with CSS zoom.
   // Width and height are divided by the same factor so the app still fills the window.
@@ -137,6 +147,7 @@ export function App() {
   };
 
   return (
+    <LanguageContext value={selectedLanguage}>
     <div
       style={{
         display: 'flex',
@@ -265,6 +276,7 @@ export function App() {
         </div>
       </div>
     </div>
+    </LanguageContext>
   );
 }
 

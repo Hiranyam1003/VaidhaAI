@@ -2,6 +2,7 @@ import React from 'react';
 import { Sparkles } from 'lucide-react';
 import { EXPLORE_IMAGE_CARDS, QUICK_PROMPTS } from '../utils/responseEngine';
 import { ImageCard } from './ImageCard';
+import { useT } from '../i18n';
 
 interface WelcomeScreenProps {
   onSelectPrompt: (prompt: string) => void;
@@ -12,6 +13,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onSelectPrompt,
   onNavigateTab,
 }) => {
+  const t = useT();
   return (
     <div
       style={{
@@ -63,7 +65,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           marginBottom: '10px',
         }}
       >
-        How can I help you today?
+        {t('How can I help you today?')}
       </h1>
 
       {/* Supporting Text */}
@@ -76,7 +78,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           marginBottom: '38px',
         }}
       >
-        Your guide to government schemes, benefits and essential documents.
+        {t('Your guide to government schemes, benefits and essential documents.')}
       </p>
 
       {/* Image-Based Explore Section */}
@@ -99,10 +101,10 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               letterSpacing: '-0.01em',
             }}
           >
-            What are you looking for today?
+            {t('What are you looking for today?')}
           </h2>
           <span style={{ fontSize: '12px', color: 'var(--workspace-text-subtle)' }}>
-            Explore verified citizen services
+            {t('Explore verified citizen services')}
           </span>
         </div>
 
@@ -123,7 +125,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 if (card.targetNav && onNavigateTab) {
                   onNavigateTab(card.targetNav);
                 } else {
-                  onSelectPrompt(card.actionPrompt);
+                  onSelectPrompt(t(card.actionPrompt));
                 }
               }}
             />
@@ -144,12 +146,12 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         }}
       >
         <span style={{ fontSize: '12px', color: 'var(--workspace-text-subtle)', marginRight: '4px' }}>
-          Suggested questions:
+          {t('Suggested questions:')}
         </span>
         {QUICK_PROMPTS.map((qp, idx) => (
           <button
             key={idx}
-            onClick={() => onSelectPrompt(qp.prompt)}
+            onClick={() => onSelectPrompt(t(qp.prompt))}
             style={{
               backgroundColor: '#ffffff',
               border: '1px solid var(--workspace-border)',
@@ -176,7 +178,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             }}
           >
             <Sparkles size={11} color="var(--brand-sun)" />
-            <span>&ldquo;{qp.label}&rdquo;</span>
+            <span>&ldquo;{t(qp.label)}&rdquo;</span>
           </button>
         ))}
       </div>

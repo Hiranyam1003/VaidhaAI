@@ -1,6 +1,7 @@
 import React from 'react';
 import { Bookmark, ExternalLink, Trash2 } from 'lucide-react';
 import type { SchemeItem } from '../types';
+import { useT } from '../i18n';
 
 interface SavedSchemesProps {
   schemes: SchemeItem[];
@@ -17,6 +18,7 @@ export const SavedSchemes: React.FC<SavedSchemesProps> = ({
   onAskScheme,
   onGoToExplore,
 }) => {
+  const t = useT();
   const bookmarked = schemes.filter((s) => savedIds.includes(s.id));
 
   return (
@@ -34,10 +36,10 @@ export const SavedSchemes: React.FC<SavedSchemesProps> = ({
     >
       <div style={{ marginBottom: '24px' }}>
         <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '24px', fontWeight: 700, color: '#1a1a1a', marginBottom: '6px' }}>
-          Saved Schemes
+          {t('Saved Schemes')}
         </h2>
         <p style={{ fontSize: '13.5px', color: 'var(--workspace-text-muted)' }}>
-          Quick access to government initiatives and application guidelines you have bookmarked.
+          {t('Quick access to government initiatives and application guidelines you have bookmarked.')}
         </p>
       </div>
 
@@ -56,9 +58,9 @@ export const SavedSchemes: React.FC<SavedSchemesProps> = ({
           }}
         >
           <Bookmark size={36} color="var(--workspace-text-subtle)" />
-          <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#1a1a1a' }}>No saved schemes yet</h3>
+          <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#1a1a1a' }}>{t('No saved schemes yet')}</h3>
           <p style={{ fontSize: '13px', color: 'var(--workspace-text-muted)', maxWidth: '380px' }}>
-            Browse through the scheme catalog and bookmark the ones relevant to you or your family.
+            {t('Browse through the scheme catalog and bookmark the ones relevant to you or your family.')}
           </p>
           <button
             onClick={onGoToExplore}
@@ -72,7 +74,7 @@ export const SavedSchemes: React.FC<SavedSchemesProps> = ({
               fontWeight: 600,
             }}
           >
-            Explore Schemes
+            {t('Explore Schemes')}
           </button>
         </div>
       ) : (
@@ -103,11 +105,11 @@ export const SavedSchemes: React.FC<SavedSchemesProps> = ({
                       borderRadius: '6px',
                     }}
                   >
-                    {scheme.category}
+                    {t(scheme.category)}
                   </span>
                   <button
                     onClick={() => onRemoveSaved(scheme.id)}
-                    title="Remove from saved"
+                    title={t('Remove from saved')}
                     style={{ color: 'var(--workspace-text-subtle)', padding: '4px' }}
                   >
                     <Trash2 size={16} />
@@ -118,14 +120,14 @@ export const SavedSchemes: React.FC<SavedSchemesProps> = ({
                   {scheme.name}
                 </h3>
                 <p style={{ fontSize: '12.5px', color: 'var(--workspace-text-muted)', lineHeight: '1.45', marginBottom: '12px' }}>
-                  {scheme.benefit}
+                  {t(scheme.benefit)}
                 </p>
               </div>
 
               <div style={{ borderTop: '1px solid #f2eee8', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '11px', color: 'var(--workspace-text-subtle)' }}>{scheme.level}</span>
+                <span style={{ fontSize: '11px', color: 'var(--workspace-text-subtle)' }}>{t(scheme.level)}</span>
                 <button
-                  onClick={() => onAskScheme(`How do I apply for ${scheme.name}?`)}
+                  onClick={() => onAskScheme(t('How do I apply for {name}?', { name: scheme.name }))}
                   style={{
                     fontSize: '12px',
                     fontWeight: 600,
@@ -135,7 +137,7 @@ export const SavedSchemes: React.FC<SavedSchemesProps> = ({
                     gap: '4px',
                   }}
                 >
-                  Ask in Chat <ExternalLink size={12} />
+                  {t('Ask in Chat')} <ExternalLink size={12} />
                 </button>
               </div>
             </div>

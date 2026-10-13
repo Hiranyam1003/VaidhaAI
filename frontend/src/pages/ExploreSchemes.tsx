@@ -8,6 +8,7 @@ import {
   FileCheck,
 } from 'lucide-react';
 import type { SchemeItem } from '../types';
+import { useT } from '../i18n';
 
 interface ExploreSchemesProps {
   schemes: SchemeItem[];
@@ -22,6 +23,7 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
   onToggleSave,
   onAskScheme,
 }) => {
+  const t = useT();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedLevel, setSelectedLevel] = useState<string>('All');
@@ -42,6 +44,7 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
         s.name.toLowerCase().includes(search.toLowerCase()) ||
         (s.hindiName && s.hindiName.includes(search)) ||
         s.benefit.toLowerCase().includes(search.toLowerCase()) ||
+        t(s.benefit).toLowerCase().includes(search.toLowerCase()) ||
         s.department.toLowerCase().includes(search.toLowerCase());
       return matchCat && matchLevel && matchBeneficiary && matchSearch;
     })
@@ -75,10 +78,10 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
             marginBottom: '6px',
           }}
         >
-          Explore Government Schemes
+          {t('Explore Government Schemes')}
         </h2>
         <p style={{ fontSize: '14px', color: 'var(--workspace-text-muted)' }}>
-          Browse verified central and state welfare initiatives with requirements and documentation.
+          {t('Browse verified central and state welfare initiatives with requirements and documentation.')}
         </p>
       </div>
 
@@ -104,7 +107,7 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
             <Search size={16} color="var(--workspace-text-subtle)" />
             <input
               type="text"
-              placeholder="Search by scheme name, benefits, or department..."
+              placeholder={t('Search by scheme name, benefits, or department...')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{
@@ -135,8 +138,8 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
               color: 'var(--workspace-text-main)',
             }}
           >
-            <option value="name">Sort by: Name (A-Z)</option>
-            <option value="category">Sort by: Category</option>
+            <option value="name">{t('Sort by: Name (A-Z)')}</option>
+            <option value="category">{t('Sort by: Category')}</option>
           </select>
         </div>
 
@@ -144,7 +147,7 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
           {/* Level Dropdown */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '12px', color: 'var(--workspace-text-subtle)', fontWeight: 500 }}>Govt Level:</span>
+            <span style={{ fontSize: '12px', color: 'var(--workspace-text-subtle)', fontWeight: 500 }}>{t('Govt Level:')}</span>
             <select
               value={selectedLevel}
               onChange={(e) => setSelectedLevel(e.target.value)}
@@ -159,14 +162,14 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
               }}
             >
               {levels.map((lvl) => (
-                <option key={lvl} value={lvl}>{lvl}</option>
+                <option key={lvl} value={lvl}>{t(lvl)}</option>
               ))}
             </select>
           </div>
 
           {/* Beneficiary Dropdown */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '12px', color: 'var(--workspace-text-subtle)', fontWeight: 500 }}>Beneficiary:</span>
+            <span style={{ fontSize: '12px', color: 'var(--workspace-text-subtle)', fontWeight: 500 }}>{t('Beneficiary:')}</span>
             <select
               value={selectedBeneficiary}
               onChange={(e) => setSelectedBeneficiary(e.target.value)}
@@ -181,7 +184,7 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
               }}
             >
               {beneficiaries.map((b) => (
-                <option key={b} value={b}>{b}</option>
+                <option key={b} value={b}>{t(b)}</option>
               ))}
             </select>
           </div>
@@ -207,7 +210,7 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
                     transition: 'all 0.12s ease',
                   }}
                 >
-                  {cat}
+                  {t(cat)}
                 </button>
               );
             })}
@@ -246,11 +249,11 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
                       borderRadius: '6px',
                     }}
                   >
-                    {scheme.category} • {scheme.level}
+                    {t(scheme.category)} • {t(scheme.level)}
                   </span>
                   <button
                     onClick={() => onToggleSave(scheme.id)}
-                    title={isSaved ? 'Remove bookmark' : 'Save scheme'}
+                    title={t(isSaved ? 'Remove bookmark' : 'Save scheme')}
                     style={{ color: isSaved ? 'var(--brand-sun)' : 'var(--workspace-text-subtle)', padding: '4px' }}
                   >
                     {isSaved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
@@ -278,11 +281,11 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
                 )}
 
                 <p style={{ fontSize: '13px', color: 'var(--workspace-text-main)', marginBottom: '8px', lineHeight: 1.45 }}>
-                  <strong>Benefit:</strong> {scheme.benefit}
+                  <strong>{t('Benefit:')}</strong> {t(scheme.benefit)}
                 </p>
 
                 <p style={{ fontSize: '12px', color: 'var(--workspace-text-muted)', lineHeight: 1.45 }}>
-                  <strong>Eligibility:</strong> {scheme.eligibility}
+                  <strong>{t('Eligibility:')}</strong> {t(scheme.eligibility)}
                 </p>
               </div>
 
@@ -300,11 +303,11 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
                   onClick={() => setActiveModalScheme(scheme)}
                   style={{ fontSize: '12px', color: 'var(--workspace-text-muted)', fontWeight: 500 }}
                 >
-                  View Details
+                  {t('View Details')}
                 </button>
 
                 <button
-                  onClick={() => onAskScheme(`What are the complete eligibility and document rules for ${scheme.name}?`)}
+                  onClick={() => onAskScheme(t('What are the complete eligibility and document rules for {name}?', { name: scheme.name }))}
                   style={{
                     fontSize: '12px',
                     fontWeight: 600,
@@ -314,7 +317,7 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
                     gap: '4px',
                   }}
                 >
-                  Ask Vaidha <ExternalLink size={12} />
+                  {t('Ask Vaidha')} <ExternalLink size={12} />
                 </button>
               </div>
             </div>
@@ -333,7 +336,7 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
             }}
           >
             <p style={{ fontSize: '14px', color: 'var(--workspace-text-muted)' }}>
-              No schemes match your filter criteria.
+              {t('No schemes match your filter criteria.')}
             </p>
           </div>
         )}
@@ -381,7 +384,7 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
                   borderRadius: '6px',
                 }}
               >
-                {activeModalScheme.category} • {activeModalScheme.level} • {activeModalScheme.beneficiaryGroup}
+                {t(activeModalScheme.category)} • {t(activeModalScheme.level)} • {t(activeModalScheme.beneficiaryGroup)}
               </span>
               <button onClick={() => setActiveModalScheme(null)} style={{ color: '#888', padding: '4px' }}>
                 <X size={18} />
@@ -398,27 +401,27 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
             )}
 
             <div style={{ fontSize: '13px', color: 'var(--workspace-text-muted)', marginBottom: '16px' }}>
-              Nodal Department: <strong>{activeModalScheme.department}</strong>
+              {t('Nodal Department:')} <strong>{t(activeModalScheme.department)}</strong>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '22px' }}>
               <div style={{ backgroundColor: '#fbfaf8', padding: '14px', borderRadius: '10px', border: '1px solid var(--workspace-border)' }}>
-                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a1a', marginBottom: '4px' }}>Direct Benefit</h4>
-                <p style={{ fontSize: '13px', color: 'var(--workspace-text-main)', lineHeight: '1.5' }}>{activeModalScheme.benefit}</p>
+                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a1a', marginBottom: '4px' }}>{t('Direct Benefit')}</h4>
+                <p style={{ fontSize: '13px', color: 'var(--workspace-text-main)', lineHeight: '1.5' }}>{t(activeModalScheme.benefit)}</p>
               </div>
 
               <div style={{ backgroundColor: '#fbfaf8', padding: '14px', borderRadius: '10px', border: '1px solid var(--workspace-border)' }}>
-                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a1a', marginBottom: '4px' }}>Potential Eligibility Criteria</h4>
-                <p style={{ fontSize: '13px', color: 'var(--workspace-text-main)', lineHeight: '1.5' }}>{activeModalScheme.eligibility}</p>
+                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a1a', marginBottom: '4px' }}>{t('Potential Eligibility Criteria')}</h4>
+                <p style={{ fontSize: '13px', color: 'var(--workspace-text-main)', lineHeight: '1.5' }}>{t(activeModalScheme.eligibility)}</p>
               </div>
 
               <div style={{ backgroundColor: '#fbfaf8', padding: '14px', borderRadius: '10px', border: '1px solid var(--workspace-border)' }}>
                 <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a1a', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <FileCheck size={15} color="var(--brand-sun)" /> Mandatory Documents Checklist
+                  <FileCheck size={15} color="var(--brand-sun)" /> {t('Mandatory Documents Checklist')}
                 </h4>
                 <ul style={{ paddingLeft: '18px', fontSize: '12.5px', color: 'var(--workspace-text-main)', lineHeight: '1.6' }}>
                   {activeModalScheme.documents.map((doc, i) => (
-                    <li key={i}>{doc}</li>
+                    <li key={i}>{t(doc)}</li>
                   ))}
                 </ul>
               </div>
@@ -429,7 +432,7 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
                 onClick={() => {
                   const name = activeModalScheme.name;
                   setActiveModalScheme(null);
-                  onAskScheme(`Provide step-by-step application instructions and required forms for ${name}`);
+                  onAskScheme(t('Provide step-by-step application instructions and required forms for {name}', { name }));
                 }}
                 style={{
                   flex: 1,
@@ -445,7 +448,7 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
                   gap: '6px',
                 }}
               >
-                Ask Vaidha in Chat
+                {t('Ask Vaidha in Chat')}
               </button>
 
               {activeModalScheme.officialUrl && (
@@ -468,7 +471,7 @@ export const ExploreSchemes: React.FC<ExploreSchemesProps> = ({
                     textDecoration: 'none',
                   }}
                 >
-                  Official Portal <ExternalLink size={13} />
+                  {t('Official Portal')} <ExternalLink size={13} />
                 </a>
               )}
             </div>

@@ -1,11 +1,13 @@
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
+import { useT } from '../i18n';
 
 interface DocumentLibraryProps {
   onAskDoc: (docName: string) => void;
 }
 
 export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({ onAskDoc }) => {
+  const t = useT();
   const documentsList = [
     {
       title: 'Tahsildar Income Certificate',
@@ -52,10 +54,10 @@ export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({ onAskDoc }) =>
     >
       <div style={{ marginBottom: '24px' }}>
         <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '24px', fontWeight: 700, color: '#1a1a1a', marginBottom: '6px' }}>
-          Official Document Library
+          {t('Official Document Library')}
         </h2>
         <p style={{ fontSize: '13.5px', color: 'var(--workspace-text-muted)' }}>
-          Detailed guidance, issuing authorities, and prerequisites for key Indian documentation.
+          {t('Detailed guidance, issuing authorities, and prerequisites for key Indian documentation.')}
         </p>
       </div>
 
@@ -74,10 +76,10 @@ export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({ onAskDoc }) =>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
               <div>
                 <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#1a1a1a', marginBottom: '2px' }}>
-                  {doc.title}
+                  {t(doc.title)}
                 </h3>
                 <span style={{ fontSize: '12px', color: 'var(--workspace-text-subtle)' }}>
-                  Issuing Authority: {doc.authority}
+                  {t('Issuing Authority:')} {t(doc.authority)}
                 </span>
               </div>
               <span
@@ -90,22 +92,22 @@ export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({ onAskDoc }) =>
                   borderRadius: '6px',
                 }}
               >
-                {doc.validity}
+                {t(doc.validity)}
               </span>
             </div>
 
             <div style={{ margin: '12px 0', fontSize: '13px', lineHeight: '1.5', color: 'var(--workspace-text-main)' }}>
               <p style={{ marginBottom: '4px' }}>
-                <strong>Commonly Required For:</strong> {doc.requiredFor}
+                <strong>{t('Commonly Required For:')}</strong> {t(doc.requiredFor)}
               </p>
               <p style={{ color: 'var(--workspace-text-muted)' }}>
-                <strong>Prerequisites:</strong> {doc.prerequisites}
+                <strong>{t('Prerequisites:')}</strong> {t(doc.prerequisites)}
               </p>
             </div>
 
             <div style={{ borderTop: '1px solid #f2eee8', paddingTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
               <button
-                onClick={() => onAskDoc(`What is the step-by-step process and timeline to obtain a ${doc.title}?`)}
+                onClick={() => onAskDoc(t('What is the step-by-step process and timeline to obtain a {doc}?', { doc: t(doc.title) }))}
                 style={{
                   fontSize: '12px',
                   fontWeight: 600,
@@ -115,7 +117,7 @@ export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({ onAskDoc }) =>
                   gap: '4px',
                 }}
               >
-                Ask Vaidha about process <ExternalLink size={12} />
+                {t('Ask Vaidha about process')} <ExternalLink size={12} />
               </button>
             </div>
           </div>

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { useT } from '../i18n';
 
 interface EligibilityCheckerProps {
   onCheckCriteria: (prompt: string) => void;
 }
 
 export const EligibilityChecker: React.FC<EligibilityCheckerProps> = ({ onCheckCriteria }) => {
+  const t = useT();
   const [state, setState] = useState('Maharashtra');
   const [incomeRange, setIncomeRange] = useState('< 3 Lakhs (EWS)');
   const [category, setCategory] = useState('General / Open');
@@ -13,7 +15,10 @@ export const EligibilityChecker: React.FC<EligibilityCheckerProps> = ({ onCheckC
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const prompt = `Please evaluate all central and ${state} government welfare schemes for my household: Income: ${incomeRange}, Category: ${category}, Occupation: ${occupation}.`;
+    const prompt = t(
+      'Please evaluate all central and {state} government welfare schemes for my household: Income: {income}, Category: {category}, Occupation: {occupation}.',
+      { state, income: incomeRange, category, occupation },
+    );
     onCheckCriteria(prompt);
   };
 
@@ -32,10 +37,10 @@ export const EligibilityChecker: React.FC<EligibilityCheckerProps> = ({ onCheckC
     >
       <div style={{ marginBottom: '24px' }}>
         <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '24px', fontWeight: 700, color: '#1a1a1a', marginBottom: '6px' }}>
-          Interactive Eligibility Checker
+          {t('Interactive Eligibility Checker')}
         </h2>
         <p style={{ fontSize: '13.5px', color: 'var(--workspace-text-muted)' }}>
-          Configure your household profile to discover high-match schemes and document prerequisites.
+          {t('Configure your household profile to discover high-match schemes and document prerequisites.')}
         </p>
       </div>
 
@@ -54,7 +59,7 @@ export const EligibilityChecker: React.FC<EligibilityCheckerProps> = ({ onCheckC
       >
         <div>
           <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
-            State / Union Territory
+            {t('State / Union Territory')}
           </label>
           <select
             value={state}
@@ -70,18 +75,18 @@ export const EligibilityChecker: React.FC<EligibilityCheckerProps> = ({ onCheckC
               color: 'var(--workspace-text-main)',
             }}
           >
-            <option value="Maharashtra">Maharashtra</option>
-            <option value="Delhi NCR">Delhi NCR</option>
-            <option value="Karnataka">Karnataka</option>
-            <option value="Uttar Pradesh">Uttar Pradesh</option>
-            <option value="Gujarat">Gujarat</option>
-            <option value="All India (Central Only)">All India (Central Only)</option>
+            <option value="Maharashtra">{t('Maharashtra')}</option>
+            <option value="Delhi NCR">{t('Delhi NCR')}</option>
+            <option value="Karnataka">{t('Karnataka')}</option>
+            <option value="Uttar Pradesh">{t('Uttar Pradesh')}</option>
+            <option value="Gujarat">{t('Gujarat')}</option>
+            <option value="All India (Central Only)">{t('All India (Central Only)')}</option>
           </select>
         </div>
 
         <div>
           <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
-            Annual Family Income
+            {t('Annual Family Income')}
           </label>
           <select
             value={incomeRange}
@@ -97,17 +102,17 @@ export const EligibilityChecker: React.FC<EligibilityCheckerProps> = ({ onCheckC
               color: 'var(--workspace-text-main)',
             }}
           >
-            <option value="< 1 Lakh (BPL / Antyodaya)">Less than ₹1 Lakh (BPL / Antyodaya)</option>
-            <option value="< 3 Lakhs (EWS)">₹1 Lakh – ₹3 Lakhs (Economically Weaker Section)</option>
-            <option value="3 - 6 Lakhs (LIG)">₹3 Lakhs – ₹6 Lakhs (Low Income Group)</option>
-            <option value="6 - 8 Lakhs (EBC Threshold)">₹6 Lakhs – ₹8 Lakhs (EBC Fee-Waiver Limit)</option>
-            <option value="8 - 18 Lakhs (MIG)">₹8 Lakhs – ₹18 Lakhs (Middle Income Group)</option>
+            <option value="< 1 Lakh (BPL / Antyodaya)">{t('Less than ₹1 Lakh (BPL / Antyodaya)')}</option>
+            <option value="< 3 Lakhs (EWS)">{t('₹1 Lakh – ₹3 Lakhs (Economically Weaker Section)')}</option>
+            <option value="3 - 6 Lakhs (LIG)">{t('₹3 Lakhs – ₹6 Lakhs (Low Income Group)')}</option>
+            <option value="6 - 8 Lakhs (EBC Threshold)">{t('₹6 Lakhs – ₹8 Lakhs (EBC Fee-Waiver Limit)')}</option>
+            <option value="8 - 18 Lakhs (MIG)">{t('₹8 Lakhs – ₹18 Lakhs (Middle Income Group)')}</option>
           </select>
         </div>
 
         <div>
           <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
-            Social Category
+            {t('Social Category')}
           </label>
           <select
             value={category}
@@ -123,17 +128,17 @@ export const EligibilityChecker: React.FC<EligibilityCheckerProps> = ({ onCheckC
               color: 'var(--workspace-text-main)',
             }}
           >
-            <option value="General / Open">General / Open</option>
-            <option value="EWS (Economically Weaker Section)">EWS (Economically Weaker Section)</option>
-            <option value="OBC (Non-Creamy Layer)">OBC (Non-Creamy Layer)</option>
-            <option value="SC / ST">Scheduled Caste (SC) / Scheduled Tribe (ST)</option>
-            <option value="VJNT / SBC">VJNT / SBC (State Specific)</option>
+            <option value="General / Open">{t('General / Open')}</option>
+            <option value="EWS (Economically Weaker Section)">{t('EWS (Economically Weaker Section)')}</option>
+            <option value="OBC (Non-Creamy Layer)">{t('OBC (Non-Creamy Layer)')}</option>
+            <option value="SC / ST">{t('Scheduled Caste (SC) / Scheduled Tribe (ST)')}</option>
+            <option value="VJNT / SBC">{t('VJNT / SBC (State Specific)')}</option>
           </select>
         </div>
 
         <div>
           <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#1a1a1a', marginBottom: '6px' }}>
-            Occupation / Primary Focus
+            {t('Occupation / Primary Focus')}
           </label>
           <select
             value={occupation}
@@ -149,11 +154,11 @@ export const EligibilityChecker: React.FC<EligibilityCheckerProps> = ({ onCheckC
               color: 'var(--workspace-text-main)',
             }}
           >
-            <option value="Student / Higher Technical Education">Student (Higher & Technical Education)</option>
-            <option value="Farmer / Small Landholder">Farmer / Small Landholder</option>
-            <option value="Artisan / Traditional Craftsman">Artisan / Traditional Craftsman</option>
-            <option value="Daily Wage / Unorganized Laborer">Daily Wage / Unorganized Laborer</option>
-            <option value="Salaried / Self-Employed">Salaried / Private Employee</option>
+            <option value="Student / Higher Technical Education">{t('Student (Higher & Technical Education)')}</option>
+            <option value="Farmer / Small Landholder">{t('Farmer / Small Landholder')}</option>
+            <option value="Artisan / Traditional Craftsman">{t('Artisan / Traditional Craftsman')}</option>
+            <option value="Daily Wage / Unorganized Laborer">{t('Daily Wage / Unorganized Laborer')}</option>
+            <option value="Salaried / Self-Employed">{t('Salaried / Private Employee')}</option>
           </select>
         </div>
 
@@ -174,7 +179,7 @@ export const EligibilityChecker: React.FC<EligibilityCheckerProps> = ({ onCheckC
             boxShadow: '0 2px 6px rgba(217, 72, 43, 0.3)',
           }}
         >
-          <span>Run Eligibility Assessment in Chat</span>
+          <span>{t('Run Eligibility Assessment in Chat')}</span>
           <ArrowRight size={16} />
         </button>
       </form>

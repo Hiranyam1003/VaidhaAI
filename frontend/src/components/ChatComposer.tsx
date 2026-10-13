@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Paperclip, ArrowUp, FileText } from 'lucide-react';
+import { useT } from '../i18n';
 
 interface ChatComposerProps {
   onSendMessage: (text: string) => void;
@@ -7,6 +8,7 @@ interface ChatComposerProps {
 }
 
 export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disabled = false }) => {
+  const t = useT();
   const [inputText, setInputText] = useState('');
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -74,10 +76,10 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
           }}
         >
           <FileText size={12} color="var(--brand-sun)" />
-          <span>Attached: <strong>{selectedFile}</strong> (Demo)</span>
+          <span>{t('Attached:')} <strong>{selectedFile}</strong> {t('(Demo)')}</span>
           <button
             onClick={() => setSelectedFile(null)}
-            aria-label="Remove attachment"
+            aria-label={t('Remove attachment')}
             style={{ marginLeft: '4px', color: '#888', fontSize: '13px' }}
           >
             ×
@@ -110,8 +112,8 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
         {/* Attachment Button */}
         <button
           onClick={() => fileInputRef.current?.click()}
-          title="Attach document for verification (Demo)"
-          aria-label="Attach document"
+          title={t('Attach document for verification (Demo)')}
+          aria-label={t('Attach document')}
           style={{
             width: '36px',
             height: '36px',
@@ -144,8 +146,8 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask about schemes, eligibility or required documents…"
-          aria-label="Message Vaidha AI"
+          placeholder={t('Ask about schemes, eligibility or required documents…')}
+          aria-label={t('Message Vaidha AI')}
           style={{
             flex: 1,
             maxHeight: '160px',
@@ -163,8 +165,8 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
         <button
           onClick={handleSend}
           disabled={!inputText.trim() || disabled}
-          title="Send message (Enter)"
-          aria-label="Send message"
+          title={t('Send message (Enter)')}
+          aria-label={t('Send message')}
           style={{
             width: '36px',
             height: '36px',
@@ -208,10 +210,22 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({ onSendMessage, disab
           color: 'var(--workspace-text-subtle)',
         }}
       >
-        <span>Press <kbd style={{ padding: '1px 4px', borderRadius: '4px', backgroundColor: '#e8e5dc', fontSize: '10px' }}>Enter ↵</kbd> to ask</span>
+        <KeyHint text={t('Press {key} to ask')} keyLabel="Enter ↵" />
         <span>•</span>
-        <span><kbd style={{ padding: '1px 4px', borderRadius: '4px', backgroundColor: '#e8e5dc', fontSize: '10px' }}>Shift + Enter</kbd> for new line</span>
+        <KeyHint text={t('{key} for new line')} keyLabel="Shift + Enter" />
       </div>
     </div>
+  );
+};
+
+// Word order differs between languages, so the key goes wherever {key} sits in the translated sentence.
+const KeyHint: React.FC<{ text: string; keyLabel: string }> = ({ text, keyLabel }) => {
+  const [before, after] = text.split('{key}');
+  return (
+    <span>
+      {before}
+      <kbd style={{ padding: '1px 4px', borderRadius: '4px', backgroundColor: '#e8e5dc', fontSize: '10px' }}>{keyLabel}</kbd>
+      {after}
+    </span>
   );
 };
