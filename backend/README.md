@@ -1,17 +1,6 @@
 # Vaidha AI — Backend Service
 
-This directory is designated for the future backend architecture of Vaidha AI (Virtual Assistant for Indian Documentation & High-level Administration).
-
-### Planned Architecture
-- **API Framework**: FastAPI / Node.js
-- **Services**:
-  - Scheme Directory & Categorization Engine
-  - Rule-based & Deterministic Eligibility Verification Engine
-  - Document Requirements & Verification Matrix
-  - Citizen Query Processing
-- **Integration Points**: Official public state APIs, UMANG, DigiLocker, and state portal directories.
-
-*Note: Currently running in frontend-only prototype mode.*
+FastAPI service that answers the chat with Google Gemini, runs the RAG eligibility checker, manages accounts and serves live government news. `main.py` holds the endpoints and the Gemini model fallback chain; `rag.py` the embedding index; `auth.py` accounts and sessions (SQLite); `guardrails.py` rate limits, PII redaction, the prompt-injection filter and the official-link allow-list. See the [main README](../README.md) for the architecture and the roadmap.
 
 ### Python environment (Gemini API)
 
