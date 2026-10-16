@@ -1,6 +1,7 @@
 """Mobile number + password accounts, sessions and the user's account details.
 
-Everything is stored locally in SQLite (backend/vaidha.db, git-ignored); nothing is sent to an outside service.
+Stored in SQLite: locally in backend/vaidha.db (git-ignored), or in a Turso database when TURSO_DATABASE_URL is set,
+because a serverless host such as Vercel has no lasting disk.
 Passwords are hashed with scrypt and session tokens are stored only as hashes.
 """
 
@@ -11,11 +12,11 @@ import logging
 import os
 import re
 import secrets
-import sqlite3
 import time
 from pathlib import Path
 from typing import Literal
 
+import libsql
 from fastapi import APIRouter, Cookie, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 
@@ -30,8 +31,11 @@ SCRYPT = {"n": 2**14, "r": 8, "p": 1}
 logger = logging.getLogger("vaidha")
 router = APIRouter(prefix="/api")
 
-_db = sqlite3.connect(DB_PATH, check_same_thread=False)
-_db.row_factory = sqlite3.Row
+_db = (
+    libsql.connect(os.environ["TURSO_DATABASE_URL"], auth_token=os.getenv("TURSO_AUTH_TOKEN", ""))
+    if os.getenv("TURSO_DATABASE_URL")
+    else libsql.connect(str(DB_PATH))
+)
 _db.executescript(
     """
     CREATE TABLE IF NOT EXISTS users (
@@ -50,9 +54,16 @@ _db.executescript(
     """
 )
 # Databases created before passwords existed lack the column.
-if "password_hash" not in {row["name"] for row in _db.execute("PRAGMA table_info(users)")}:
+if "password_hash" not in {row[1] for row in _db.execute("PRAGMA table_info(users)").fetchall()}:
     _db.execute("ALTER TABLE users ADD COLUMN password_hash TEXT")
 _db.commit()
+
+
+def _one(sql: str, params: tuple = ()) -> dict | None:
+    """First matching row as a dict (libsql has no row_factory)."""
+    cursor = _db.execute(sql, params)
+    row = cursor.fetchone()
+    return dict(zip([col[0] for col in cursor.description], row)) if row else None
 
 
 class AccountDetails(BaseModel):
@@ -127,12 +138,12 @@ def rate_limit(request: Request, limits: list[tuple[str, int, int]]) -> None:
         raise HTTPException(429, "Too many attempts. Please wait a few minutes and try again.", headers={"Retry-After": str(wait)})
 
 
-def account_for(user: sqlite3.Row) -> Account:
+def account_for(user: dict) -> Account:
     details = json.loads(user["details"])
     return Account(phone=user["phone"], details=details, needsDetails="name" not in details)
 
 
-def start_session(user: sqlite3.Row, request: Request, response: Response) -> Account:
+def start_session(user: dict, request: Request, response: Response) -> Account:
     token = secrets.token_urlsafe(32)
     _db.execute(
         "INSERT INTO sessions (token_hash, user_id, expires_at) VALUES (?, ?, ?)",
@@ -152,13 +163,13 @@ def start_session(user: sqlite3.Row, request: Request, response: Response) -> Ac
     return account_for(user)
 
 
-def current_user(token: str | None) -> sqlite3.Row:
+def current_user(token: str | None) -> dict:
     if not token:
         raise HTTPException(401, "Please log in.")
-    row = _db.execute(
+    row = _one(
         "SELECT users.* FROM sessions JOIN users ON users.id = sessions.user_id WHERE token_hash = ? AND expires_at > ?",
         (token_hash(token), time.time()),
-    ).fetchone()
+    )
     if not row:
         raise HTTPException(401, "Your session has ended. Please log in again.")
     return row
@@ -170,7 +181,7 @@ def register(body: Credentials, request: Request, response: Response) -> Account
     rate_limit(request, [("register-ip:{ip}", 10, 3600)])
     if len(body.password) < MIN_PASSWORD_LENGTH:
         raise HTTPException(422, "Use a password with at least 8 characters.")
-    existing = _db.execute("SELECT * FROM users WHERE phone = ?", (phone,)).fetchone()
+    existing = _one("SELECT * FROM users WHERE phone = ?", (phone,))
     if existing and existing["password_hash"]:
         raise HTTPException(409, "An account with this mobile number already exists. Please log in instead.")
     if existing:
@@ -181,7 +192,7 @@ def register(body: Credentials, request: Request, response: Response) -> Account
             "INSERT INTO users (phone, password_hash, created_at) VALUES (?, ?, ?)",
             (phone, hash_password(body.password), time.time()),
         )
-    user = _db.execute("SELECT * FROM users WHERE phone = ?", (phone,)).fetchone()
+    user = _one("SELECT * FROM users WHERE phone = ?", (phone,))
     return start_session(user, request, response)
 
 
@@ -190,7 +201,7 @@ def login(body: Credentials, request: Request, response: Response) -> Account:
     phone = normalize_phone(body.phone)
     # Per number: stops password guessing on one account. Per visitor: stops guessing across many accounts.
     rate_limit(request, [(f"login-phone:{phone}", 10, 900), ("login-ip:{ip}", 30, 900)])
-    user = _db.execute("SELECT * FROM users WHERE phone = ?", (phone,)).fetchone()
+    user = _one("SELECT * FROM users WHERE phone = ?", (phone,))
     if not password_matches(body.password, user["password_hash"] if user else _DUMMY_HASH) or not user:
         raise HTTPException(401, "The mobile number or password is not right.")
     return start_session(user, request, response)
@@ -231,4 +242,4 @@ def update_details(changes: dict, token: str | None) -> Account:
     details = {**json.loads(user["details"]), **changes}
     _db.execute("UPDATE users SET details = ? WHERE id = ?", (json.dumps(details), user["id"]))
     _db.commit()
-    return account_for(_db.execute("SELECT * FROM users WHERE id = ?", (user["id"],)).fetchone())
+    return account_for(_one("SELECT * FROM users WHERE id = ?", (user["id"],)))

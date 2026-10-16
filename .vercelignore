@@ -1,0 +1,7 @@
+# Never upload secrets, the local accounts database or local build/install folders.
+.env
+*.db
+.venv
+__pycache__
+node_modules
+frontend/dist

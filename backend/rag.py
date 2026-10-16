@@ -114,9 +114,13 @@ class Index:
                 for chunk, vector in zip(batch, await embed(client, [c.text for c in batch], "RETRIEVAL_DOCUMENT")):
                     cache[text_key(chunk.text)] = vector
             if missing:
-                CACHE_FILE.parent.mkdir(exist_ok=True)
-                CACHE_FILE.write_text(json.dumps({text_key(c.text): cache[text_key(c.text)] for c in chunks}))
                 logger.info("Embedded %d new or changed chunks", len(missing))
+                try:
+                    CACHE_FILE.parent.mkdir(exist_ok=True)
+                    CACHE_FILE.write_text(json.dumps({text_key(c.text): cache[text_key(c.text)] for c in chunks}))
+                except OSError:
+                    # Read-only on serverless hosts such as Vercel: commit an up-to-date cache instead.
+                    logger.warning("Could not save the embeddings cache to %s", CACHE_FILE)
             for chunk in chunks:
                 chunk.vector = cache[text_key(chunk.text)]
             self.chunks = chunks
