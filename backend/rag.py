@@ -1,28 +1,26 @@
 """Retrieval over the scheme and document data shared with the frontend (frontend/src/data/*.json).
 
-Each scheme and each document guide becomes one text chunk. Chunks are embedded with Gemini once and cached
-in backend/.cache/embeddings.json, keyed by a hash of their text, so only new or edited entries are re-embedded.
-The corpus is small (tens of entries), so search is a plain cosine similarity over all vectors.
+Each scheme and each document guide becomes one text chunk. The corpus is small (tens of entries), so search is
+plain BM25 keyword scoring in memory: no embedding API and nothing to cache. The index rebuilds itself when the
+JSON data files change.
 """
 
-import asyncio
-import hashlib
 import json
-import logging
 import math
 import os
-from dataclasses import dataclass
+import re
+from collections import Counter
+from dataclasses import dataclass, field
 from pathlib import Path
 
-from google import genai
-from google.genai import types
-
 DATA_DIR = Path(os.getenv("VAIDHA_DATA_DIR", Path(__file__).parent.parent / "frontend" / "src" / "data"))
-CACHE_FILE = Path(__file__).parent / ".cache" / "embeddings.json"
-EMBED_MODEL = os.getenv("GEMINI_EMBED_MODEL", "gemini-embedding-001")
-EMBED_DIMS = 768
-
-logger = logging.getLogger("vaidha")
+DATA_FILES = ("schemes.json", "documents.json")
+BM25_K1 = 1.5
+BM25_B = 0.75
+STOPWORDS = set(
+    "a an and are as at be by for from has have in is it of on or the to who with this that not does do "
+    "your you can any all per its their they".split()
+)
 
 
 @dataclass
@@ -31,7 +29,7 @@ class Chunk:
     id: str
     text: str
     record: dict
-    vector: list[float] | None = None
+    terms: Counter = field(default_factory=Counter)
 
 
 def scheme_text(s: dict) -> str:
@@ -69,70 +67,43 @@ def load_chunks() -> list[Chunk]:
     ]
 
 
-def normalize(v: list[float]) -> list[float]:
-    # Gemini only normalises full-size embeddings; reduced ones (EMBED_DIMS) must be normalised here.
-    norm = math.sqrt(sum(x * x for x in v)) or 1.0
-    return [x / norm for x in v]
-
-
-def text_key(text: str) -> str:
-    return hashlib.sha256(f"{EMBED_MODEL}:{EMBED_DIMS}:{text}".encode()).hexdigest()
-
-
-async def embed(client: genai.Client, texts: list[str], task: str) -> list[list[float]]:
-    result = await client.aio.models.embed_content(
-        model=EMBED_MODEL,
-        contents=texts,
-        config=types.EmbedContentConfig(task_type=task, output_dimensionality=EMBED_DIMS),
-    )
-    return [normalize(e.values) for e in result.embeddings]
+def tokenize(text: str) -> list[str]:
+    return [w for w in re.findall(r"[a-z0-9]+", text.lower()) if len(w) > 1 and w not in STOPWORDS]
 
 
 class Index:
     def __init__(self) -> None:
         self.chunks: list[Chunk] = []
-        self._lock = asyncio.Lock()
+        self.idf: dict[str, float] = {}
+        self.avg_len = 1.0
         self._data_mtime = 0.0
 
-    def _data_changed(self) -> bool:
-        mtime = max((DATA_DIR / name).stat().st_mtime for name in ("schemes.json", "documents.json"))
-        return mtime != self._data_mtime
-
-    async def ensure_ready(self, client: genai.Client) -> None:
+    def ensure_ready(self) -> None:
         """Builds the index on first use, and again whenever the JSON data files change."""
-        if self.chunks and not self._data_changed():
+        mtime = max((DATA_DIR / name).stat().st_mtime for name in DATA_FILES)
+        if self.chunks and mtime == self._data_mtime:
             return
-        async with self._lock:
-            if self.chunks and not self._data_changed():
-                return
-            self._data_mtime = max((DATA_DIR / n).stat().st_mtime for n in ("schemes.json", "documents.json"))
-            chunks = load_chunks()
-            cache = json.loads(CACHE_FILE.read_text()) if CACHE_FILE.exists() else {}
-            missing = [c for c in chunks if text_key(c.text) not in cache]
-            for start in range(0, len(missing), 50):
-                batch = missing[start : start + 50]
-                for chunk, vector in zip(batch, await embed(client, [c.text for c in batch], "RETRIEVAL_DOCUMENT")):
-                    cache[text_key(chunk.text)] = vector
-            if missing:
-                logger.info("Embedded %d new or changed chunks", len(missing))
-                try:
-                    CACHE_FILE.parent.mkdir(exist_ok=True)
-                    CACHE_FILE.write_text(json.dumps({text_key(c.text): cache[text_key(c.text)] for c in chunks}))
-                except OSError:
-                    # Read-only on serverless hosts such as Vercel: commit an up-to-date cache instead.
-                    logger.warning("Could not save the embeddings cache to %s", CACHE_FILE)
-            for chunk in chunks:
-                chunk.vector = cache[text_key(chunk.text)]
-            self.chunks = chunks
+        chunks = load_chunks()
+        for chunk in chunks:
+            chunk.terms = Counter(tokenize(chunk.text))
+        doc_freq = Counter(term for c in chunks for term in c.terms)
+        n = len(chunks)
+        self.idf = {term: math.log(1 + (n - df + 0.5) / (df + 0.5)) for term, df in doc_freq.items()}
+        self.avg_len = sum(c.terms.total() for c in chunks) / n
+        self.chunks, self._data_mtime = chunks, mtime
 
-    async def search(self, client: genai.Client, query: str, kind: str, k: int, exclude=lambda record: False) -> list[Chunk]:
-        await self.ensure_ready(client)
-        [q] = await embed(client, [query], "RETRIEVAL_QUERY")
-        scored = [
-            (sum(a * b for a, b in zip(q, c.vector)), c)
-            for c in self.chunks
-            if c.kind == kind and not exclude(c.record)
-        ]
+    def score(self, query_terms: set[str], chunk: Chunk) -> float:
+        norm = BM25_K1 * (1 - BM25_B + BM25_B * chunk.terms.total() / self.avg_len)
+        return sum(
+            self.idf[term] * tf * (BM25_K1 + 1) / (tf + norm)
+            for term in query_terms
+            if (tf := chunk.terms.get(term, 0))
+        )
+
+    def search(self, query: str, kind: str, k: int, exclude=lambda record: False) -> list[Chunk]:
+        self.ensure_ready()
+        query_terms = set(tokenize(query))
+        scored = [(self.score(query_terms, c), c) for c in self.chunks if c.kind == kind and not exclude(c.record)]
         scored.sort(key=lambda pair: pair[0], reverse=True)
         return [c for _, c in scored[:k]]
 

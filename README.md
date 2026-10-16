@@ -15,7 +15,7 @@
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.143-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org)
-[![Gemini](https://img.shields.io/badge/Google_Gemini-AI-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white)](https://ai.google.dev)
+[![Groq](https://img.shields.io/badge/Groq-AI-F55036?style=for-the-badge)](https://groq.com)
 [![SQLite](https://img.shields.io/badge/SQLite-local-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org)
 
 ![Languages](https://img.shields.io/badge/languages-English%20%C2%B7%20%E0%A4%B9%E0%A4%BF%E0%A4%A8%E0%A5%8D%E0%A4%A6%E0%A5%80%20%C2%B7%20%E0%A4%AE%E0%A4%B0%E0%A4%BE%E0%A4%A0%E0%A5%80-d9482b?style=flat-square)
@@ -49,7 +49,7 @@ Vaidha answers in **English, Hindi or Marathi**, in plain language, points only 
 <td width="50%" valign="top">
 
 ### 💬 Chat-first assistant
-Ask anything about schemes, eligibility or documents. Answers come back as structured JSON from Gemini (content, official citations, suggested follow-ups) and render as clean headings, lists and links.
+Ask anything about schemes, eligibility or documents. Answers come back as structured JSON from Groq (content, official citations, suggested follow-ups) and render as clean headings, lists and links.
 
 </td>
 <td width="50%" valign="top">
@@ -127,24 +127,24 @@ Asking a language model "which schemes am I eligible for?" invites made-up schem
 flowchart LR
     P["👤 Profile<br/>state · age · gender · income<br/>category · occupation · yes/no facts"]
     D["📝 Plain-language<br/>description"]
-    S["🔎 Top schemes<br/>cosine similarity"]
+    S["🔎 Top schemes<br/>BM25 keyword ranking"]
     G["🔎 Matching document guides<br/>from those schemes' papers"]
-    J["✨ Gemini judges each scheme<br/>using ONLY the retrieved records"]
+    J["✨ The model judges each scheme<br/>using ONLY the retrieved records"]
     V["🛡️ Validate<br/>drop unknown ids · strip links<br/>sort likely → maybe → unlikely"]
     R["✅ Verdicts + reasons<br/>papers · steps · guide links"]
 
     P --> D --> S --> G --> J --> V --> R
-    E[("Embedding index<br/>gemini-embedding-001 · 768-d<br/>hash-keyed disk cache")] -.-> S
+    E[("Keyword index<br/>BM25, in memory")] -.-> S
     E -.-> G
 ```
 
 | Step | Detail |
 |---|---|
 | **One source of truth** | Schemes and document guides live in `frontend/src/data/schemes.json` and `documents.json`. The UI imports them and the backend indexes the same files, so the two can never drift apart. |
-| **Embedding** | Each scheme and guide becomes one text chunk, embedded with `gemini-embedding-001` at 768 dimensions and normalised. Vectors are cached in `backend/.cache/embeddings.json` keyed by a hash of the text, so only new or edited entries are re-embedded, and the index rebuilds itself when the JSON changes. |
-| **Retrieval** | Plain cosine similarity over all vectors: the corpus is tens of entries, so a vector database would only add moving parts. Maharashtra-only schemes are filtered out for other states. |
+| **Indexing** | Each scheme and guide becomes one text chunk, tokenised for BM25 keyword scoring in memory. Nothing is cached on disk, and the index rebuilds itself when the JSON changes. |
+| **Retrieval** | BM25 over a short query of the profile's distinctive facts (occupation, category, state, age group, land, housing, disability…), so generic words don't decide the ranking. The corpus is tens of entries, so no embedding API or vector database is needed. Maharashtra-only schemes are filtered out for other states. |
 | **Two-hop retrieval** | After finding the schemes, Vaidha retrieves the document guides closest to *those schemes' required papers*, so every verdict can link straight to "how to get this document". |
-| **Grounded judging** | Gemini returns structured JSON (`verdict`, `reason`, `toConfirm`, `papers`, `documentIds`, `steps`). Every fact in the profile is stated explicitly, including negatives like *does not own a pucca house*, so the model can't assume them. |
+| **Grounded judging** | The model returns structured JSON (`verdict`, `reason`, `toConfirm`, `papers`, `documentIds`, `steps`). Every fact in the profile is stated explicitly, including negatives like *does not own a pucca house*, so the model can't assume them. |
 | **Trust but verify** | Any scheme or document id the model returns that wasn't retrieved is dropped. Results are sorted by verdict, then by relevance. |
 
 ---
@@ -167,7 +167,7 @@ flowchart LR
         GR["guardrails.py<br/>rate limits · PII redaction<br/>injection filter · link allow-list"]
         CHAT["POST /api/chat"]
         ELIG["POST /api/eligibility"]
-        RAG["rag.py<br/>embedding index"]
+        RAG["rag.py<br/>BM25 keyword index"]
         NEWS["GET /api/news<br/>15-min cache"]
         AUTH["auth.py<br/>/api/auth · /api/account"]
         DB[("SQLite<br/>vaidha.db")]
@@ -184,9 +184,8 @@ flowchart LR
     UI -->|"/api via Vite proxy"| NEWS
     DATA --> UI
     DATA --> RAG
-    CHAT -->|"structured JSON<br/>model fallback chain"| GEM["✨ Google Gemini"]
+    CHAT -->|"structured JSON<br/>model fallback chain"| GEM["✨ Groq"]
     ELIG --> GEM
-    RAG -->|embeddings| GEM
     NEWS -->|RSS| GN["📰 Google News"]
 ```
 
@@ -201,7 +200,7 @@ sequenceDiagram
     participant F as React app
     participant B as FastAPI
     participant N as News cache
-    participant G as Gemini
+    participant G as Groq
 
     U->>F: "Am I eligible for PM-KISAN?"
     F->>B: POST /api/chat (message, history, language)
@@ -225,11 +224,11 @@ sequenceDiagram
 | Decision | Why |
 |---|---|
 | **Structured output** (`ChatReply` schema) | The UI gets guaranteed `content` / `citations` / `followUps` fields, with no fragile text parsing. |
-| **Model fallback chain** | Each Gemini model has its own free-tier quota. If one is overloaded, times out or hits 429, the next answers. SDK retries are disabled so failover is fast. |
+| **Model fallback chain** | Each Groq model has its own free-tier quota (8,000 tokens/minute). If one is overloaded, times out, hits 429 or returns invalid JSON, the next answers. |
 | **Headlines in the user turn, not the system prompt** | News comes from outside publishers, so it is treated as *untrusted data*: flattened to one line, injection-filtered and fenced off, never given system-level authority. |
 | **2-second news budget** | A slow RSS feed never slows down a chat; the answer simply goes out without headlines. |
 | **Escaped markdown subset** | `MessageBubble` HTML-escapes model output before adding only `<strong>` and `<a>`, so the model can't inject markup. |
-| **No vector database** | Tens of documents fit in memory; cosine similarity in a few lines of Python beats running and securing another service. |
+| **No vector database** | Tens of documents fit in memory; BM25 in a few lines of Python beats running and securing another service. |
 | **Local SQLite for accounts** | Phone numbers and profiles never leave the server, and there is nothing extra to deploy. |
 | **No router, no state library** | A single `App.tsx` owns state and pages hand off to each other (and to the chat) through callbacks. Small surface, zero extra dependencies. |
 | **Translation keys are the English text** | `t('English text')` reads like normal code, and a missing translation falls back to English instead of breaking. |
@@ -242,12 +241,11 @@ Government services attract vulnerable users and sensitive data. Vaidha treats b
 
 | Layer | What it does | Where |
 |---|---|---|
-| 🔒 **PII redaction** | Aadhaar, PAN, IFSC, phone, bank/card numbers, OTP/PIN and email are replaced with placeholders *before* reaching Gemini **and** on the way back. The model only ever sees `[Aadhaar number removed]`. | `guardrails.py` |
+| 🔒 **PII redaction** | Aadhaar, PAN, IFSC, phone, bank/card numbers, OTP/PIN and email are replaced with placeholders *before* reaching the model **and** on the way back. The model only ever sees `[Aadhaar number removed]`. | `guardrails.py` |
 | 🧱 **Prompt-injection filter** | Known jailbreak patterns ("ignore previous instructions", "developer mode", …) get a fixed refusal without calling the model. Poisoned history turns are dropped. | `guardrails.py` |
 | 🔗 **Official-link allow-list** | Only `https` links to `gov.in`, `nic.in`, `mygov.in`, `india.gov.in`, `rbi.org.in`, `npci.org.in` (and subdomains) stay clickable. | `guardrails.py` |
 | ⏱️ **Rate limiting** | Chat: 10/min and 150/day per visitor. Eligibility: 5/min and 60/day. Both share a 30/min global cap to protect quota. Logins are limited per number and per visitor. IPv6 visitors are grouped per `/64`, memory is capped at 100k tracked keys, and every limit answers `429` with `Retry-After`. | `guardrails.py`, `main.py`, `auth.py` |
 | 🔑 **Account security** | Passwords (8+ characters) hashed with **scrypt** and a per-user salt. Session tokens are random, sent in an `HttpOnly` cookie, and stored only as SHA-256 hashes. A wrong password and an unknown number get the same message and the same timing, so attackers can't discover which numbers are registered. | `auth.py` |
-| 🚫 **Gemini safety settings** | Harassment, hate, sexual and dangerous content blocked at medium and above. | `main.py` |
 | 📜 **Grounded system prompt** | Never invent schemes, amounts or deadlines; say when unsure and point to the official source; stay politically neutral. | `main.py` |
 
 The guardrails ship with a runnable self-check:
@@ -266,7 +264,7 @@ cd backend
 
 - **Node.js** 22+ and npm
 - **Python 3.12** and [`uv`](https://docs.astral.sh/uv/)
-- A free **Gemini API key** from [Google AI Studio](https://aistudio.google.com/apikey)
+- A free **Groq API key** from [console.groq.com](https://console.groq.com/keys)
 
 ### 1. Backend
 
@@ -274,7 +272,7 @@ cd backend
 cd backend
 uv venv --python 3.12 .venv
 uv pip install -r requirements.txt
-cp .env.example .env          # then paste your key into GEMINI_API_KEY
+cp .env.example .env          # then paste your key into GROQ_API_KEY
 ```
 
 Start it:
@@ -296,7 +294,7 @@ npm run dev
 
 Open **http://localhost:5173**, register with a mobile number and password, and you're in. Vite proxies every `/api/*` call to the backend on port 8000.
 
-> The backend creates `backend/vaidha.db` (accounts) and `backend/.cache/embeddings.json` (RAG index) on first use. Both are git-ignored.
+> The backend creates `backend/vaidha.db` (accounts, git-ignored) on first use. Set `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` to keep accounts in Turso instead, as the Vercel deploy does.
 
 ### Useful commands
 
@@ -312,11 +310,11 @@ Open **http://localhost:5173**, register with a mobile number and password, and 
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `GEMINI_API_KEY` | *(required)* | Your Google AI Studio key |
-| `GEMINI_MODEL` | `gemini-3.1-flash-lite` | First model tried |
-| `GEMINI_FALLBACK_MODELS` | `gemini-3.6-flash,gemini-3.5-flash` | Tried in order when the previous one fails |
-| `GEMINI_EMBED_MODEL` | `gemini-embedding-001` | Embedding model for the RAG index |
+| `GROQ_API_KEY` | *(required)* | Your Groq key |
+| `GROQ_MODEL` | `openai/gpt-oss-120b` | First model tried |
+| `GROQ_FALLBACK_MODELS` | `openai/gpt-oss-20b,qwen/qwen3.8-27b` | Tried in order when the previous one fails |
 | `VAIDHA_DB` | `backend/vaidha.db` | SQLite database for accounts and sessions |
+| `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` | *(unset)* | Store accounts in Turso instead of `VAIDHA_DB` (needed on Vercel) |
 | `VAIDHA_DATA_DIR` | `frontend/src/data` | Where `schemes.json` and `documents.json` are read from |
 
 ---
@@ -359,7 +357,7 @@ Open **http://localhost:5173**, register with a mobile number and password, and 
 }
 ```
 
-**Errors:** `429` rate limited (with `Retry-After`) · `502` Gemini error · `503` all models busy or key missing
+**Errors:** `429` rate limited (with `Retry-After`) · `502` Groq error · `503` all models busy or key missing
 
 </details>
 
@@ -435,7 +433,7 @@ Returns news items from six category searches, cached in memory for 15 minutes. 
 <br />
 
 ```json
-{ "ok": true, "models": ["gemini-3.1-flash-lite", "gemini-3.6-flash", "gemini-3.5-flash"], "keyConfigured": true }
+{ "ok": true, "models": ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.8-27b"], "keyConfigured": true }
 ```
 
 </details>
@@ -447,8 +445,8 @@ Returns news items from six category searches, cached in memory for 15 minutes. 
 ```text
 VaidhaAI/
 ├── backend/
-│   ├── main.py                  # FastAPI app: chat, eligibility, news, health, Gemini fallback chain
-│   ├── rag.py                   # Embedding index + cosine retrieval over schemes.json / documents.json
+│   ├── main.py                  # FastAPI app: chat, eligibility, news, health, Groq fallback chain
+│   ├── rag.py                   # BM25 keyword retrieval over schemes.json / documents.json
 │   ├── auth.py                  # Mobile + password accounts, scrypt hashing, sessions (SQLite)
 │   ├── guardrails.py            # Rate limits, PII redaction, injection filter, link allow-list (+ self-test)
 │   ├── requirements.txt
@@ -491,7 +489,7 @@ VaidhaAI/
 ## 🧭 Roadmap
 
 - [x] Chat-first UI with image discovery cards and quick prompts
-- [x] Gemini backend with structured output and model failover
+- [x] Groq backend with structured output and model failover
 - [x] Guardrails: PII redaction, injection filter, rate limits, official-link allow-list
 - [x] Live government news feed, fed into chat context
 - [x] Full Hindi and Marathi translation

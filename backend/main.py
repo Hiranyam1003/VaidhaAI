@@ -1,4 +1,4 @@
-"""Vaidha AI backend: one chat endpoint answered by Gemini.
+"""Vaidha AI backend: chat and eligibility answered by Groq, plus live government news.
 
 Run from backend/:  .venv/bin/uvicorn main:app --reload --port 8000
 """
@@ -20,9 +20,7 @@ from urllib.parse import quote_plus
 import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
-from google import genai
-from google.genai import errors, types
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 
 # Load .env before importing local modules: auth.py and rag.py read their settings when imported.
 load_dotenv(Path(__file__).parent / ".env")
@@ -31,13 +29,14 @@ from auth import router as auth_router  # noqa: E402
 from guardrails import looks_like_injection, redact_pii, retry_after, strip_unofficial_links, visitor_id  # noqa: E402
 from rag import index  # noqa: E402
 
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 # Tried in order: if a model is overloaded, too slow or out of quota, the next one answers instead.
 # Each model has its own free-tier quota, so falling back also stretches the rate limit.
 MODELS = [
-    os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite"),
-    *filter(None, os.getenv("GEMINI_FALLBACK_MODELS", "gemini-3.6-flash,gemini-3.5-flash").split(",")),
+    os.getenv("GROQ_MODEL", "openai/gpt-oss-120b"),
+    *filter(None, os.getenv("GROQ_FALLBACK_MODELS", "openai/gpt-oss-20b,qwen/qwen3.8-27b").split(",")),
 ]
-REQUEST_TIMEOUT_MS = 25_000
+REQUEST_TIMEOUT_S = 25
 MAX_HISTORY_TURNS = 10
 IST = timezone(timedelta(hours=5, minutes=30))  # India has no daylight saving, so a fixed offset is exact
 NEWS_HEADLINES_IN_PROMPT = 20
@@ -45,23 +44,11 @@ NEWS_HEADLINES_IN_PROMPT = 20
 NEWS_CONTEXT_TIMEOUT_S = 2
 MAX_HEADLINE_CHARS = 200
 
-# (key prefix, max requests, window in seconds). "ip" limits are per visitor; "all" protects the Gemini quota.
+# (key prefix, max requests, window in seconds). "ip" limits are per visitor; "all" protects the Groq quota.
 # In production behind a proxy, run uvicorn with --proxy-headers so request.client.host is the visitor's IP.
 CHAT_LIMITS = [("ip-min", 10, 60), ("ip-day", 150, 86_400), ("all-min", 30, 60)]
 NEWS_LIMITS = [("news-ip-min", 30, 60)]
 ELIGIBILITY_LIMITS = [("elig-ip-min", 5, 60), ("elig-ip-day", 60, 86_400), ("all-min", 30, 60)]
-
-# Block clearly harmful content. Civic integrity is left at the default on purpose: it would block ordinary
-# questions about elections, Parliament and political news that this assistant is meant to answer.
-SAFETY_SETTINGS = [
-    types.SafetySetting(category=category, threshold=types.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE)
-    for category in (
-        types.HarmCategory.HARM_CATEGORY_HARASSMENT,
-        types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-        types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-        types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    )
-]
 
 SYSTEM_PROMPT = """You are Vaidha AI, a citizen services assistant that helps people in India understand
 government schemes, check whether they might be eligible, and find out which documents they need. You also
@@ -132,27 +119,17 @@ class ChatReply(BaseModel):
 logger = logging.getLogger("vaidha")
 app = FastAPI(title="Vaidha AI")
 app.include_router(auth_router)
-_client: genai.Client | None = None
 
 
-def get_client() -> genai.Client:
-    global _client
-    if not os.getenv("GEMINI_API_KEY"):
-        raise HTTPException(503, "The Gemini API key is missing. Add GEMINI_API_KEY to backend/.env.")
-    if _client is None:
-        # One attempt per model; falling back to the next model is faster than retrying a busy one.
-        _client = genai.Client(
-            http_options=types.HttpOptions(
-                timeout=REQUEST_TIMEOUT_MS,
-                retry_options=types.HttpRetryOptions(attempts=1),
-            )
-        )
-    return _client
+def require_key() -> str:
+    if not (key := os.getenv("GROQ_API_KEY")):
+        raise HTTPException(503, "The Groq API key is missing. Add GROQ_API_KEY to backend/.env.")
+    return key
 
 
 @app.get("/api/health")
 def health() -> dict:
-    return {"ok": True, "models": MODELS, "keyConfigured": bool(os.getenv("GEMINI_API_KEY"))}
+    return {"ok": True, "models": MODELS, "keyConfigured": bool(os.getenv("GROQ_API_KEY"))}
 
 
 REFUSAL = ChatReply(
@@ -179,7 +156,7 @@ def enforce_rate_limits(request: Request, limits: list[tuple[str, int, int]]) ->
 @app.post("/api/chat", response_model=ChatReply)
 async def chat(req: ChatRequest, request: Request) -> ChatReply:
     enforce_rate_limits(request, CHAT_LIMITS)
-    get_client()  # fail fast with a clear message if the key is missing
+    require_key()  # fail fast with a clear message if the key is missing
 
     if looks_like_injection(req.message):
         logger.info("Refused a prompt-injection attempt")
@@ -188,79 +165,66 @@ async def chat(req: ChatRequest, request: Request) -> ChatReply:
     # drop those turns instead of refusing, or one bad message would block the rest of the conversation.
     turns = [t for t in req.history[-MAX_HISTORY_TURNS:] if not looks_like_injection(t.content)]
 
-    # Personal data never leaves the server: the model only sees placeholders.
-    contents = [
-        types.Content(role="model" if t.role == "assistant" else "user", parts=[types.Part(text=redact_pii(t.content))])
-        for t in turns
-    ]
-    # Headlines come from outside publishers, so they go in the message as a labelled data block rather than
-    # in the system instruction, where they would carry the model's highest trust.
-    headlines = await news_context()
-    question = types.Part(text=redact_pii(req.message))
-    contents.append(types.Content(role="user", parts=[types.Part(text=headlines), question] if headlines else [question]))
-
-    config = types.GenerateContentConfig(
-        system_instruction=(
-            f"{SYSTEM_PROMPT}\n\nToday's date in India is {datetime.now(IST):%d %B %Y}.\n\n"
-            f"Write every field of your reply in {req.language}."
-        ),
-        response_mime_type="application/json",
-        response_schema=ChatReply,
-        safety_settings=SAFETY_SETTINGS,
-        # Low thinking keeps answers fast and is plenty for these citizen-service questions.
-        thinking_config=types.ThinkingConfig(thinking_level="low"),
+    system = (
+        f"{SYSTEM_PROMPT}\n\nToday's date in India is {datetime.now(IST):%d %B %Y}.\n\n"
+        f"Write every field of your reply in {req.language}."
     )
+    # Personal data never leaves the server: the model only sees placeholders.
+    messages = [{"role": "system", "content": system}] + [{"role": t.role, "content": redact_pii(t.content)} for t in turns]
+    # Headlines come from outside publishers, so they go in the message as a labelled data block rather than
+    # in the system prompt, where they would carry the model's highest trust.
+    headlines = await news_context()
+    question = redact_pii(req.message)
+    messages.append({"role": "user", "content": f"{headlines}\n\n{question}" if headlines else question})
 
-    response = await generate(contents, config)
-    if is_blocked(response):
-        logger.info("Gemini safety filter blocked a request")
-        return REFUSAL
-
-    reply = response.parsed
-    if not isinstance(reply, ChatReply):
-        logger.warning("Gemini returned unparseable output: %r", response.text)
-        raise HTTPException(502, "Gemini returned an answer in an unexpected format. Please try again.")
+    reply = await generate(messages, ChatReply, max_tokens=1500)
 
     # Only official government links stay clickable, and the model can't echo personal data back.
     reply.content = redact_pii(strip_unofficial_links(reply.content))
     return reply
 
 
-async def generate(contents, config: types.GenerateContentConfig) -> types.GenerateContentResponse:
-    """Asks each model in MODELS in turn until one answers."""
-    client = get_client()
+async def generate[T: BaseModel](messages: list[dict], schema: type[T], max_tokens: int) -> T:
+    """Asks each model in MODELS in turn until one answers with JSON matching the schema."""
+    headers = {"Authorization": f"Bearer {require_key()}"}
     for model in MODELS:
+        body = {
+            "model": model,
+            "messages": messages,
+            "response_format": {"type": "json_schema", "json_schema": {"name": schema.__name__, "schema": schema.model_json_schema()}},
+            # Groq counts this reservation against the per-minute token limit, so keep it close to what's needed.
+            "max_completion_tokens": max_tokens,
+        }
+        if model.startswith("openai/gpt-oss"):
+            body["reasoning_effort"] = "low"  # fast, and plenty for these citizen-service questions
         try:
-            return await client.aio.models.generate_content(model=model, contents=contents, config=config)
-        except (errors.ServerError, httpx.TimeoutException) as e:
-            logger.warning("%s is busy or slow (%s); trying the next model", model, getattr(e, "code", type(e).__name__))
-        except errors.ClientError as e:
-            if e.code != 429:
-                logger.warning("Gemini request to %s failed: %s %s", model, e.code, e.message)
-                raise HTTPException(502, explain_gemini_error(e, model)) from e
-            logger.warning("%s is out of quota; trying the next model", model)
-        except errors.APIError as e:
-            logger.warning("Gemini request to %s failed: %s %s", model, e.code, e.message)
-            raise HTTPException(502, explain_gemini_error(e, model)) from e
-    raise HTTPException(503, "Gemini is busy or its usage limit was reached. Please try again in a minute.")
+            # A client per call: serverless hosts may run each request in a new event loop.
+            async with httpx.AsyncClient(timeout=REQUEST_TIMEOUT_S) as client:
+                res = await client.post(GROQ_URL, json=body, headers=headers)
+        except httpx.HTTPError as e:
+            logger.warning("%s is unreachable or slow (%s); trying the next model", model, type(e).__name__)
+            continue
+        if res.status_code == 429 or res.status_code >= 500:
+            logger.warning("%s is busy or out of quota (%s); trying the next model", model, res.status_code)
+            continue
+        if res.status_code != 200:
+            logger.warning("Groq request to %s failed: %s %s", model, res.status_code, res.text[:300])
+            raise HTTPException(502, explain_groq_error(res.status_code, model))
+        try:
+            return schema.model_validate_json(res.json()["choices"][0]["message"]["content"])
+        except (ValidationError, KeyError, IndexError, TypeError, ValueError):
+            logger.warning("%s returned unparseable output; trying the next model", model)
+    raise HTTPException(503, "The AI service is busy or its usage limit was reached. Please try again in a minute.")
 
 
-def is_blocked(response: types.GenerateContentResponse) -> bool:
-    return bool(
-        (response.prompt_feedback and response.prompt_feedback.block_reason)
-        or (response.candidates and response.candidates[0].finish_reason == types.FinishReason.SAFETY)
-    )
-
-
-def explain_gemini_error(e: errors.APIError, model: str) -> str:
-    message = e.message or ""
-    if "API key" in message or e.status == "PERMISSION_DENIED":
-        return "The Gemini API key was rejected. Check GEMINI_API_KEY in backend/.env."
-    if e.code == 429:
-        return "Gemini's usage limit was reached. Please wait a minute and try again."
-    if e.code == 404:
-        return f"The Gemini model '{model}' is not available. Set GEMINI_MODEL in backend/.env."
-    return "Gemini could not answer right now. Please try again in a moment."
+def explain_groq_error(status: int, model: str) -> str:
+    if status in (401, 403):
+        return "The Groq API key was rejected. Check GROQ_API_KEY in backend/.env."
+    if status == 413:
+        return "The request was too large for the AI service's free plan. Please try again with fewer details."
+    if status == 404:
+        return f"The Groq model '{model}' is not available. Set GROQ_MODEL in backend/.env."
+    return "The AI service could not answer right now. Please try again in a moment."
 
 
 # --- Eligibility check: retrieval-augmented answers from the scheme and document data ---
@@ -289,7 +253,13 @@ OCCUPATION_TEXT = {
 }
 
 SCHEME_CANDIDATES = 8
-DOCUMENT_CANDIDATES = 10
+DOCUMENT_CANDIDATES = 8
+# Only the fields the model needs to judge a scheme: a whole record (sources, dates, keywords, Hindi name) would
+# push one request past the free tier's 8,000 tokens per minute.
+SCHEME_FIELDS = (
+    "id", "name", "level", "beneficiaryGroups", "benefits", "eligibilityCriteria",
+    "requiredDocuments", "applicationProcess", "applicationStatus", "officialApplicationUrl",
+)
 
 
 class EligibilityProfile(BaseModel):
@@ -350,6 +320,28 @@ Rules:
 """
 
 
+def search_terms(p: EligibilityProfile) -> str:
+    """Keywords for retrieval: only the distinctive facts, so generic words like "income" don't decide the ranking."""
+    words = [OCCUPATION_TEXT[p.occupation], p.category, p.state]
+    if p.gender == "Female":
+        words.append("women woman girl")
+    if p.age < 30:
+        words.append("youth young")
+    if p.age >= 60:
+        words.append("senior citizens old age pension")
+    if p.income in ("below-1l", "1l-3l"):
+        words.append("poor BPL low-income")
+    if p.ownsFarmland:
+        words.append("farmer landholding cultivable land")
+    if not p.ownsPuccaHouse:
+        words.append("housing pucca house")
+    if p.hasDisability:
+        words.append("disability divyang")
+    if p.pregnantOrNewMother:
+        words.append("pregnant maternity mother")
+    return " ".join(words)
+
+
 def describe_profile(p: EligibilityProfile) -> str:
     facts = [
         f"A {p.age}-year-old {p.gender.lower()} person living in {p.state}",
@@ -369,45 +361,30 @@ def describe_profile(p: EligibilityProfile) -> str:
 @app.post("/api/eligibility", response_model=EligibilityReply)
 async def eligibility(req: EligibilityRequest, request: Request) -> EligibilityReply:
     enforce_rate_limits(request, ELIGIBILITY_LIMITS)
-    client = get_client()
+    require_key()  # fail fast with a clear message if the key is missing
     profile_text = describe_profile(req.profile)
 
     # 1. Retrieve the schemes closest to this person. State-level schemes in the data are Maharashtra schemes.
-    try:
-        schemes = await index.search(
-            client,
-            f"Government schemes for: {profile_text}",
-            "scheme",
-            SCHEME_CANDIDATES,
-            exclude=lambda s: s["level"] == "State" and req.profile.state != "Maharashtra",
-        )
-        # 2. Retrieve the document guides closest to the papers those schemes ask for.
-        papers = "; ".join(
-            paper for c in schemes for paper in c.record["requiredDocuments"]["mandatory"] + c.record["requiredDocuments"].get("conditional", [])
-        )
-        documents = await index.search(client, f"How to get these documents: {papers}", "document", DOCUMENT_CANDIDATES)
-    except (errors.APIError, httpx.TimeoutException) as e:
-        logger.warning("Eligibility retrieval failed: %s", e)
-        raise HTTPException(503, "Vaidha AI could not search the scheme library right now. Please try again in a minute.") from e
+    schemes = index.search(
+        search_terms(req.profile),
+        "scheme",
+        SCHEME_CANDIDATES,
+        exclude=lambda s: s["level"] == "State" and req.profile.state != "Maharashtra",
+    )
+    # 2. Retrieve the document guides closest to the papers those schemes ask for.
+    papers = "; ".join(
+        paper for c in schemes for paper in c.record["requiredDocuments"]["mandatory"] + c.record["requiredDocuments"].get("conditional", [])
+    )
+    documents = index.search(papers, "document", DOCUMENT_CANDIDATES)
 
-    # 3. Let Gemini judge each retrieved scheme, grounded only in the retrieved records.
+    # 3. Let the model judge each retrieved scheme, grounded only in the retrieved records.
     context = "\n\n".join(
         [f"PERSON: {profile_text}"]
-        + [f"SCHEME RECORD id={c.id}\n{json.dumps(c.record, ensure_ascii=False)}" for c in schemes]
+        + [f"SCHEME RECORD id={c.id}\n{json.dumps({k: c.record[k] for k in SCHEME_FIELDS if k in c.record}, ensure_ascii=False)}" for c in schemes]
         + [f"DOCUMENT GUIDE id={c.id}\n{c.text}" for c in documents]
     )
-    config = types.GenerateContentConfig(
-        system_instruction=f"{ELIGIBILITY_PROMPT}\nWrite every text field in {req.language}.",
-        response_mime_type="application/json",
-        response_schema=EligibilityReply,
-        safety_settings=SAFETY_SETTINGS,
-        thinking_config=types.ThinkingConfig(thinking_level="low"),
-    )
-    response = await generate(context, config)
-    reply = None if is_blocked(response) else response.parsed
-    if not isinstance(reply, EligibilityReply):
-        logger.warning("Gemini returned unparseable eligibility output: %r", response.text)
-        raise HTTPException(502, "Gemini returned an answer in an unexpected format. Please try again.")
+    system = f"{ELIGIBILITY_PROMPT}\nWrite every text field in {req.language}."
+    reply = await generate([{"role": "system", "content": system}, {"role": "user", "content": context}], EligibilityReply, max_tokens=3500)
 
     # Keep only schemes and document guides that were actually retrieved, ordered by how relevant they were.
     rank = {c.id: i for i, c in enumerate(schemes)}

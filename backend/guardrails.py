@@ -65,7 +65,7 @@ def retry_after(limits: list[tuple[str, int, int]]) -> int:
     return 0
 
 
-# --- Personal data: removed before anything is sent to Gemini or shown back ---
+# --- Personal data: removed before anything is sent to the AI model or shown back ---
 
 # Order matters: Aadhaar (12 digits) and phone (10) must run before the generic bank-account rule.
 _PII_PATTERNS = [

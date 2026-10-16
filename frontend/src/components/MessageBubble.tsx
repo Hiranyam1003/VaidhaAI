@@ -333,7 +333,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     });
   }
 
-  // Answers come from Gemini, so escape any HTML before adding the <strong> and <a> tags we render.
+  // Answers come from the AI model, so escape any HTML before adding the <strong> and <a> tags we render.
   function formatBold(str: string) {
     const escaped = str
       .replace(/&/g, '&amp;')

@@ -45,7 +45,7 @@ export interface EligibilityReply {
 export type EligibilityResult = { ok: true; reply: EligibilityReply } | { ok: false; error: string };
 
 // Asks the backend which schemes fit this profile. The backend retrieves the closest schemes and document
-// guides (RAG) and has Gemini judge each one. Never throws: failures come back as a translated message.
+// guides (RAG) and has the AI model judge each one. Never throws: failures come back as a translated message.
 export async function checkEligibility(profile: EligibilityProfile, language: Language): Promise<EligibilityResult> {
   const fail = (text: string): EligibilityResult => ({ ok: false, error: translate(language, text) });
   try {

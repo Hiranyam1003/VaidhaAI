@@ -27,9 +27,6 @@ dist-ssr
 .venv
 __pycache__
 .env
-.cache/*
-# Committed so a deploy doesn't re-embed everything (and spend Gemini quota) on each cold start.
-!.cache/embeddings.json
 *.db
 
 # Vercel
