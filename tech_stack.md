@@ -1,6 +1,6 @@
-# CLAUDE.md
+# Tech stack
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+How Vaidha AI is built: the commands, architecture, data, backend and deployment.
 
 ## Project
 
